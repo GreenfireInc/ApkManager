@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=ApkManager
+GenericName=Android APK Inspector
+Comment=Inspect and read Android APK package contents
+Categories=Development;Utility;GTK;GNOME;
+Exec=@bindir@/apk-manager %f
+TryExec=@bindir@/apk-manager
+Icon=com.github.ApkManager
+Terminal=false
+Type=Application
+StartupNotify=true
+MimeType=application/vnd.android.package-archive;
+Keywords=Android;APK;Apktool;Manifest;Smali;
+StartupWMClass=com.github.ApkManager

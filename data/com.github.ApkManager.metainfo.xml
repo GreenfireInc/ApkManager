@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.github.ApkManager</id>
+  <name>ApkManager</name>
+  <summary>Inspect Android APK package contents on Linux</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <description>
+    <p>ApkManager is a native GTK desktop application for reading Android APK files on Debian and Fedora. It lists raw archive contents instantly and uses Apktool to decode manifests, resources, and smali for deeper inspection.</p>
+  </description>
+  <launchable type="desktop-id">com.github.ApkManager.desktop</launchable>
+  <url type="homepage">https://github.com/</url>
+  <bundle type="legal">
+    <name>Apktool</name>
+    <license>Apache-2.0</license>
+  </bundle>
+  <content_rating type="oars-1.1"/>
+</component>

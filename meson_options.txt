@@ -1,0 +1,2 @@
+option('bundle_apktool', type: 'boolean', value: true,
+  description: 'Download and bundle a pinned apktool.jar at build time')
