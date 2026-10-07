@@ -2,7 +2,7 @@ namespace ApkManager.Utils {
     public class FileUtilsHelper {
         public static string format_bytes(int64 bytes) {
             if (bytes < 1024) {
-                return "%d B".printf(bytes);
+                return "%lld B".printf(bytes);
             }
             if (bytes < 1024 * 1024) {
                 return "%.1f KiB".printf(bytes / 1024.0);

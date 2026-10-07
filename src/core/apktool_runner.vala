@@ -16,7 +16,6 @@ namespace ApkManager.Core {
 
         private Subprocess? current_proc = null;
         private Cancellable? cancellable = null;
-        private uint stdout_watch_id = 0;
 
         public bool java_available {
             get {
@@ -69,13 +68,21 @@ namespace ApkManager.Core {
                 );
 
                 var stdout = new DataInputStream(current_proc.get_stdout_pipe());
-                stdout_watch_id = stdout.set_line_funcs((stream, line) => {
-                    inspect_line(line);
-                    return Source.CONTINUE;
-                });
 
-                int exit_status = 0;
-                yield current_proc.wait_async(cancellable, out exit_status);
+                while (true) {
+                    try {
+                        string? line = yield stdout.read_line_utf8_async(Priority.DEFAULT, cancellable);
+                        if (line == null) {
+                            break;
+                        }
+                        inspect_line(line);
+                    } catch (IOError e) {
+                        if (cancellable != null && cancellable.is_cancelled()) {
+                            break;
+                        }
+                        throw e;
+                    }
+                }
 
                 if (cancellable != null && cancellable.is_cancelled()) {
                     phase_changed(ApktoolPhase.FAILED, "Decode cancelled");
@@ -83,9 +90,11 @@ namespace ApkManager.Core {
                     return false;
                 }
 
-                if (!Subprocess.check_exit_status(exit_status, cancellable)) {
+                try {
+                    yield current_proc.wait_check_async(cancellable);
+                } catch (Error e) {
                     phase_changed(ApktoolPhase.FAILED, "Apktool failed");
-                    finished(false, "Apktool exited with status %d".printf(exit_status));
+                    finished(false, e.message);
                     return false;
                 }
 
@@ -129,10 +138,6 @@ namespace ApkManager.Core {
         }
 
         private void cleanup_subprocess() {
-            if (stdout_watch_id != 0) {
-                Source.remove(stdout_watch_id);
-                stdout_watch_id = 0;
-            }
             current_proc = null;
             cancellable = null;
         }

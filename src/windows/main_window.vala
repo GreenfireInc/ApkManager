@@ -12,7 +12,7 @@ namespace ApkManager.Windows {
         private Gtk.TreeView archive_tree;
         private Gtk.ListStore archive_store;
         private Gtk.Label status_label;
-        private Adw.ProgressBar progress_bar;
+        private Gtk.ProgressBar progress_bar;
         private Gtk.Button decode_manifest_button;
         private Gtk.Button decode_full_button;
         private Gtk.Button cancel_button;
@@ -47,7 +47,7 @@ namespace ApkManager.Windows {
             open_button.clicked.connect(on_open_clicked);
             sidebar_box.append(open_button);
 
-            split.sidebar = sidebar_box;
+            split.sidebar = new Adw.NavigationPage(sidebar_box, "Sessions");
 
             var content_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
             var content_header = new Adw.HeaderBar();
@@ -60,7 +60,7 @@ namespace ApkManager.Windows {
             content_header.pack_end(cancel_button);
             content_box.append(content_header);
 
-            progress_bar = new Adw.ProgressBar();
+            progress_bar = new Gtk.ProgressBar();
             progress_bar.visible = false;
             content_box.append(progress_bar);
 
@@ -72,7 +72,7 @@ namespace ApkManager.Windows {
             status_label.xalign = 0;
             content_box.append(status_label);
 
-            archive_store = new Gtk.ListStore(typeof(string), typeof(string), typeof(string));
+            archive_store = new Gtk.ListStore.newv({typeof(string), typeof(string), typeof(string)});
             archive_tree = new Gtk.TreeView.with_model(archive_store);
             archive_tree.set_vexpand(true);
 
@@ -96,7 +96,7 @@ namespace ApkManager.Windows {
             var stack = new Adw.ViewStack();
             stack.add_titled(content_box, "content", "Content");
             stack.add_titled(empty_page, "empty", "Empty");
-            split.content = stack;
+            split.content = new Adw.NavigationPage(stack, "Content");
 
             decode_manifest_button.clicked.connect(() => {
                 start_decode(DecodeMode.MANIFEST_ONLY);
@@ -202,8 +202,10 @@ namespace ApkManager.Windows {
         }
 
         private void refresh_sessions() {
-            while (var child = session_list.get_first_child()) {
+            Gtk.Widget? child = session_list.get_first_child();
+            while (child != null) {
                 session_list.remove(child);
+                child = session_list.get_first_child();
             }
 
             foreach (var session in registry.get_sessions()) {
@@ -229,7 +231,7 @@ namespace ApkManager.Windows {
             var filter = new Gtk.FileFilter();
             filter.add_pattern("*.apk");
             filter.add_pattern("*.APK");
-            filter.set_name("Android packages");
+            filter.set_filter_name("Android packages");
             var filters = new GLib.ListStore(typeof(Gtk.FileFilter));
             filters.append(filter);
             dialog.set_filters(filters);
