@@ -70,6 +70,9 @@ namespace ApkManager.Windows {
             status_label.margin_top = 8;
             status_label.halign = Gtk.Align.START;
             status_label.xalign = 0;
+            status_label.wrap = true;
+            status_label.wrap_mode = Pango.WrapMode.WORD_CHAR;
+            status_label.max_width_chars = 80;
             content_box.append(status_label);
 
             archive_store = new Gtk.ListStore.newv({typeof(string), typeof(string), typeof(string)});

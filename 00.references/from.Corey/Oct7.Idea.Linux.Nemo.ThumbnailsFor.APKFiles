@@ -1,0 +1,105 @@
+10/7/2026
+
+Idea.Linux: Nemo.ThumbnailsFor.APKFiles
+
+
+
+
+
+
+############33Prompt:
+
+Im on Cinnamon with Nemo, and I would like to create code that allows for android apk files to be recognized by using the android logo for those files
+
+
+
+
+
+################33Response:
+
+Nemo picks icons by MIME type, so you need to (1) make sure `.apk` maps to a MIME type, and (2) install an icon for that type into your icon theme. Here's a script that does both for your user only, with no root needed.
+
+**1. Get an Android icon**
+
+Use any Android-logo PNG or SVG you have. Save it as `android.svg` (or `.png`) in your home folder. The Android logo is a trademark, so check that your use is fine. Using it locally on your own desktop is generally harmless.
+
+**2. Run this script**
+
+```bash
+#!/usr/bin/env bash
+set -e
+
+ICON_SRC="${1:-$HOME/android.svg}"   # path to your Android icon
+EXT="${ICON_SRC##*.}"                # svg or png
+
+# --- Register the MIME type for .apk ---
+MIME_DIR="$HOME/.local/share/mime"
+mkdir -p "$MIME_DIR/packages"
+
+cat > "$MIME_DIR/packages/application-vnd.android.package-archive.xml" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/vnd.android.package-archive">
+    <comment>Android application package</comment>
+    <glob pattern="*.apk"/>
+    <sub-class-of type="application/zip"/>
+  </mime-type>
+</mime-info>
+EOF
+
+update-mime-database "$MIME_DIR"
+
+# --- Install the icon into the hicolor theme ---
+# Icon name for MIME type: application/vnd.android.package-archive
+#   -> application-vnd.android.package-archive
+ICON_NAME="application-vnd.android.package-archive"
+
+if [ "$EXT" = "svg" ]; then
+    DEST="$HOME/.local/share/icons/hicolor/scalable/mimetypes"
+    mkdir -p "$DEST"
+    cp "$ICON_SRC" "$DEST/$ICON_NAME.svg"
+else
+    for size in 48 64 128; do
+        DEST="$HOME/.local/share/icons/hicolor/${size}x${size}/mimetypes"
+        mkdir -p "$DEST"
+        convert "$ICON_SRC" -resize ${size}x${size} "$DEST/$ICON_NAME.png"   # needs ImageMagick
+    done
+fi
+
+gtk-update-icon-cache -f -t "$HOME/.local/share/icons/hicolor" 2>/dev/null || true
+
+# --- Restart Nemo so it reloads ---
+nemo -q || true
+echo "Done. Reopen a Nemo window."
+```
+
+Run it with:
+
+```bash
+chmod +x apk-icon.sh
+./apk-icon.sh ~/android.svg
+```
+
+**Things to know**
+
+- **Icon theme overrides:** Nemo uses your active icon theme (Mint-Y, Adwaita, etc.) first and falls back to `hicolor`. If your theme already ships an icon for this exact MIME type, it wins. In that case, copy the icon into your theme's folder instead, e.g. `~/.local/share/icons/<ThemeName>/mimetypes/`, or create a small override theme that inherits from your current one.
+- **Thumbnail cache:** If an APK still shows the old icon, clear the cache with `rm -rf ~/.cache/thumbnails/*` and reopen Nemo.
+- **Check detection:** `xdg-mime query filetype yourapp.apk` should print `application/vnd.android.package-archive`. If it prints `application/zip`, the MIME registration didn't take, so re-run `update-mime-database ~/.local/share/mime`.
+- **System-wide install:** Use `/usr/share/mime/packages/` and `/usr/share/icons/hicolor/...` with `sudo`, then run `sudo update-mime-database /usr/share/mime` and `sudo gtk-update-icon-cache /usr/share/icons/hicolor`.
+
+If you'd also like double-clicking an APK to do something (install via `adb`, open in a tool like `apktool`), I can add a `.desktop` file and associate it with this MIME type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
