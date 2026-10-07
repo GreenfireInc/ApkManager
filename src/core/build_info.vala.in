@@ -1,3 +1,7 @@
 namespace ApkManager.Core {
     public const string APPLICATION_VERSION = "@VERSION@";
+    // Absolute directory where meson install places apktool.jar
+    // (<prefix>/<libdir>/apk-manager). libdir is "lib64" on Fedora and
+    // "lib" or "lib/<triplet>" on Debian, so it must come from Meson.
+    public const string APKTOOL_INSTALL_DIR = "@APKTOOL_LIBDIR@";
 }

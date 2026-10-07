@@ -45,13 +45,26 @@ namespace ApkManager.Core {
                     return env.strip();
                 }
 
-                var installed = Path.build_filename(get_install_prefix(), "lib", "apk-manager", APKTOOL_JAR_NAME);
+                // 1. Exact path baked in by Meson at configure time
+                //    (<prefix>/<libdir>/apk-manager, e.g. lib64 on Fedora).
+                var installed = Path.build_filename(APKTOOL_INSTALL_DIR, APKTOOL_JAR_NAME);
                 if (FileUtils.test(installed, FileTest.EXISTS)) {
                     return installed;
                 }
 
-                // Development fallback: build directory output from fetch-apktool.sh
-                var build_fallback = Path.build_filename(Environment.get_current_dir(), "build", "apktool.jar");
+                // 2. Relocated install: derive prefix from the running binary
+                //    (<prefix>/bin/apk-manager) and probe common libdirs.
+                var prefix = get_install_prefix();
+                string[] libdirs = { "lib64", "lib", "lib/x86_64-linux-gnu", "lib/aarch64-linux-gnu" };
+                foreach (var libdir in libdirs) {
+                    var candidate = Path.build_filename(prefix, libdir, "apk-manager", APKTOOL_JAR_NAME);
+                    if (FileUtils.test(candidate, FileTest.EXISTS)) {
+                        return candidate;
+                    }
+                }
+
+                // 3. Development fallback: build directory output from fetch-apktool.sh
+                var build_fallback = Path.build_filename(Environment.get_current_dir(), "build", APKTOOL_JAR_NAME);
                 if (FileUtils.test(build_fallback, FileTest.EXISTS)) {
                     return build_fallback;
                 }
@@ -61,15 +74,11 @@ namespace ApkManager.Core {
         }
 
         public static string decoded_dir_for_key(string cache_key) {
-            owned get {
-                return Path.build_filename(decoded_root, cache_key);
-            }
+            return Path.build_filename(decoded_root, cache_key);
         }
 
         public static string partial_decode_dir(string cache_key) {
-            owned get {
-                return "%s.partial-%d".printf(decoded_dir_for_key(cache_key), Posix.getpid());
-            }
+            return "%s.partial-%d".printf(decoded_dir_for_key(cache_key), Posix.getpid());
         }
 
         private static string get_install_prefix() {
@@ -77,6 +86,18 @@ namespace ApkManager.Core {
             if (prefix != null && prefix.strip() != "") {
                 return prefix.strip();
             }
+
+            // Resolve <prefix> from <prefix>/bin/apk-manager via /proc/self/exe.
+            try {
+                var exe = FileUtils.read_link("/proc/self/exe");
+                var bindir = Path.get_dirname(exe);
+                if (Path.get_basename(bindir) == "bin") {
+                    return Path.get_dirname(bindir);
+                }
+            } catch (FileError e) {
+                // fall through to default
+            }
+
             return "/usr/local";
         }
     }

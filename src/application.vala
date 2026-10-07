@@ -43,12 +43,26 @@ namespace ApkManager {
             }
         }
 
-        protected override int command_line(string[] command_line) {
+        protected override int command_line(ApplicationCommandLine command_line) {
             if (opt_version) {
-                print("ApkManager %s\n", Core.APPLICATION_VERSION);
+                command_line.print("ApkManager %s\n", Core.APPLICATION_VERSION);
                 return 0;
             }
-            return base.command_line(command_line);
+
+            var args = command_line.get_arguments();
+            bool opened_apk = false;
+            for (int i = 1; i < args.length; i++) {
+                if (ApkArchive.is_apk_path(args[i])) {
+                    show_open_window(args[i]);
+                    opened_apk = true;
+                }
+            }
+
+            if (!opened_apk) {
+                ensure_main_window();
+                main_window.present();
+            }
+            return 0;
         }
 
         private void ensure_main_window() {

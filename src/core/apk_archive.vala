@@ -28,26 +28,27 @@ namespace ApkManager.Core {
             }
 
             var entries = new Gee.ArrayList<ArchiveEntryInfo>();
-            Archive.Read reader = Archive.Read.new();
-            reader.set_support_filter_all();
-            reader.set_support_format_all();
+            Archive.Read reader = new Archive.Read();
+            reader.support_filter_all();
+            reader.support_format_all();
 
             if (reader.open_filename(apk_path, 10240) != Archive.Result.OK) {
                 throw new IOError.FAILED("Failed to open APK archive: %s".printf(apk_path));
             }
 
-            Archive.Entry entry;
+            unowned Archive.Entry entry;
             while (reader.next_header(out entry) == Archive.Result.OK) {
-                var name = entry.pathname ?? "";
+                var name = entry.pathname();
                 if (name == "" || !is_safe_archive_path(name)) {
                     continue;
                 }
 
+                var size = entry.size();
                 entries.add(new ArchiveEntryInfo(
                     name,
-                    entry.size,
-                    entry.size_uncompressed,
-                    entry.filetype == Archive.EntryFileType.DIRECTORY
+                    size,
+                    size,
+                    entry.filetype() == Archive.FileType.IFDIR
                 ));
             }
 
@@ -81,7 +82,7 @@ namespace ApkManager.Core {
                     if (bytes_read == 0) {
                         break;
                     }
-                    checksum.update(buffer[0:bytes_read]);
+                    checksum.update(buffer, bytes_read);
                 }
 
                 return checksum.get_string();

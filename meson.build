@@ -31,6 +31,7 @@ core_sources = files(
 
 build_info_conf = configuration_data()
 build_info_conf.set('VERSION', meson.project_version())
+build_info_conf.set('APKTOOL_LIBDIR', apktool_libdir)
 build_info = configure_file(
   input: 'src/core/build_info.vala.in',
   output: 'build_info.vala',
@@ -43,8 +44,18 @@ apktool_jar = custom_target('apktool-jar',
   output: 'apktool.jar',
   build_by_default: true,
   command: ['sh', fetch_apktool_script, meson.current_build_dir()],
-  install: true,
-  install_dir: apktool_libdir
+  # Deliberately NOT `install: true`. Meson runs depfixer.fix_jar() on every
+  # installed build-target output ending in .jar, which requires the JDK `jar`
+  # tool and rewrites the manifest's Class-Path. Hosts with only a headless JRE
+  # have no `jar` binary and `meson install` aborts. The JAR is a pinned
+  # third-party artifact that must be copied verbatim, so install it with a
+  # plain copy script instead.
+  install: false
+)
+
+meson.add_install_script('scripts/install-apktool.sh',
+  meson.current_build_dir() / 'apktool.jar',
+  get_option('libdir') / 'apk-manager'
 )
 
 subdir('data')

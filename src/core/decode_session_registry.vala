@@ -1,7 +1,7 @@
 using Json;
 
 namespace ApkManager.Core {
-    public class DecodeSessionRegistry : Object {
+    public class DecodeSessionRegistry : GLib.Object {
         private Gee.ArrayList<DecodeSession> sessions = new Gee.ArrayList<DecodeSession>();
 
         public DecodeSessionRegistry() {
@@ -14,7 +14,7 @@ namespace ApkManager.Core {
 
         public DecodeSession get_or_create(string apk_path) {
             var hash = ApkArchive.compute_sha256(apk_path);
-            var id = hash ?? Path.get_basename(apk_path);
+            var id = hash ?? GLib.Path.get_basename(apk_path);
 
             foreach (var session in sessions) {
                 if (session.id == id) {
