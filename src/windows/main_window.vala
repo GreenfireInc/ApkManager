@@ -16,6 +16,9 @@ namespace ApkManager.Windows {
         private Gtk.Button decode_manifest_button;
         private Gtk.Button decode_full_button;
         private Gtk.Button cancel_button;
+        private Adw.NavigationSplitView split_view;
+        private Adw.ViewStack content_stack;
+        private string[] recent_paths = {};
 
         public MainWindow(Adw.Application app, DecodeSessionRegistry registry) {
             Object(application: app, default_width: 960, default_height: 640);
@@ -26,8 +29,8 @@ namespace ApkManager.Windows {
         }
 
         private void build_ui() {
-            var split = new Adw.NavigationSplitView();
-            content = split;
+            split_view = new Adw.NavigationSplitView();
+            content = split_view;
 
             var sidebar_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
             var sidebar_header = new Adw.HeaderBar();
@@ -36,7 +39,9 @@ namespace ApkManager.Windows {
 
             session_list = new Gtk.ListBox();
             session_list.selection_mode = Gtk.SelectionMode.SINGLE;
+            session_list.activate_on_single_click = true;
             session_list.set_vexpand(true);
+            session_list.row_activated.connect(on_session_activated);
             sidebar_box.append(session_list);
 
             var open_button = new Gtk.Button.with_label("Open APK…");
@@ -47,7 +52,7 @@ namespace ApkManager.Windows {
             open_button.clicked.connect(on_open_clicked);
             sidebar_box.append(open_button);
 
-            split.sidebar = new Adw.NavigationPage(sidebar_box, "Sessions");
+            split_view.sidebar = new Adw.NavigationPage(sidebar_box, "Sessions");
 
             var content_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
             var content_header = new Adw.HeaderBar();
@@ -96,10 +101,11 @@ namespace ApkManager.Windows {
             empty_page.title = "No APK selected";
             empty_page.description = "Open an Android package to browse its raw archive entries and decode with Apktool.";
 
-            var stack = new Adw.ViewStack();
-            stack.add_titled(content_box, "content", "Content");
-            stack.add_titled(empty_page, "empty", "Empty");
-            split.content = new Adw.NavigationPage(stack, "Content");
+            content_stack = new Adw.ViewStack();
+            content_stack.add_titled(empty_page, "empty", "Empty");
+            content_stack.add_titled(content_box, "content", "Content");
+            content_stack.visible_child_name = "empty";
+            split_view.content = new Adw.NavigationPage(content_stack, "Content");
 
             decode_manifest_button.clicked.connect(() => {
                 start_decode(DecodeMode.MANIFEST_ONLY);
@@ -120,8 +126,25 @@ namespace ApkManager.Windows {
             title = "ApkManager — %s".printf(active_session.label ?? Path.get_basename(apk_path));
             status_label.set_text("Loaded %s".printf(apk_path));
             load_archive_entries(apk_path);
+            content_stack.visible_child_name = "content";
+            split_view.show_content = true;
             refresh_sessions();
             present();
+        }
+
+        private void on_session_activated(Gtk.ListBoxRow row) {
+            var index = row.get_index();
+            if (index < 0 || index >= recent_paths.length) {
+                return;
+            }
+            var path = recent_paths[index];
+            if (!FileUtils.test(path, FileTest.IS_REGULAR)) {
+                status_label.set_text("That APK is no longer at %s".printf(path));
+                content_stack.visible_child_name = "content";
+                split_view.show_content = true;
+                return;
+            }
+            open_apk(path);
         }
 
         private void load_archive_entries(string apk_path) {
@@ -176,6 +199,9 @@ namespace ApkManager.Windows {
                     FileUtils.rename(partial_dir, final_dir);
                     session.cache_dir = final_dir;
                     session.state = DecodeState.DECODED;
+                    if (mode == DecodeMode.MANIFEST_ONLY) {
+                        show_manifest_popup(session.apk_path, final_dir);
+                    }
                 } catch (Error e) {
                     session.state = DecodeState.FAILED;
                     status_label.set_text("Failed to finalize cache: %s".printf(e.message));
@@ -185,6 +211,17 @@ namespace ApkManager.Windows {
                 FileUtilsHelper.remove_tree_if_exists(partial_dir);
             }
             registry.save();
+        }
+
+        private void show_manifest_popup(string apk_path, string decode_dir) {
+            try {
+                var meta = ApkMetadata.from_decode_dir(decode_dir);
+                var popup = new ManifestPopup(this, apk_path, meta);
+                popup.present();
+                status_label.set_text("Manifest ready.");
+            } catch (Error e) {
+                status_label.set_text("Decoded, but metadata could not be read: %s".printf(e.message));
+            }
         }
 
         private void on_phase_changed(ApktoolPhase phase, string message) {
@@ -211,7 +248,9 @@ namespace ApkManager.Windows {
                 child = session_list.get_first_child();
             }
 
+            recent_paths = {};
             foreach (var session in registry.get_sessions()) {
+                recent_paths += session.apk_path;
                 var row = new Gtk.ListBoxRow();
                 var box = new Gtk.Box(Gtk.Orientation.VERTICAL, 2);
                 var title = new Gtk.Label(session.label ?? session.apk_path);

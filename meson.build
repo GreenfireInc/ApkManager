@@ -26,6 +26,8 @@ core_sources = files(
   'src/core/apktool_runner.vala',
   'src/core/decode_session.vala',
   'src/core/decode_session_registry.vala',
+  'src/core/apk_metadata.vala',
+  'src/core/apk_icon.vala',
   'src/utils/file_utils.vala'
 )
 
