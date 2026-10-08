@@ -32,11 +32,12 @@ namespace ApkManager.Windows {
             split_view = new Adw.NavigationSplitView();
             content = split_view;
 
-            var sidebar_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+            var sidebar_toolbar = new Adw.ToolbarView();
             var sidebar_header = new Adw.HeaderBar();
             sidebar_header.title_widget = new Adw.WindowTitle("Sessions", "Recent APKs");
-            sidebar_box.append(sidebar_header);
+            sidebar_toolbar.add_top_bar(sidebar_header);
 
+            var sidebar_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
             session_list = new Gtk.ListBox();
             session_list.selection_mode = Gtk.SelectionMode.SINGLE;
             session_list.activate_on_single_click = true;
@@ -51,10 +52,11 @@ namespace ApkManager.Windows {
             open_button.margin_end = 12;
             open_button.clicked.connect(on_open_clicked);
             sidebar_box.append(open_button);
+            sidebar_toolbar.content = sidebar_box;
 
-            split_view.sidebar = new Adw.NavigationPage(sidebar_box, "Sessions");
+            split_view.sidebar = new Adw.NavigationPage(sidebar_toolbar, "Sessions");
 
-            var content_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+            var content_toolbar = new Adw.ToolbarView();
             var content_header = new Adw.HeaderBar();
             decode_manifest_button = new Gtk.Button.with_label("Quick Manifest");
             decode_full_button = new Gtk.Button.with_label("Full Decode");
@@ -62,8 +64,11 @@ namespace ApkManager.Windows {
             cancel_button.sensitive = false;
             content_header.pack_start(decode_manifest_button);
             content_header.pack_start(decode_full_button);
-            content_header.pack_end(cancel_button);
-            content_box.append(content_header);
+            content_header.pack_start(cancel_button);
+            content_header.title_widget = new Adw.WindowTitle("ApkManager", "");
+            content_toolbar.add_top_bar(content_header);
+
+            var content_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
             progress_bar = new Gtk.ProgressBar();
             progress_bar.visible = false;
@@ -105,7 +110,8 @@ namespace ApkManager.Windows {
             content_stack.add_titled(empty_page, "empty", "Empty");
             content_stack.add_titled(content_box, "content", "Content");
             content_stack.visible_child_name = "empty";
-            split_view.content = new Adw.NavigationPage(content_stack, "Content");
+            content_toolbar.content = content_stack;
+            split_view.content = new Adw.NavigationPage(content_toolbar, "ApkManager");
 
             decode_manifest_button.clicked.connect(() => {
                 start_decode(DecodeMode.MANIFEST_ONLY);

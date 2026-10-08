@@ -36,7 +36,14 @@ compiled_schemas = custom_target('gschemas.compiled',
 
 gnome.post_install(
   glib_compile_schemas: true,
-  gtk_update_icon_cache: true,
+  # Do not run gtk-update-icon-cache here. Meson regenerates the entire
+  # ~/.local/share/icons/hicolor tree; on user-local prefixes that tree often
+  # already holds third-party icons (Wine, manual drops) with names or layouts
+  # gtk-update-icon-cache rejects, which aborts meson install even though
+  # apk-manager, the desktop file, and apktool.jar are already installed.
+  # Our app icon is a single SVG under scalable/apps/ and is picked up without
+  # a cache rebuild; run update-desktop-database after install instead.
+  gtk_update_icon_cache: false,
   update_desktop_database: true
 )
 

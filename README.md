@@ -30,7 +30,10 @@ sudo dnf install vala meson ninja-build gtk4-devel libadwaita-devel \
 
 ## Build
 
+First-time setup:
+
 ```bash
+cd ~/Workspace/Applications/apkManager
 chmod +x scripts/fetch-apktool.sh
 meson setup build --prefix=$HOME/.local
 meson compile -C build
@@ -38,9 +41,20 @@ meson install -C build
 update-desktop-database ~/.local/share/applications
 ```
 
+Rebuild and run:
+
+```bash
+cd ~/Workspace/Applications/apkManager
+meson compile -C build
+meson install -C build
+export PATH="$HOME/.local/bin:$PATH"
+apk-manager
+```
+
 ## Usage
 
 ```bash
+export PATH="$HOME/.local/bin:$PATH"
 apk-manager                    # Launch GUI
 apk-manager /path/to/app.apk   # Open an APK
 apk-manager --version
