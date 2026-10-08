@@ -28,7 +28,9 @@ core_sources = files(
   'src/core/decode_session_registry.vala',
   'src/core/apk_metadata.vala',
   'src/core/apk_icon.vala',
-  'src/utils/file_utils.vala'
+  'src/core/apk_display_name.vala',
+  'src/utils/file_utils.vala',
+  'src/utils/ui_utils.vala'
 )
 
 build_info_conf = configuration_data()
