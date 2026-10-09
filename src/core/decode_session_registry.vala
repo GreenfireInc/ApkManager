@@ -12,6 +12,17 @@ namespace ApkManager.Core {
             return sessions;
         }
 
+        public bool remove_by_apk_path(string apk_path) {
+            for (int i = 0; i < sessions.size; i++) {
+                if (sessions[i].apk_path == apk_path) {
+                    sessions.remove_at(i);
+                    save();
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public DecodeSession get_or_create(string apk_path) {
             var hash = ApkArchive.compute_sha256(apk_path);
             var id = hash ?? GLib.Path.get_basename(apk_path);

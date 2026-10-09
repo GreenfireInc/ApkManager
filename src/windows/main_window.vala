@@ -31,6 +31,8 @@ namespace ApkManager.Windows {
         private Gtk.Label session_count_label;
         private string session_search_text = "";
         private string[] recent_paths = {};
+        private Gtk.PopoverMenu session_context_menu;
+        private string? context_menu_apk_path;
 
         public MainWindow(Adw.Application app, DecodeSessionRegistry registry) {
             Object(application: app, default_width: 960, default_height: 640);
@@ -67,7 +69,14 @@ namespace ApkManager.Windows {
                 application.quit();
             });
             sidebar_actions.add_action(quit_action);
+            var remove_session_action = new SimpleAction("remove-session", null);
+            remove_session_action.activate.connect(on_remove_session_from_recents);
+            sidebar_actions.add_action(remove_session_action);
             insert_action_group("win", sidebar_actions);
+
+            var session_context_model = new Menu();
+            session_context_model.append("_Remove from recents", "win.remove-session");
+            session_context_menu = new Gtk.PopoverMenu.from_model(session_context_model);
 
             sidebar_header.pack_start(sidebar_menu);
 
@@ -167,24 +176,23 @@ namespace ApkManager.Windows {
             progress_bar.visible = false;
             content_box.append(progress_bar);
 
-            status_label = new Gtk.Label("Open an APK to inspect its contents.");
-            status_label.margin_start = 12;
-            status_label.margin_end = 12;
-            status_label.margin_top = 8;
-            status_label.halign = Gtk.Align.START;
-            status_label.xalign = 0;
-            status_label.wrap = true;
-            status_label.wrap_mode = Pango.WrapMode.WORD_CHAR;
-            status_label.max_width_chars = 80;
-            content_box.append(status_label);
-
-            archive_store = new Gtk.ListStore.newv({typeof(string), typeof(string), typeof(string)});
+            archive_store = new Gtk.ListStore.newv({
+                typeof(string), typeof(string), typeof(string), typeof(int64)
+            });
             archive_tree = new Gtk.TreeView.with_model(archive_store);
+            archive_tree.headers_visible = true;
+            archive_tree.headers_clickable = true;
             archive_tree.set_vexpand(true);
 
             var col_name = new Gtk.TreeViewColumn.with_attributes("Entry", new Gtk.CellRendererText(), "text", 0);
+            col_name.sort_column_id = 0;
+            col_name.resizable = true;
             var col_size = new Gtk.TreeViewColumn.with_attributes("Size", new Gtk.CellRendererText(), "text", 1);
+            col_size.sort_column_id = 3;
+            col_size.resizable = true;
             var col_kind = new Gtk.TreeViewColumn.with_attributes("Type", new Gtk.CellRendererText(), "text", 2);
+            col_kind.sort_column_id = 2;
+            col_kind.resizable = true;
             archive_tree.append_column(col_name);
             archive_tree.append_column(col_size);
             archive_tree.append_column(col_kind);
@@ -204,6 +212,22 @@ namespace ApkManager.Windows {
             content_stack.add_titled(content_box, "content", "Content");
             content_stack.visible_child_name = "empty";
             content_toolbar.content = content_stack;
+
+            var status_footer = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+            status_footer.add_css_class("toolbar");
+            status_label = new Gtk.Label("Open an APK to inspect its contents.");
+            status_label.margin_start = 12;
+            status_label.margin_end = 12;
+            status_label.margin_top = 6;
+            status_label.margin_bottom = 6;
+            status_label.hexpand = true;
+            status_label.halign = Gtk.Align.FILL;
+            status_label.xalign = 0;
+            status_label.ellipsize = Pango.EllipsizeMode.MIDDLE;
+            status_label.add_css_class("dim-label");
+            status_footer.append(status_label);
+            content_toolbar.add_bottom_bar(status_footer);
+
             split_view.content = new Adw.NavigationPage(content_toolbar, "ApkManager");
 
             decode_manifest_button.clicked.connect(() => {
@@ -275,6 +299,44 @@ namespace ApkManager.Windows {
             refresh_sessions();
         }
 
+        private void attach_session_context_menu(Gtk.Widget widget, string apk_path) {
+            var gesture = new Gtk.GestureClick();
+            // Default is the primary button, so a right click never emits pressed.
+            gesture.button = Gdk.BUTTON_SECONDARY;
+            gesture.propagation_phase = Gtk.PropagationPhase.CAPTURE;
+            gesture.pressed.connect((n_press, x, y) => {
+                context_menu_apk_path = apk_path;
+                var parent = session_context_menu.get_parent();
+                if (parent != null) {
+                    session_context_menu.unparent();
+                }
+                session_context_menu.set_parent(widget);
+                session_context_menu.has_arrow = false;
+                session_context_menu.popup();
+            });
+            widget.add_controller(gesture);
+        }
+
+        private void on_remove_session_from_recents() {
+            if (context_menu_apk_path == null) {
+                return;
+            }
+            remove_recent_session(context_menu_apk_path);
+            context_menu_apk_path = null;
+        }
+
+        private void remove_recent_session(string apk_path) {
+            registry.remove_by_apk_path(apk_path);
+            if (active_session != null && active_session.apk_path == apk_path) {
+                active_session = null;
+                title = "ApkManager";
+                archive_store.clear();
+                content_stack.visible_child_name = "empty";
+                status_label.set_text("Open an APK to inspect its contents.");
+            }
+            refresh_sessions();
+        }
+
         private Gtk.Widget build_session_grid_tile(string apk_path, string name) {
             var tile = new Gtk.Box(Gtk.Orientation.VERTICAL, 6);
             tile.width_request = 96;
@@ -339,8 +401,13 @@ namespace ApkManager.Windows {
                 foreach (var entry in entries) {
                     Gtk.TreeIter iter;
                     archive_store.append(out iter);
-                    archive_store.set(iter, 0, entry.path, 1, FileUtilsHelper.format_bytes(entry.uncompressed_size),
-                        2, entry.is_directory ? "directory" : "file");
+                    archive_store.set(
+                        iter,
+                        0, entry.path,
+                        1, FileUtilsHelper.format_bytes(entry.uncompressed_size),
+                        2, entry.is_directory ? "directory" : "file",
+                        3, entry.uncompressed_size
+                    );
                 }
             } catch (Error e) {
                 status_label.set_text("Failed to read archive: %s".printf(e.message));
@@ -500,6 +567,7 @@ namespace ApkManager.Windows {
                 if (session_view_mode == SessionViewMode.LIST) {
                     var row = new Gtk.ListBoxRow();
                     row.child = build_session_list_row(session.apk_path, name);
+                    attach_session_context_menu(row, session.apk_path);
                     session_list.append(row);
                     if (active_path != null && session.apk_path == active_path) {
                         selected_row = row;
@@ -507,6 +575,7 @@ namespace ApkManager.Windows {
                 } else {
                     var grid_item = new Gtk.FlowBoxChild();
                     grid_item.child = build_session_grid_tile(session.apk_path, name);
+                    attach_session_context_menu(grid_item, session.apk_path);
                     session_grid.append(grid_item);
                     if (active_path != null && session.apk_path == active_path) {
                         selected_grid_child = grid_item;
