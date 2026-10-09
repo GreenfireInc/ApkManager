@@ -1,15 +1,19 @@
 # ApkManager
 
-Native GTK 4 / Libadwaita desktop application for inspecting Android APK files on Debian and Fedora.
+Native GTK 4 / Libadwaita desktop application for inspecting Android APK files
+on Debian and Fedora.
 
-ApkManager wraps a pinned [Apktool](https://apktool.org/) release and presents decoded manifests, resources, and archive contents in a read-only GUI modeled after AppManager's desktop patterns.
+ApkManager wraps a pinned [Apktool](https://apktool.org/) release and presents
+decoded manifests, resources, and archive contents in a read-only GUI modeled
+after AppManager's desktop patterns.
 
 ## Requirements
 
 - Vala, Meson, Ninja
 - GTK 4, Libadwaita (≥ 1.4), GtkSourceView 5
 - libarchive, json-glib, libgee
-- Java runtime 17+ (required for Apktool decode; raw archive listing works without Java)
+- Java runtime 17+ (required for Apktool decode; raw archive listing works
+  without Java)
 
 ### Debian / Ubuntu
 
@@ -19,7 +23,6 @@ sudo apt install valac meson ninja-build pkg-config \
   libglib2.0-dev libjson-glib-dev libgee-0.8-dev libarchive-dev \
   desktop-file-utils default-jre-headless
 ```
-
 ### Fedora
 
 ```bash
@@ -27,7 +30,6 @@ sudo dnf install vala meson ninja-build gtk4-devel libadwaita-devel \
   gtksourceview5-devel glib2-devel json-glib-devel libgee-devel \
   libarchive-devel desktop-file-utils java-latest-openjdk-headless
 ```
-
 ## Build
 
 First-time setup:
@@ -40,7 +42,6 @@ meson compile -C build
 meson install -C build
 update-desktop-database ~/.local/share/applications
 ```
-
 Rebuild and run:
 
 ```bash
@@ -50,7 +51,6 @@ meson install -C build
 export PATH="$HOME/.local/bin:$PATH"
 apk-manager
 ```
-
 ## Usage
 
 ```bash
@@ -59,7 +59,6 @@ apk-manager                    # Launch GUI
 apk-manager /path/to/app.apk   # Open an APK
 apk-manager --version
 ```
-
 ## Project layout
 
 ```text
@@ -72,9 +71,10 @@ scripts/fetch-apktool.sh    # Pin and download apktool.jar at build time
 docs/methodologies/         # Architecture and implementation plans
 docs/progress/              # Build progress reports
 ```
-
 ## Status
 
-Initial foundation (Phase 0–1): Meson scaffold, raw archive browser, Apktool subprocess integration, session registry, desktop metadata.
+Initial foundation (Phase 0–1): Meson scaffold, raw archive browser, Apktool
+subprocess integration, session registry, desktop metadata.
 
 See `docs/methodologies/` for the full implementation roadmap.
+
