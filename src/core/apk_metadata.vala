@@ -9,11 +9,18 @@ namespace ApkManager.Core {
         public string app_label { get; set; default = ""; }
         public string apk_file_name { get; set; default = ""; }
         public string icon_ref { get; set; default = ""; }
+        public string label_ref { get; set; default = ""; }
         public Gee.ArrayList<string> permissions = new Gee.ArrayList<string>();
 
-        public string display_name() {
+        public string display_name(string? apk_path = null) {
             if (app_label != "") {
                 return app_label;
+            }
+            if (label_ref != "" && apk_path != null) {
+                var resolved = ApkIcon.resolve_label_ref(apk_path, label_ref);
+                if (resolved != null && resolved != "") {
+                    return resolved;
+                }
             }
             if (apk_file_name != "") {
                 return apk_file_name;
@@ -138,7 +145,14 @@ namespace ApkManager.Core {
                     assign_text(Field.TARGET_SDK, attr(attr_names, attr_values, "targetSdkVersion"), false);
                     break;
                 case "application":
-                    assign_text(Field.LABEL, attr(attr_names, attr_values, "label"), false);
+                    var label = attr(attr_names, attr_values, "label");
+                    if (label != null && label != "") {
+                        if (label.has_prefix("@")) {
+                            label_ref = label;
+                        } else {
+                            assign_text(Field.LABEL, label, false);
+                        }
+                    }
                     var icon = attr(attr_names, attr_values, "icon");
                     if (icon != null && icon != "") {
                         icon_ref = icon;

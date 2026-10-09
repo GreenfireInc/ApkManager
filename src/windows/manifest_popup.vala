@@ -22,7 +22,7 @@ namespace ApkManager.Windows {
             content = toolbar;
 
             var header = new Adw.HeaderBar();
-            var heading = meta.display_name();
+            var heading = meta.display_name(apk_path);
             var sub = meta.version_line();
             header.title_widget = new Adw.WindowTitle(heading, sub != "" ? sub : meta.package_name);
             toolbar.add_top_bar(header);

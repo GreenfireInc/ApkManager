@@ -25,6 +25,27 @@ namespace ApkManager.Core {
             }
         }
 
+        public static string? resolve_label_ref(string apk_path, string label_ref) {
+            uint32 id;
+            if (!parse_resource_id(label_ref, out id)) {
+                return null;
+            }
+            return resolve_label_id(apk_path, id);
+        }
+
+        public static string? resolve_label_id(string apk_path, uint32 resource_id) {
+            try {
+                Bytes? table = ApkArchive.read_entry(apk_path, "resources.arsc");
+                if (table == null) {
+                    return null;
+                }
+                return new ResourceTable(table.get_data()).best_display_string(resource_id);
+            } catch (Error e) {
+                warning("Failed to resolve APK label: %s", e.message);
+                return null;
+            }
+        }
+
         private static bool parse_resource_id(string icon_ref, out uint32 id) {
             id = 0;
             var text = icon_ref.strip();
@@ -81,6 +102,120 @@ namespace ApkManager.Core {
             public string? best_image_path(uint32 resource_id) {
                 var seen = new Gee.HashSet<uint32>();
                 return resolve(resource_id, seen);
+            }
+
+            public string? best_display_string(uint32 resource_id) {
+                var seen = new Gee.HashSet<uint32>();
+                return resolve_display_string(resource_id, seen);
+            }
+
+            private string? resolve_display_string(uint32 resource_id, Gee.HashSet<uint32> seen) {
+                if (resource_id == 0 || seen.contains(resource_id)) {
+                    return null;
+                }
+                seen.add(resource_id);
+                uint8 type_id = (uint8) ((resource_id >> 16) & 0xff);
+                uint16 entry_index = (uint16) (resource_id & 0xffff);
+                if (data.length < 12) {
+                    return null;
+                }
+
+                int pool_off = u16(2);
+                int pool_size = (int) u32(pool_off + 4);
+                return consider_display_chunk(pool_off + pool_size, data.length, type_id, entry_index, seen);
+            }
+
+            private string? consider_display_chunk(int start, int end, uint8 type_id, uint16 entry_index, Gee.HashSet<uint32> seen) {
+                int off = start;
+                while (off + 8 <= end && off + 8 <= data.length) {
+                    uint16 typ = u16(off);
+                    int header = u16(off + 2);
+                    int size = (int) u32(off + 4);
+                    if (header < 8 || size < header || off + size > data.length) {
+                        return null;
+                    }
+                    if (typ == 0x0200) {
+                        var nested = consider_display_chunk(off + header, off + size, type_id, entry_index, seen);
+                        if (nested != null) {
+                            return nested;
+                        }
+                    } else if (typ == 0x0201 && data[off + 8] == type_id) {
+                        var text = display_string_at_type(off, header, entry_index, seen);
+                        if (text != null) {
+                            return text;
+                        }
+                    }
+                    off += size;
+                }
+                return null;
+            }
+
+            private string? display_string_at_type(int off, int header, uint16 entry_index, Gee.HashSet<uint32> seen) {
+                uint8 flags = data[off + 9];
+                uint32 entry_count = u32(off + 12);
+                uint32 entries_start = u32(off + 16);
+
+                uint32 entry_offset = NO_ENTRY;
+                if ((flags & 0x01) != 0) {
+                    for (uint i = 0; i < entry_count; i++) {
+                        int pos = off + header + (int) i * 4;
+                        if (pos + 4 > data.length) {
+                            return null;
+                        }
+                        if (u16(pos) == entry_index) {
+                            entry_offset = (uint32) u16(pos + 2) * 4;
+                            break;
+                        }
+                    }
+                } else if (entry_index < entry_count) {
+                    int pos = off + header + entry_index * 4;
+                    if (pos + 4 > data.length) {
+                        return null;
+                    }
+                    entry_offset = u32(pos);
+                }
+                if (entry_offset == NO_ENTRY) {
+                    return null;
+                }
+
+                int ent = off + (int) entries_start + (int) entry_offset;
+                if (ent + 8 > data.length) {
+                    return null;
+                }
+                int entry_size = u16(ent);
+                uint16 entry_flags = u16(ent + 2);
+                if ((entry_flags & 0x0001) != 0 || entry_size < 8) {
+                    return null;
+                }
+                int value = ent + entry_size;
+                if (value + 8 > data.length) {
+                    return null;
+                }
+                uint8 data_type = data[value + 3];
+                uint32 data_value = u32(value + 4);
+                if (data_type == TYPE_REFERENCE) {
+                    return resolve_display_string(data_value, seen);
+                }
+                if (data_type != TYPE_STRING || data_value >= pool.length) {
+                    return null;
+                }
+                var text = pool[data_value];
+                if (text == "" || looks_like_resource_path(text)) {
+                    return null;
+                }
+                return text;
+            }
+
+            private static bool looks_like_resource_path(string text) {
+                var lower = text.down();
+                if (!lower.has_prefix("res/")) {
+                    return false;
+                }
+                return lower.has_suffix(".png")
+                    || lower.has_suffix(".webp")
+                    || lower.has_suffix(".jpg")
+                    || lower.has_suffix(".jpeg")
+                    || lower.has_suffix(".xml");
             }
 
             private string? resolve(uint32 resource_id, Gee.HashSet<uint32> seen) {
