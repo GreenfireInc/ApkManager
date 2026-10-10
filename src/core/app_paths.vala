@@ -30,6 +30,14 @@ namespace ApkManager.Core {
             }
         }
 
+        public static string downloads_dir {
+            owned get {
+                var dir = Path.build_filename(cache_dir, DOWNLOADS_DIRNAME);
+                DirUtils.create_with_parents(dir, 0700);
+                return dir;
+            }
+        }
+
         public static string frameworks_dir {
             owned get {
                 var dir = Path.build_filename(cache_dir, FRAMEWORKS_DIRNAME);
@@ -73,8 +81,68 @@ namespace ApkManager.Core {
             }
         }
 
+        public static string store_repository_icon(string filename) {
+            var env = Environment.get_variable("APK_MANAGER_ASSETS_DIR");
+            if (env != null && env.strip() != "") {
+                var from_env = Path.build_filename(
+                    env.strip(), "icons", "storesRepositories", filename
+                );
+                if (FileUtils.test(from_env, FileTest.EXISTS)) {
+                    return from_env;
+                }
+            }
+
+            var installed = Path.build_filename(
+                get_install_prefix(), "share", "apk-manager", "icons", "storesRepositories", filename
+            );
+            if (FileUtils.test(installed, FileTest.EXISTS)) {
+                return installed;
+            }
+
+            var relative = Path.build_filename(
+                "public", "assets", "icons", "storesRepositories", filename
+            );
+            string[] starts = { Environment.get_current_dir(), executable_dir() };
+            foreach (var start in starts) {
+                var found = find_ancestor_file(start, relative);
+                if (found != null) {
+                    return found;
+                }
+            }
+
+            return installed;
+        }
+
         public static string decoded_dir_for_key(string cache_key) {
             return Path.build_filename(decoded_root, cache_key);
+        }
+
+        private static string executable_dir() {
+            try {
+                return Path.get_dirname(FileUtils.read_link("/proc/self/exe"));
+            } catch (FileError e) {
+                return "";
+            }
+        }
+
+        private static string? find_ancestor_file(string start, string relative) {
+            if (start == null || start == "") {
+                return null;
+            }
+
+            var dir = start;
+            for (var i = 0; i < 8; i++) {
+                var candidate = Path.build_filename(dir, relative);
+                if (FileUtils.test(candidate, FileTest.EXISTS)) {
+                    return candidate;
+                }
+                var parent = Path.get_dirname(dir);
+                if (parent == dir) {
+                    break;
+                }
+                dir = parent;
+            }
+            return null;
         }
 
         public static string partial_decode_dir(string cache_key) {

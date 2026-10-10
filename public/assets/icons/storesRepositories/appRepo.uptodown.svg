@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="5.2942162mm"
+   height="5.2933817mm"
+   viewBox="0 0 5.2942162 5.2933817"
+   version="1.1"
+   id="svg357"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="uptodown.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview359"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.74653479"
+     inkscape:cx="630.24524"
+     inkscape:cy="-16.074268"
+     inkscape:window-width="1920"
+     inkscape:window-height="1008"
+     inkscape:window-x="1600"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs354" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(61.834459,-152.5872)">
+    <g
+       id="Grupo_1964"
+       fill="#00aad5"
+       transform="matrix(0.26458333,0,0,0.26458333,-61.829567,152.58892)">
+      <path
+         id="Trazado_1236"
+         d="m 155.955,93.94 a 0.81,0.81 0 0 0 1.148,0 l 2.3,-2.3 a 0.81,0.81 0 0 0 0,-1.148 l -2.3,-2.3 a 0.81,0.81 0 0 0 -1.148,0 l -2.3,2.3 a 0.81,0.81 0 0 0 0,1.148 z"
+         transform="translate(-146.527,-87.96)" />
+      <path
+         id="Trazado_1237"
+         d="m 134.052,129.615 -2.3,-2.3 a 0.81,0.81 0 0 0 -1.148,0 l -2.3,2.3 a 0.81,0.81 0 0 1 -1.149,0 l -2.3,-2.3 a 0.81,0.81 0 0 0 -1.149,0 l -2.3,2.3 a 0.81,0.81 0 0 1 -1.148,0 l -2.3,-2.3 a 0.81,0.81 0 0 0 -1.148,0 l -2.3,2.3 a 0.81,0.81 0 0 0 0,1.148 l 2.871,2.871 3.445,3.445 2.871,2.871 a 0.81,0.81 0 0 0 1.149,0 l 2.871,-2.871 3.445,-3.445 2.871,-2.871 a 0.81,0.81 0 0 0 0.019,-1.148"
+         transform="translate(-114.29,-120.189)" />
+    </g>
+  </g>
+</svg>

@@ -56,14 +56,14 @@ namespace ApkManager.Windows {
             sidebar_menu.add_css_class("flat");
 
             var sidebar_menu_model = new Menu();
-            sidebar_menu_model.append("_Open APK…", "win.open-apk");
+            sidebar_menu_model.append("_Get APKs", "win.get-apks");
             sidebar_menu_model.append("_Quit", "win.quit");
             sidebar_menu.menu_model = sidebar_menu_model;
 
             var sidebar_actions = new SimpleActionGroup();
-            var open_apk_action = new SimpleAction("open-apk", null);
-            open_apk_action.activate.connect(on_open_clicked);
-            sidebar_actions.add_action(open_apk_action);
+            var get_apks_action = new SimpleAction("get-apks", null);
+            get_apks_action.activate.connect(on_get_apks_clicked);
+            sidebar_actions.add_action(get_apks_action);
             var quit_action = new SimpleAction("quit", null);
             quit_action.activate.connect(() => {
                 application.quit();
@@ -147,13 +147,13 @@ namespace ApkManager.Windows {
             session_stack.visible_child_name = "list";
             sidebar_box.append(session_stack);
 
-            var open_button = new Gtk.Button.with_label("Open APK…");
-            open_button.margin_top = 8;
-            open_button.margin_bottom = 8;
-            open_button.margin_start = 12;
-            open_button.margin_end = 12;
-            open_button.clicked.connect(on_open_clicked);
-            sidebar_box.append(open_button);
+            var get_apks_button = new Gtk.Button.with_label("Get APKs");
+            get_apks_button.margin_top = 8;
+            get_apks_button.margin_bottom = 8;
+            get_apks_button.margin_start = 12;
+            get_apks_button.margin_end = 12;
+            get_apks_button.clicked.connect(on_get_apks_clicked);
+            sidebar_box.append(get_apks_button);
             sidebar_toolbar.content = sidebar_box;
 
             split_view.sidebar = new Adw.NavigationPage(sidebar_toolbar, "Sessions");
@@ -604,27 +604,12 @@ namespace ApkManager.Windows {
             }
         }
 
-        private void on_open_clicked() {
-            var dialog = new Gtk.FileDialog();
-            dialog.set_title("Open APK");
-            var filter = new Gtk.FileFilter();
-            filter.add_pattern("*.apk");
-            filter.add_pattern("*.APK");
-            filter.set_filter_name("Android packages");
-            var filters = new GLib.ListStore(typeof(Gtk.FileFilter));
-            filters.append(filter);
-            dialog.set_filters(filters);
-
-            dialog.open.begin(this, null, (obj, res) => {
-                try {
-                    var file = dialog.open.end(res);
-                    open_apk(file.get_path());
-                } catch (Error e) {
-                    if (!(e is IOError.CANCELLED)) {
-                        warning("Open dialog failed: %s", e.message);
-                    }
-                }
+        private void on_get_apks_clicked() {
+            var window = new GetApksWindow(this);
+            window.apk_ready.connect((path) => {
+                open_apk(path);
             });
+            window.present();
         }
     }
 }

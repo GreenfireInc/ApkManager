@@ -29,7 +29,10 @@ core_sources = files(
   'src/core/apk_metadata.vala',
   'src/core/apk_icon.vala',
   'src/core/apk_display_name.vala',
+  'src/core/apk_store_result.vala',
+  'src/core/apk_store_search.vala',
   'src/utils/file_utils.vala',
+  'src/utils/http_client.vala',
   'src/utils/ui_utils.vala'
 )
 
@@ -60,6 +63,13 @@ apktool_jar = custom_target('apktool-jar',
 meson.add_install_script('scripts/install-apktool.sh',
   meson.current_build_dir() / 'apktool.jar',
   get_option('libdir') / 'apk-manager'
+)
+
+apk_resources = gnome.compile_resources(
+  'apk-manager-resources',
+  'data/apk-manager.gresource.xml',
+  source_dir: meson.project_source_root(),
+  c_name: 'apk_manager'
 )
 
 subdir('data')

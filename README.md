@@ -59,6 +59,8 @@ apk-manager                    # Launch GUI
 apk-manager /path/to/app.apk   # Open an APK
 apk-manager --version
 ```
+
+Use **Get APKs** in the sidebar to search [F-Droid](https://f-droid.org/), [Aptoide](https://en.aptoide.com/), and [Uptodown](https://en.uptodown.com/) and download APKs. F-Droid and Aptoide downloads happen inside the app; Uptodown opens its download page in your browser (their site requires browser verification).
 ## Project layout
 
 ```text
