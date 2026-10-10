@@ -51,3 +51,12 @@ install_data('../public/icons/androidRobot.svg',
   install_dir: join_paths(get_option('datadir'), 'icons', 'hicolor', 'scalable', 'apps'),
   rename: 'com.github.ApkManager.svg'
 )
+
+store_repo_icon_dir = join_paths(get_option('datadir'), 'apk-manager', 'icons', 'storesRepositories')
+foreach icon : [
+  'appRepo.fdroid.svg',
+  'appRepo.aptoide.svg',
+  'appRepo.uptodown.svg'
+]
+  install_data('../public/assets/icons/storesRepositories/' + icon, install_dir: store_repo_icon_dir)
+endforeach

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/ApkManager/icons/storesRepositories">
+    <file alias="appRepo.fdroid.svg">public/assets/icons/storesRepositories/appRepo.fdroid.svg</file>
+    <file alias="appRepo.aptoide.svg">public/assets/icons/storesRepositories/appRepo.aptoide.svg</file>
+    <file alias="appRepo.uptodown.svg">public/assets/icons/storesRepositories/appRepo.uptodown.svg</file>
+  </gresource>
+</gresources>
