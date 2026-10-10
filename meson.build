@@ -21,6 +21,8 @@ apktool_libdir = get_option('prefix') / get_option('libdir') / 'apk-manager'
 
 core_sources = files(
   'src/core/app_constants.vala',
+  'src/core/app_settings.vala',
+  'src/core/apk_install.vala',
   'src/core/app_paths.vala',
   'src/core/apk_archive.vala',
   'src/core/apktool_runner.vala',

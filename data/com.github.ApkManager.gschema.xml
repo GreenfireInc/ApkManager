@@ -19,5 +19,35 @@
       <default>640</default>
       <summary>Main window height</summary>
     </key>
+    <key name="install-path" type="s">
+      <default>''</default>
+      <summary>APK install directory</summary>
+      <description>Folder where installed Android apps are stored. Empty uses ~/Applications/android.</description>
+    </key>
+    <key name="remove-original-on-install" type="b">
+      <default>true</default>
+      <summary>Remove the original APK after install</summary>
+      <description>Move the APK into the install folder instead of leaving a copy at the original location.</description>
+    </key>
+    <key name="file-manager-icon-mode" type="s">
+      <default>'android-logo'</default>
+      <summary>File manager icon source</summary>
+      <description>Whether installed apps use the Android logo or an icon extracted from each APK.</description>
+    </key>
+    <key name="runtime-engine" type="s">
+      <default>'waydroid'</default>
+      <summary>Android runtime engine</summary>
+      <description>Container runtime used to run installed Android apps.</description>
+    </key>
+    <key name="preferred-repository" type="s">
+      <default>'fdroid'</default>
+      <summary>Preferred APK repository</summary>
+      <description>Default store when searching for APKs.</description>
+    </key>
+    <key name="check-for-updates" type="b">
+      <default>true</default>
+      <summary>Check for updates</summary>
+      <description>Whether ApkManager should check for new releases.</description>
+    </key>
   </schema>
 </schemalist>

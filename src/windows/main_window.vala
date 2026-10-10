@@ -58,6 +58,7 @@ namespace ApkManager.Windows {
 
             var sidebar_menu_model = new Menu();
             sidebar_menu_model.append("_Get APKs", "win.get-apks");
+            sidebar_menu_model.append("_Preferences", "win.preferences");
             sidebar_menu_model.append("_Quit", "win.quit");
             sidebar_menu.menu_model = sidebar_menu_model;
 
@@ -65,6 +66,9 @@ namespace ApkManager.Windows {
             var get_apks_action = new SimpleAction("get-apks", null);
             get_apks_action.activate.connect(on_get_apks_clicked);
             sidebar_actions.add_action(get_apks_action);
+            var preferences_action = new SimpleAction("preferences", null);
+            preferences_action.activate.connect(on_preferences_clicked);
+            sidebar_actions.add_action(preferences_action);
             var quit_action = new SimpleAction("quit", null);
             quit_action.activate.connect(() => {
                 application.quit();
@@ -615,6 +619,11 @@ namespace ApkManager.Windows {
             window.apk_ready.connect((path) => {
                 open_apk(path);
             });
+            window.present();
+        }
+
+        private void on_preferences_clicked() {
+            var window = new PreferencesWindow(this);
             window.present();
         }
     }

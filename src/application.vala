@@ -182,6 +182,9 @@ namespace ApkManager {
             window.inspect_requested.connect((path) => {
                 main_window.open_apk(path);
             });
+            window.install_requested.connect((path) => {
+                main_window.open_apk(path);
+            });
             window.present();
         }
     }
