@@ -75,22 +75,20 @@ namespace ApkManager.Core {
                     continue;
                 }
                 var size = entry.size();
-                if (size <= 0 || size > 8 * 1024 * 1024) {
+                // Large apps (Netflix, TikTok) ship resources.arsc well past 8 MiB.
+                // The icon id cannot be resolved without that table.
+                if (size <= 0 || size > 64 * 1024 * 1024) {
                     reader.close();
                     return null;
                 }
                 var bytes = new ByteArray.sized((uint) size);
-                uint8[] chunk = new uint8[8192];
+                uint8[] chunk = new uint8[65536];
                 while (true) {
                     ssize_t n = reader.read_data(chunk);
                     if (n <= 0) {
                         break;
                     }
-                    uint8[] piece = new uint8[n];
-                    for (int i = 0; i < n; i++) {
-                        piece[i] = chunk[i];
-                    }
-                    bytes.append(piece);
+                    bytes.append(chunk[0:n]);
                 }
                 reader.close();
                 return ByteArray.free_to_bytes((owned) bytes);
