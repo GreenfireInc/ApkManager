@@ -22,6 +22,7 @@ namespace ApkManager.Windows {
         private Gtk.ListStore archive_store;
         private Gtk.Label status_label;
         private Gtk.ProgressBar progress_bar;
+        private string status_before_decode = "";
         private Gtk.Button decode_manifest_button;
         private Gtk.Button decode_full_button;
         private Gtk.Button cancel_button;
@@ -172,10 +173,6 @@ namespace ApkManager.Windows {
 
             var content_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
-            progress_bar = new Gtk.ProgressBar();
-            progress_bar.visible = false;
-            content_box.append(progress_bar);
-
             archive_store = new Gtk.ListStore.newv({
                 typeof(string), typeof(string), typeof(string), typeof(int64)
             });
@@ -213,8 +210,17 @@ namespace ApkManager.Windows {
             content_stack.visible_child_name = "empty";
             content_toolbar.content = content_stack;
 
-            var status_footer = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+            var status_footer = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
             status_footer.add_css_class("toolbar");
+
+            progress_bar = new Gtk.ProgressBar();
+            progress_bar.visible = false;
+            progress_bar.margin_start = 12;
+            progress_bar.margin_end = 12;
+            progress_bar.margin_top = 6;
+            progress_bar.margin_bottom = 0;
+            status_footer.append(progress_bar);
+
             status_label = new Gtk.Label("Open an APK to inspect its contents.");
             status_label.margin_start = 12;
             status_label.margin_end = 12;
@@ -432,6 +438,7 @@ namespace ApkManager.Windows {
             active_session.last_mode = mode;
             registry.save();
 
+            status_before_decode = status_label.get_text();
             progress_bar.visible = true;
             progress_bar.pulse();
             cancel_button.sensitive = true;
@@ -474,7 +481,6 @@ namespace ApkManager.Windows {
                 }
                 var popup = new ManifestPopup(this, apk_path, meta);
                 popup.present();
-                status_label.set_text("Manifest ready.");
             } catch (Error e) {
                 status_label.set_text("Decoded, but metadata could not be read: %s".printf(e.message));
             }
@@ -491,7 +497,7 @@ namespace ApkManager.Windows {
             decode_full_button.sensitive = true;
 
             if (success) {
-                status_label.set_text("Decode complete.");
+                status_label.set_text(status_before_decode);
             } else if (error_message != null) {
                 status_label.set_text(error_message);
             }

@@ -324,20 +324,34 @@ namespace ApkManager.Core {
             }
 
             private static int score_path(string? path, int density) {
-                if (path == null) {
+                if (path == null || path == "") {
                     return -1;
                 }
                 var lower = path.down();
-                if (!(lower.has_suffix(".png") || lower.has_suffix(".webp") || lower.has_suffix(".jpg") || lower.has_suffix(".jpeg"))) {
+                var slash = lower.last_index_of_char('/');
+                var basename = slash < 0 ? lower : lower.substring(slash + 1);
+                bool image_ext = lower.has_suffix(".png")
+                    || lower.has_suffix(".webp")
+                    || lower.has_suffix(".jpg")
+                    || lower.has_suffix(".jpeg");
+                // aapt2 resource shrinking stores launcher art as extensionless
+                // WebP/PNG under res/ (Netflix: res/raw/bqg). XML adaptive icons stay out.
+                bool extensionless = !basename.contains(".");
+                if (!image_ext && !extensionless) {
                     return -1;
                 }
+                int score;
                 if (density >= 65534) {
-                    return 1;
+                    score = 1;
+                } else if (density <= 0) {
+                    score = 2;
+                } else {
+                    score = density;
                 }
-                if (density <= 0) {
-                    return 2;
+                if (image_ext) {
+                    score += 100000;
                 }
-                return density;
+                return score;
             }
 
             private string[] read_pool(int off) {
@@ -412,7 +426,23 @@ namespace ApkManager.Core {
                 for (int i = 0; i < n; i++) {
                     chars[i] = u16(p + i * 2);
                 }
-                return ((string) chars).dup();
+                return utf16_to_utf8(chars);
+            }
+
+            private static string utf16_to_utf8(uint16[] chars) {
+                var builder = new StringBuilder();
+                for (int i = 0; i < chars.length; i++) {
+                    unichar c = chars[i];
+                    if (c >= 0xD800 && c <= 0xDBFF && i + 1 < chars.length) {
+                        unichar low = chars[i + 1];
+                        if (low >= 0xDC00 && low <= 0xDFFF) {
+                            c = (unichar) (0x10000 + ((c - 0xD800) << 10) + (low - 0xDC00));
+                            i++;
+                        }
+                    }
+                    builder.append_unichar(c);
+                }
+                return builder.str;
             }
 
             private uint16 u16(int off) {

@@ -247,7 +247,25 @@ namespace ApkManager.Core {
             for (int i = 0; i < n; i++) {
                 chars[i] = u16(data, p + i * 2);
             }
-            return ((string) chars).dup();
+            return utf16_to_utf8(chars);
+        }
+
+        // (string) uint16[] stops at the first 0x00 byte, so a UTF-16
+        // code unit such as 'a' (0x0061) becomes a one-character string.
+        private static string utf16_to_utf8(uint16[] chars) {
+            var builder = new StringBuilder();
+            for (int i = 0; i < chars.length; i++) {
+                unichar c = chars[i];
+                if (c >= 0xD800 && c <= 0xDBFF && i + 1 < chars.length) {
+                    unichar low = chars[i + 1];
+                    if (low >= 0xDC00 && low <= 0xDFFF) {
+                        c = (unichar) (0x10000 + ((c - 0xD800) << 10) + (low - 0xDC00));
+                        i++;
+                    }
+                }
+                builder.append_unichar(c);
+            }
+            return builder.str;
         }
 
         private static uint16 u16(uint8[] data, int off) {

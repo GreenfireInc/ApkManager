@@ -3,6 +3,7 @@ app_sources = files(
   'application.vala',
   'windows/main_window.vala',
   'windows/open_window.vala',
+  'windows/verify_apk_window.vala',
   'windows/get_apks_window.vala',
   'windows/manifest_popup.vala'
 )

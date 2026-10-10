@@ -9,6 +9,7 @@ int main(string[] args) {
         }
     }
 
+    ApkManager.Application.retire_stale_instance();
     var app = new ApkManager.Application();
     return app.run(args);
 }

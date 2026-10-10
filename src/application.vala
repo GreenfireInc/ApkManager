@@ -23,9 +23,114 @@ namespace ApkManager {
             set_option_context_summary("Android APK inspector powered by Apktool");
         }
 
+        protected override void startup() {
+            base.startup();
+            // Exported over D-Bus with the app, so a newer launcher can ask an
+            // older primary instance to exit instead of handing its files to it.
+            var quit_action = new SimpleAction("quit", null);
+            quit_action.activate.connect(() => {
+                quit();
+            });
+            add_action(quit_action);
+        }
+
         protected override void activate() {
             ensure_main_window();
             main_window.present();
+        }
+
+        // GApplication is single-instance: every later `apk-manager foo.apk`
+        // forwards the file to whichever process already owns the bus name.
+        // After `meson install` that owner is usually the old executable, which
+        // has been deleted on disk but keeps running old code, so new fixes never
+        // show up until it is closed by hand. Replace such an owner before run().
+        public static void retire_stale_instance() {
+            uint32 pid;
+            if (!primary_instance_pid(out pid) || pid == (uint32) Posix.getpid()) {
+                return;
+            }
+
+            string? theirs = exe_of(pid);
+            string? ours = exe_of((uint32) Posix.getpid());
+            bool stale = theirs == null
+                || theirs.has_suffix(" (deleted)")
+                || (ours != null && theirs != ours);
+            if (!stale) {
+                return;
+            }
+
+            message("Replacing ApkManager instance %u (%s) with %s", pid, theirs ?? "unknown", ours ?? "this binary");
+            ask_remote_quit();
+            if (!wait_for_exit(pid, 1500)) {
+                Posix.kill((Posix.pid_t) pid, Posix.Signal.TERM);
+                wait_for_exit(pid, 3000);
+            }
+            wait_for_name_release(3000);
+        }
+
+        private static bool primary_instance_pid(out uint32 pid) {
+            pid = 0;
+            try {
+                var bus = Bus.get_sync(BusType.SESSION);
+                var reply = bus.call_sync(
+                    "org.freedesktop.DBus",
+                    "/org/freedesktop/DBus",
+                    "org.freedesktop.DBus",
+                    "GetConnectionUnixProcessID",
+                    new Variant("(s)", Core.APPLICATION_ID),
+                    new VariantType("(u)"),
+                    DBusCallFlags.NONE,
+                    1000
+                );
+                reply.get("(u)", out pid);
+                return pid != 0;
+            } catch (Error e) {
+                // No owner, or no session bus: nothing to retire.
+                return false;
+            }
+        }
+
+        private static string? exe_of(uint32 pid) {
+            try {
+                return FileUtils.read_link("/proc/%u/exe".printf(pid));
+            } catch (FileError e) {
+                return null;
+            }
+        }
+
+        private static void ask_remote_quit() {
+            try {
+                var bus = Bus.get_sync(BusType.SESSION);
+                var object_path = "/" + Core.APPLICATION_ID.replace(".", "/");
+                var actions = DBusActionGroup.get(bus, Core.APPLICATION_ID, object_path);
+                // Older binaries have no app.quit; the call is then a no-op.
+                actions.activate_action("quit", null);
+                bus.flush_sync();
+            } catch (Error e) {
+                // fall through to SIGTERM
+            }
+        }
+
+        private static bool wait_for_exit(uint32 pid, int timeout_ms) {
+            var proc_dir = "/proc/%u".printf(pid);
+            int waited = 0;
+            while (waited < timeout_ms) {
+                if (!FileUtils.test(proc_dir, FileTest.EXISTS)) {
+                    return true;
+                }
+                Thread.usleep(50 * 1000);
+                waited += 50;
+            }
+            return !FileUtils.test(proc_dir, FileTest.EXISTS);
+        }
+
+        private static void wait_for_name_release(int timeout_ms) {
+            int waited = 0;
+            uint32 pid;
+            while (waited < timeout_ms && primary_instance_pid(out pid)) {
+                Thread.usleep(50 * 1000);
+                waited += 50;
+            }
         }
 
         protected override void open(File[] files, string hint) {
