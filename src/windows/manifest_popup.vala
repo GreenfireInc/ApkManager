@@ -27,13 +27,15 @@ namespace ApkManager.Windows {
             header.title_widget = new Adw.WindowTitle(heading, sub != "" ? sub : meta.package_name);
             toolbar.add_top_bar(header);
 
+            toolbar.content = build_properties_view(apk_path, meta);
+        }
+
+        public static Gtk.Widget build_properties_view(string apk_path, ApkMetadata meta) {
             var body = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
-            body.append(icon_image(apk_path, meta));
 
             var page = new Adw.PreferencesPage();
             page.vexpand = true;
             body.append(page);
-            toolbar.content = body;
 
             var identity = new Adw.PreferencesGroup();
             identity.title = "Application";
@@ -70,34 +72,8 @@ namespace ApkManager.Windows {
                 perms.add(more);
             }
             page.add(perms);
-        }
 
-        private static Gtk.Widget icon_image(string apk_path, ApkMetadata meta) {
-            Bytes? icon = ApkIcon.load(apk_path, meta.icon_ref);
-            if (icon != null) {
-                try {
-                    // Gtk.Picture, not Gtk.Image. Assigning icon_name = null on
-                    // Gtk.Image calls gtk_image_clear() and drops the texture.
-                    var picture = new Gtk.Picture.for_paintable(Gdk.Texture.from_bytes(icon));
-                    picture.content_fit = Gtk.ContentFit.CONTAIN;
-                    picture.can_shrink = true;
-                    picture.halign = Gtk.Align.CENTER;
-                    picture.margin_top = 18;
-                    picture.margin_bottom = 8;
-                    picture.width_request = 64;
-                    picture.height_request = 64;
-                    return picture;
-                } catch (Error e) {
-                    warning("Could not decode APK icon: %s", e.message);
-                }
-            }
-
-            var fallback = new Gtk.Image.from_icon_name("application-x-android-package");
-            fallback.pixel_size = 64;
-            fallback.margin_top = 18;
-            fallback.margin_bottom = 8;
-            fallback.halign = Gtk.Align.CENTER;
-            return fallback;
+            return body;
         }
 
         private static Adw.ActionRow row(string title, string value) {
