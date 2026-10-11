@@ -41,7 +41,10 @@ namespace ApkManager.Windows {
             identity.title = "Application";
             identity.add(row("Package", meta.package_name));
             identity.add(row("Version", meta.version_line()));
-            identity.add(row("File", meta.apk_file_name != "" ? meta.apk_file_name : Path.get_basename(apk_path)));
+            identity.add(file_row(
+                apk_path,
+                meta.apk_file_name != "" ? meta.apk_file_name : Path.get_basename(apk_path)
+            ));
             identity.add(row("Size", file_size(apk_path)));
             page.add(identity);
 
@@ -81,6 +84,19 @@ namespace ApkManager.Windows {
             item.title = title;
             item.subtitle = value != "" ? value : "—";
             item.subtitle_selectable = true;
+            return item;
+        }
+
+        private static Adw.ActionRow file_row(string apk_path, string display_name) {
+            var item = new Adw.ActionRow();
+            item.title = "File";
+            item.subtitle = display_name != "" ? display_name : "—";
+            item.subtitle_selectable = true;
+            item.activatable = true;
+            item.add_suffix(new Gtk.Image.from_icon_name("folder-open-symbolic"));
+            item.activated.connect(() => {
+                FileUtilsHelper.show_in_file_manager(apk_path);
+            });
             return item;
         }
 

@@ -12,6 +12,8 @@ namespace ApkManager.Core {
         public string summary { get; construct; }
         public string icon_url { get; construct; }
         public string page_url { get; construct; }
+        public string version_name { get; construct set; default = ""; }
+        public string version_date { get; construct set; default = ""; }
 
         public ApkStoreResult(
             ApkStoreSource source,
@@ -19,7 +21,9 @@ namespace ApkManager.Core {
             string package_id,
             string summary,
             string icon_url,
-            string page_url
+            string page_url,
+            string version_name = "",
+            string version_date = ""
         ) {
             Object(
                 source: source,
@@ -27,8 +31,22 @@ namespace ApkManager.Core {
                 package_id: package_id,
                 summary: summary,
                 icon_url: icon_url,
-                page_url: page_url
+                page_url: page_url,
+                version_name: version_name,
+                version_date: version_date
             );
+        }
+
+        public string version_suffix {
+            owned get {
+                if (version_name.strip() == "") {
+                    return "";
+                }
+                if (version_date.strip() != "") {
+                    return "(v.%s;%s)".printf(version_name.strip(), version_date.strip());
+                }
+                return "(v.%s)".printf(version_name.strip());
+            }
         }
 
         public string source_label {
