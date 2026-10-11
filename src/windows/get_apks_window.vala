@@ -85,6 +85,7 @@ namespace ApkManager.Windows {
             source_filter.notify["selected"].connect(on_source_filter_changed);
             filter_row.append(source_filter);
             root.append(filter_row);
+            apply_preferred_repository_filter();
 
             status_label = new Gtk.Label("Search for Android apps to download.");
             status_label.xalign = 0;
@@ -117,6 +118,19 @@ namespace ApkManager.Windows {
             download_button.add_css_class("suggested-action");
             download_button.clicked.connect(on_download_clicked);
             root.append(download_button);
+        }
+
+        private void apply_preferred_repository_filter() {
+            uint selected = 0;
+            switch (AppSettings.get_default().get_preferred_repository()) {
+            case PreferredRepository.FDROID:
+                selected = 1;
+                break;
+            case PreferredRepository.APTOIDE:
+                selected = 2;
+                break;
+            }
+            source_filter.selected = selected;
         }
 
         private void on_search_changed() {
