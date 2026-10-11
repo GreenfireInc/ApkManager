@@ -71,9 +71,9 @@ namespace ApkManager.Windows {
             filter_row.append(filter_label);
 
             var filter_store = new GLib.ListStore(typeof(StoreSourceFilterItem));
-            filter_store.append(new StoreSourceFilterItem("All sources"));
-            filter_store.append(new StoreSourceFilterItem("F-Droid", "appRepo.fdroid.svg"));
+            filter_store.append(new StoreSourceFilterItem("All Sources"));
             filter_store.append(new StoreSourceFilterItem("Aptoide", "appRepo.aptoide.svg"));
+            filter_store.append(new StoreSourceFilterItem("F-Droid", "appRepo.fdroid.svg"));
             filter_store.append(new StoreSourceFilterItem("Uptodown", "appRepo.uptodown.svg"));
 
             source_filter = new Gtk.DropDown(
@@ -85,7 +85,6 @@ namespace ApkManager.Windows {
             source_filter.notify["selected"].connect(on_source_filter_changed);
             filter_row.append(source_filter);
             root.append(filter_row);
-            apply_preferred_repository_filter();
 
             status_label = new Gtk.Label("Search for Android apps to download.");
             status_label.xalign = 0;
@@ -113,24 +112,11 @@ namespace ApkManager.Windows {
             download_progress.visible = false;
             root.append(download_progress);
 
-            download_button = new Gtk.Button.with_label("Download");
+            download_button = new Gtk.Button.with_label("Download and install");
             download_button.sensitive = false;
             download_button.add_css_class("suggested-action");
             download_button.clicked.connect(on_download_clicked);
             root.append(download_button);
-        }
-
-        private void apply_preferred_repository_filter() {
-            uint selected = 0;
-            switch (AppSettings.get_default().get_preferred_repository()) {
-            case PreferredRepository.FDROID:
-                selected = 1;
-                break;
-            case PreferredRepository.APTOIDE:
-                selected = 2;
-                break;
-            }
-            source_filter.selected = selected;
         }
 
         private void on_search_changed() {
@@ -250,6 +236,14 @@ namespace ApkManager.Windows {
             return false;
         }
 
+        private bool apply_repository_icon(Gtk.Image image, ApkStoreResult result) {
+            var basename = result.repository_icon_basename;
+            if (basename == "") {
+                return false;
+            }
+            return apply_store_icon(image, new StoreSourceFilterItem(result.source_label, basename));
+        }
+
         private void on_source_filter_changed() {
             populate_results();
         }
@@ -308,17 +302,23 @@ namespace ApkManager.Windows {
             var text_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 2);
             text_box.hexpand = true;
 
-            var title_row = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 8);
+            var title_row = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 6);
+            title_row.hexpand = true;
+
             var title = new Gtk.Label(result.name);
             title.xalign = 0;
-            title.hexpand = true;
             title.add_css_class("title-4");
             title_row.append(title);
 
-            var source_badge = new Gtk.Label(result.source_label);
-            source_badge.add_css_class("caption");
-            source_badge.add_css_class("dim-label");
-            title_row.append(source_badge);
+            if (result.version_suffix != "") {
+                var version_label = new Gtk.Label(result.version_suffix);
+                version_label.xalign = 0;
+                version_label.valign = Gtk.Align.BASELINE;
+                version_label.add_css_class("caption");
+                version_label.add_css_class("dim-label");
+                title_row.append(version_label);
+            }
+
             text_box.append(title_row);
 
             var subtitle_parts = new Gee.ArrayList<string>();
@@ -339,13 +339,41 @@ namespace ApkManager.Windows {
             text_box.append(subtitle);
 
             box.append(text_box);
+
+            if (active_source_filter() == null) {
+                var source_column = new Gtk.Box(Gtk.Orientation.VERTICAL, 4);
+                source_column.halign = Gtk.Align.END;
+                source_column.valign = Gtk.Align.CENTER;
+                source_column.margin_start = 8;
+
+                var source_icon = new Gtk.Image();
+                source_icon.set_pixel_size(20);
+                source_icon.halign = Gtk.Align.CENTER;
+                if (!apply_repository_icon(source_icon, result)) {
+                    source_icon.set_from_icon_name("view-grid-symbolic");
+                }
+                source_column.append(source_icon);
+
+                var source_label = new Gtk.Label(result.source_label);
+                source_label.add_css_class("caption");
+                source_label.add_css_class("dim-label");
+                source_label.halign = Gtk.Align.CENTER;
+                source_column.append(source_label);
+
+                box.append(source_column);
+            }
+
             row.child = box;
             return row;
         }
 
         private async void load_icon_async(string url, Gtk.Image image) {
             try {
-                var bytes = yield HttpClient.get_bytes(url);
+                var bytes = yield HttpClient.get_bytes(url, HttpClient.BROWSER_USER_AGENT);
+                if (!HttpClient.looks_like_image(bytes)) {
+                    warning("Store icon URL returned non-image data: %s", url);
+                    return;
+                }
                 var texture = Gdk.Texture.from_bytes(bytes);
                 image.set_from_paintable(texture);
             } catch (Error e) {
@@ -364,7 +392,7 @@ namespace ApkManager.Windows {
             if (selected_result != null && store_search.requires_browser_download(selected_result)) {
                 download_button.label = "Open in browser";
             } else {
-                download_button.label = "Download";
+                download_button.label = "Download and install";
             }
         }
 
@@ -377,11 +405,38 @@ namespace ApkManager.Windows {
                 return;
             }
 
-            if (store_search.requires_browser_download(selected_result)) {
-                open_browser_download(selected_result);
-                return;
-            }
+            var result = selected_result;
+            var browser_download = store_search.requires_browser_download(result);
+            var dialog = new GetApkConfirmDialog(
+                result.name,
+                AppSettings.get_default().get_install_path(),
+                selected_row_icon(),
+                browser_download
+            );
+            dialog.confirmed.connect(() => {
+                if (browser_download) {
+                    open_browser_download(result);
+                    return;
+                }
+                start_download(result);
+            });
+            dialog.present(this);
+        }
 
+        private Gdk.Paintable? selected_row_icon() {
+            var row = results_list.get_selected_row();
+            if (row == null) {
+                return null;
+            }
+            var box = row.child as Gtk.Box;
+            if (box == null) {
+                return null;
+            }
+            var image = box.get_first_child() as Gtk.Image;
+            return image != null ? image.paintable : null;
+        }
+
+        private void start_download(ApkStoreResult result) {
             if (download_cancellable != null) {
                 download_cancellable.cancel();
             }
@@ -389,9 +444,9 @@ namespace ApkManager.Windows {
             download_progress.visible = true;
             download_progress.pulse();
             download_button.sensitive = false;
-            status_label.set_text("Downloading %s…".printf(selected_result.name));
+            status_label.set_text("Downloading %s…".printf(result.name));
 
-            run_download.begin(selected_result, download_cancellable);
+            run_download.begin(result, download_cancellable);
         }
 
         private void open_browser_download(ApkStoreResult result) {
@@ -427,9 +482,36 @@ namespace ApkManager.Windows {
                 return;
             }
 
-            status_label.set_text("Downloaded to %s".printf(path));
-            apk_ready(path);
+            status_label.set_text("Installing %s…".printf(result.name));
+            string? installed_path = null;
+            try {
+                installed_path = yield install_downloaded_async(path);
+            } catch (Error e) {
+                status_label.set_text("Downloaded, but install failed: %s".printf(e.message));
+                return;
+            }
+
+            status_label.set_text("Installed to %s".printf(installed_path));
+            apk_ready(installed_path);
             close();
+        }
+
+        private async string install_downloaded_async(string path) throws Error {
+            string? result = null;
+            Error? error = null;
+            new Thread<void>("apk-get-install", () => {
+                try {
+                    result = ApkInstall.install(path);
+                } catch (Error e) {
+                    error = e;
+                }
+                Idle.add(install_downloaded_async.callback);
+            });
+            yield;
+            if (error != null) {
+                throw error;
+            }
+            return result;
         }
     }
 }

@@ -40,6 +40,7 @@ namespace ApkManager.Core {
 
             var results = new Gee.ArrayList<ApkStoreResult>();
             foreach (var item in parse_fdroid_results(fdroid_html)) {
+                yield enrich_fdroid_version(item, cancellable);
                 results.add(item);
             }
             foreach (var item in parse_aptoide_results(aptoide_json)) {
@@ -82,13 +83,15 @@ namespace ApkManager.Core {
             try {
                 var block_regex = new Regex(
                     "<a class=\"package-header\" href=\"https://f-droid.org/en/packages/([^\"]+)\">[\\s\\S]*?" +
-                    "class=\"package-icon\" src=\"([^\"]+)\"[\\s\\S]*?" +
+                    "<img[^>]*class=\"package-icon\"[^>]*src=\"([^\"]+)\"[\\s\\S]*?" +
                     "<h4 class=\"package-name\">\\s*([^<]+?)\\s*</h4>[\\s\\S]*?" +
                     "<span class=\"package-summary\">([^<]*)</span>",
                     RegexCompileFlags.DOTALL
                 );
                 MatchInfo match;
-                if (!block_regex.match_all(html, 0, out match)) {
+                // match_all() does not support MatchInfo.next(). That combination
+                // is undefined and returns HTML fragments as the captured fields.
+                if (!block_regex.match(html, 0, out match)) {
                     return results;
                 }
                 while (true) {
@@ -147,6 +150,17 @@ namespace ApkManager.Core {
                     var name = app.has_member("name") ? app.get_string_member("name") : "";
                     var package_id = app.has_member("package") ? app.get_string_member("package") : "";
                     var icon_url = app.has_member("icon") ? app.get_string_member("icon") : "";
+                    var version_name = "";
+                    var version_date = "";
+                    if (app.has_member("file")) {
+                        var file = app.get_object_member("file");
+                        if (file != null && file.has_member("vername")) {
+                            version_name = file.get_string_member("vername");
+                        }
+                    }
+                    if (app.has_member("updated")) {
+                        version_date = yyyymmdd_from_timestamp(app.get_string_member("updated"));
+                    }
                     if (name == "" || package_id == "") {
                         continue;
                     }
@@ -156,7 +170,9 @@ namespace ApkManager.Core {
                         package_id,
                         "",
                         icon_url,
-                        "https://en.aptoide.com/app/%s".printf(package_id)
+                        "https://en.aptoide.com/app/%s".printf(package_id),
+                        version_name,
+                        version_date
                     ));
                 }
             } catch (Error e) {
@@ -174,25 +190,31 @@ namespace ApkManager.Core {
 
             try {
                 var row_regex = new Regex(
-                    "<div class=\"name\">\\s*<a href=\"([^\"]+)\" title=\"Download ([^\"]+)\">\\s*<h2>([^<]+)</h2>",
+                    "<img[^>]*class=\"app_card_img\"[^>]*src=\"([^\"]+)\"[\\s\\S]*?" +
+                    "<div class=\"name\">\\s*<a href=\"([^\"]+)\" title=\"Download ([^\"]+)\">\\s*<h2>([^<]+)</h2>[\\s\\S]*?" +
+                    "<div class=\"author\">([^<]*)</div>\\s*<div class=\"description\">([^<]*)</div>",
                     RegexCompileFlags.DOTALL
                 );
                 MatchInfo match;
-                if (!row_regex.match_all(html, 0, out match)) {
+                if (!row_regex.match(html, 0, out match)) {
                     return results;
                 }
                 while (true) {
-                    var page_url = (match.fetch(1) ?? "").strip();
-                    var title = (match.fetch(2) ?? "").strip();
-                    var heading = (match.fetch(3) ?? "").strip();
+                    var icon_url = (match.fetch(1) ?? "").strip();
+                    var page_url = (match.fetch(2) ?? "").strip();
+                    var title = (match.fetch(3) ?? "").strip();
+                    var heading = (match.fetch(4) ?? "").strip();
+                    var author = (match.fetch(5) ?? "").strip();
+                    var description = (match.fetch(6) ?? "").strip();
                     var name = heading != "" ? heading : title;
+                    var summary = description != "" ? description : author;
                     if (page_url != "" && name != "") {
                         results.add(new ApkStoreResult(
                             ApkStoreSource.UPTODOWN,
                             name,
                             "",
-                            "",
-                            "",
+                            summary,
+                            icon_url,
                             page_url
                         ));
                     }
@@ -274,6 +296,53 @@ namespace ApkManager.Core {
             return file.get_string_member("path");
         }
 
+        private async void enrich_fdroid_version(ApkStoreResult result, Cancellable? cancellable) {
+            if (result.package_id.strip() == "") {
+                return;
+            }
+
+            try {
+                var url = "https://f-droid.org/api/v1/packages/%s".printf(
+                    Uri.escape_string(result.package_id)
+                );
+                var json_text = yield HttpClient.get_string(url, HttpClient.DEFAULT_USER_AGENT);
+                var parser = new Json.Parser();
+                parser.load_from_data(json_text, -1);
+                var root = parser.get_root().get_object();
+                if (root == null || !root.has_member("suggestedVersionCode") || !root.has_member("packages")) {
+                    return;
+                }
+                var suggested_code = root.get_int_member("suggestedVersionCode");
+                var packages = root.get_array_member("packages");
+                if (packages == null) {
+                    return;
+                }
+                for (uint i = 0; i < packages.get_length(); i++) {
+                    var package_info = packages.get_object_element(i);
+                    if (package_info == null || !package_info.has_member("versionCode")) {
+                        continue;
+                    }
+                    if (package_info.get_int_member("versionCode") != suggested_code) {
+                        continue;
+                    }
+                    if (package_info.has_member("versionName")) {
+                        result.version_name = package_info.get_string_member("versionName");
+                    }
+                    break;
+                }
+            } catch (Error e) {
+                warning("Could not load F-Droid version for %s: %s", result.package_id, e.message);
+            }
+        }
+
+        private static string yyyymmdd_from_timestamp(string value) {
+            var trimmed = value.strip();
+            if (trimmed.length < 10) {
+                return "";
+            }
+            return trimmed.substring(0, 10).replace("-", "");
+        }
+
         public async string download_apk(
             ApkStoreResult result,
             Cancellable? cancellable = null
@@ -299,7 +368,7 @@ namespace ApkManager.Core {
                 download_url,
                 result.source == ApkStoreSource.APTOIDE ? APTOIDE_USER_AGENT : HttpClient.DEFAULT_USER_AGENT
             );
-            FileUtils.set_contents(destination, (string) bytes.get_data(), bytes.length);
+            FileUtils.set_data(destination, bytes.get_data());
             return destination;
         }
 
