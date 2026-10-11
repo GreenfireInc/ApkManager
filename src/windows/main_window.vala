@@ -7,6 +7,17 @@ namespace ApkManager.Windows {
         GRID
     }
 
+    private enum SessionSortMode {
+        NAME_ASC,
+        NAME_DESC,
+        SIZE_ASC,
+        SIZE_DESC
+    }
+
+    private const int SESSION_GRID_TILE_PX = 96;
+    private const int SESSION_GRID_TILE_MARGIN_PX = 8;
+    private const int SESSION_GRID_MIN_COLUMNS = 2;
+
     public class MainWindow : Adw.ApplicationWindow {
         private DecodeSessionRegistry registry;
         private ApktoolRunner runner = new ApktoolRunner();
@@ -16,10 +27,15 @@ namespace ApkManager.Windows {
         private Gtk.Stack session_stack;
         private Gtk.ListBox session_list;
         private Gtk.FlowBox session_grid;
+        private Gtk.ScrolledWindow session_grid_scrolled;
         private Gtk.Button session_view_toggle_button;
-        private SessionViewMode session_view_mode = SessionViewMode.LIST;
+        private SessionViewMode session_view_mode = SessionViewMode.GRID;
+        private SessionSortMode session_sort_mode = SessionSortMode.NAME_ASC;
         private Gtk.TreeView archive_tree;
         private Gtk.ListStore archive_store;
+        private Adw.ViewStack detail_stack;
+        private Adw.ViewSwitcher detail_switcher;
+        private Gtk.Box properties_content_box;
         private Gtk.Label status_label;
         private Gtk.ProgressBar progress_bar;
         private string status_before_decode = "";
@@ -77,6 +93,15 @@ namespace ApkManager.Windows {
             var remove_session_action = new SimpleAction("remove-session", null);
             remove_session_action.activate.connect(on_remove_session_from_recents);
             sidebar_actions.add_action(remove_session_action);
+            var sort_action = new SimpleAction.stateful(
+                "sort-sessions",
+                VariantType.STRING,
+                new Variant.string("name-asc")
+            );
+            sort_action.change_state.connect((value) => {
+                on_session_sort_changed(sort_action, value);
+            });
+            sidebar_actions.add_action(sort_action);
             insert_action_group("win", sidebar_actions);
 
             var session_context_model = new Menu();
@@ -109,13 +134,49 @@ namespace ApkManager.Windows {
             session_count_label.hexpand = true;
             session_count_label.halign = Gtk.Align.START;
             session_count_label.add_css_class("dim-label");
+            session_count_label.add_css_class("session-count-link");
+            session_count_label.can_target = true;
+            session_count_label.set_cursor_from_name("pointer");
+            session_count_label.tooltip_text = "Scan install folder for APKs not in recents";
+            ensure_session_view_controls_css();
+
+            var count_click = new Gtk.GestureClick();
+            count_click.released.connect(() => {
+                scan_install_folder_for_missing_apks();
+            });
+            session_count_label.add_controller(count_click);
             session_status_bar.append(session_count_label);
+
+            var view_controls = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+            view_controls.halign = Gtk.Align.END;
+            view_controls.valign = Gtk.Align.CENTER;
+            view_controls.add_css_class("session-view-controls");
+            ensure_session_view_controls_css();
 
             session_view_toggle_button = new Gtk.Button();
             session_view_toggle_button.add_css_class("flat");
             session_view_toggle_button.clicked.connect(on_session_view_toggle_clicked);
             update_session_view_toggle_icon();
-            session_status_bar.append(session_view_toggle_button);
+            view_controls.append(session_view_toggle_button);
+
+            var view_separator = new Gtk.Label("|");
+            view_separator.add_css_class("dim-label");
+            view_separator.valign = Gtk.Align.CENTER;
+            view_controls.append(view_separator);
+
+            var sort_menu = new Menu();
+            sort_menu.append_item(sort_menu_item("Name (A to Z)", "name-asc"));
+            sort_menu.append_item(sort_menu_item("Name (Z to A)", "name-desc"));
+            sort_menu.append_item(sort_menu_item("Size (Smallest to Largest)", "size-asc"));
+            sort_menu.append_item(sort_menu_item("Size (Largest to Smallest)", "size-desc"));
+
+            var sort_button = new Gtk.MenuButton();
+            sort_button.icon_name = "pan-down-symbolic";
+            sort_button.tooltip_text = "Reorder recent APKs";
+            sort_button.add_css_class("flat");
+            sort_button.menu_model = sort_menu;
+            view_controls.append(sort_button);
+            session_status_bar.append(view_controls);
             sidebar_box.append(session_status_bar);
 
             session_list = new Gtk.ListBox();
@@ -126,7 +187,9 @@ namespace ApkManager.Windows {
             session_grid = new Gtk.FlowBox();
             session_grid.selection_mode = Gtk.SelectionMode.SINGLE;
             session_grid.activate_on_single_click = true;
-            session_grid.max_children_per_line = 2;
+            session_grid.min_children_per_line = SESSION_GRID_MIN_COLUMNS;
+            session_grid.max_children_per_line = SESSION_GRID_MIN_COLUMNS;
+            session_grid.homogeneous = true;
             session_grid.column_spacing = 8;
             session_grid.row_spacing = 8;
             session_grid.margin_start = 12;
@@ -140,16 +203,22 @@ namespace ApkManager.Windows {
             list_scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC);
             list_scrolled.child = session_list;
 
-            var grid_scrolled = new Gtk.ScrolledWindow();
-            grid_scrolled.set_vexpand(true);
-            grid_scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC);
-            grid_scrolled.child = session_grid;
+            session_grid_scrolled = new Gtk.ScrolledWindow();
+            session_grid_scrolled.set_vexpand(true);
+            session_grid_scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC);
+            session_grid_scrolled.child = session_grid;
+            session_grid_scrolled.notify["width"].connect(() => {
+                update_session_grid_columns();
+            });
+            session_grid.map.connect(() => {
+                update_session_grid_columns();
+            });
 
             session_stack = new Gtk.Stack();
             session_stack.set_vexpand(true);
             session_stack.add_named(list_scrolled, "list");
-            session_stack.add_named(grid_scrolled, "grid");
-            session_stack.visible_child_name = "list";
+            session_stack.add_named(session_grid_scrolled, "grid");
+            session_stack.visible_child_name = "grid";
             sidebar_box.append(session_stack);
 
             var get_apks_button = new Gtk.Button.with_label("Get APKs");
@@ -165,15 +234,11 @@ namespace ApkManager.Windows {
 
             var content_toolbar = new Adw.ToolbarView();
             var content_header = new Adw.HeaderBar();
-            decode_manifest_button = new Gtk.Button.with_label("Quick Manifest");
-            decode_full_button = new Gtk.Button.with_label("Full Decode");
-            cancel_button = new Gtk.Button.with_label("Cancel");
-            cancel_button.sensitive = false;
-            content_header.pack_start(decode_manifest_button);
-            content_header.pack_start(decode_full_button);
-            content_header.pack_start(cancel_button);
             content_header.title_widget = new Adw.WindowTitle("ApkManager", "");
             content_toolbar.add_top_bar(content_header);
+
+            decode_manifest_button = new Gtk.Button.with_label("Quick Manifest");
+            decode_full_button = new Gtk.Button.with_label("Full Decode");
 
             var content_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
@@ -198,10 +263,46 @@ namespace ApkManager.Windows {
             archive_tree.append_column(col_size);
             archive_tree.append_column(col_kind);
 
-            var scrolled = new Gtk.ScrolledWindow();
-            scrolled.child = archive_tree;
-            scrolled.set_vexpand(true);
-            content_box.append(scrolled);
+            var files_scrolled = new Gtk.ScrolledWindow();
+            files_scrolled.child = archive_tree;
+            files_scrolled.set_vexpand(true);
+            files_scrolled.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
+
+            properties_content_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+            var properties_scrolled = new Gtk.ScrolledWindow();
+            properties_scrolled.child = properties_content_box;
+            properties_scrolled.set_vexpand(true);
+            properties_scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC);
+
+            var decode_buttons_row = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 8);
+            decode_buttons_row.margin_top = 12;
+            decode_buttons_row.margin_start = 12;
+            decode_buttons_row.margin_end = 12;
+            decode_buttons_row.margin_bottom = 8;
+            decode_buttons_row.halign = Gtk.Align.START;
+            decode_buttons_row.append(decode_manifest_button);
+            decode_buttons_row.append(decode_full_button);
+
+            var properties_tab_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+            properties_tab_box.append(decode_buttons_row);
+            properties_tab_box.append(properties_scrolled);
+
+            detail_stack = new Adw.ViewStack();
+            detail_stack.add_titled(files_scrolled, "files", "Files");
+            detail_stack.add_titled(properties_tab_box, "properties", "Properties");
+            detail_stack.set_vexpand(true);
+            detail_stack.visible_child_name = "files";
+
+            detail_switcher = new Adw.ViewSwitcher();
+            detail_switcher.stack = detail_stack;
+            detail_switcher.margin_start = 12;
+            detail_switcher.margin_end = 12;
+            detail_switcher.margin_top = 6;
+            detail_switcher.margin_bottom = 4;
+            detail_switcher.halign = Gtk.Align.START;
+
+            content_box.append(detail_switcher);
+            content_box.append(detail_stack);
 
             empty_page = new Adw.StatusPage();
             empty_page.icon_name = "application-x-android-package";
@@ -225,17 +326,27 @@ namespace ApkManager.Windows {
             progress_bar.margin_bottom = 0;
             status_footer.append(progress_bar);
 
+            var status_row = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 8);
+            status_row.margin_start = 12;
+            status_row.margin_end = 12;
+            status_row.margin_top = 6;
+            status_row.margin_bottom = 6;
+
             status_label = new Gtk.Label("Open an APK to inspect its contents.");
-            status_label.margin_start = 12;
-            status_label.margin_end = 12;
-            status_label.margin_top = 6;
-            status_label.margin_bottom = 6;
             status_label.hexpand = true;
             status_label.halign = Gtk.Align.FILL;
             status_label.xalign = 0;
             status_label.ellipsize = Pango.EllipsizeMode.MIDDLE;
             status_label.add_css_class("dim-label");
-            status_footer.append(status_label);
+            status_row.append(status_label);
+
+            cancel_button = new Gtk.Button.with_label("Cancel");
+            cancel_button.visible = false;
+            cancel_button.sensitive = false;
+            cancel_button.halign = Gtk.Align.END;
+            cancel_button.valign = Gtk.Align.CENTER;
+            status_row.append(cancel_button);
+            status_footer.append(status_row);
             content_toolbar.add_bottom_bar(status_footer);
 
             split_view.content = new Adw.NavigationPage(content_toolbar, "ApkManager");
@@ -261,6 +372,8 @@ namespace ApkManager.Windows {
             title = "ApkManager — %s".printf(active_session.label ?? Path.get_basename(apk_path));
             status_label.set_text("Loaded %s".printf(apk_path));
             load_archive_entries(apk_path);
+            refresh_properties_panel();
+            detail_stack.visible_child_name = "files";
             content_stack.visible_child_name = "content";
             split_view.show_content = true;
             refresh_sessions();
@@ -307,6 +420,127 @@ namespace ApkManager.Windows {
             }
             update_session_view_toggle_icon();
             refresh_sessions();
+            if (session_view_mode == SessionViewMode.GRID) {
+                update_session_grid_columns();
+            }
+        }
+
+        private void update_session_grid_columns() {
+            if (session_view_mode != SessionViewMode.GRID) {
+                return;
+            }
+
+            int width = session_grid_scrolled.get_allocated_width();
+            if (width <= 0) {
+                return;
+            }
+
+            int cell = SESSION_GRID_TILE_PX + SESSION_GRID_TILE_MARGIN_PX;
+            int available = width - (int) session_grid.margin_start - (int) session_grid.margin_end;
+            int columns = available / cell;
+            if (columns < SESSION_GRID_MIN_COLUMNS) {
+                columns = SESSION_GRID_MIN_COLUMNS;
+            }
+
+            uint column_count = (uint) columns;
+            if (session_grid.max_children_per_line != column_count) {
+                session_grid.max_children_per_line = column_count;
+            }
+        }
+
+        private static bool session_view_controls_css_installed = false;
+
+        private static void ensure_session_view_controls_css() {
+            if (session_view_controls_css_installed) {
+                return;
+            }
+            session_view_controls_css_installed = true;
+
+            var css = new Gtk.CssProvider();
+            css.load_from_string("""
+                .session-view-controls button {
+                    padding: 2px 4px;
+                    min-width: 0;
+                    min-height: 0;
+                }
+                .session-count-link:hover {
+                    color: @accent_color;
+                }
+            """);
+            Gtk.StyleContext.add_provider_for_display(
+                Gdk.Display.get_default(),
+                css,
+                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+            );
+        }
+
+        private static MenuItem sort_menu_item(string label, string target) {
+            var item = new MenuItem(label, null);
+            item.set_action_and_target_value("win.sort-sessions", new Variant.string(target));
+            return item;
+        }
+
+        private void on_session_sort_changed(SimpleAction action, Variant? value) {
+            if (value == null) {
+                return;
+            }
+            action.set_state(value);
+            switch (value.get_string()) {
+            case "name-desc":
+                session_sort_mode = SessionSortMode.NAME_DESC;
+                break;
+            case "size-asc":
+                session_sort_mode = SessionSortMode.SIZE_ASC;
+                break;
+            case "size-desc":
+                session_sort_mode = SessionSortMode.SIZE_DESC;
+                break;
+            default:
+                session_sort_mode = SessionSortMode.NAME_ASC;
+                break;
+            }
+            refresh_sessions();
+        }
+
+        private int compare_sessions(
+            DecodeSession a,
+            DecodeSession b,
+            Gee.Map<string, string> names,
+            Gee.Map<string, int64?> sizes
+        ) {
+            switch (session_sort_mode) {
+            case SessionSortMode.NAME_DESC:
+                return names[b.id].collate(names[a.id]);
+            case SessionSortMode.SIZE_ASC:
+                return compare_int64(sizes[a.id], sizes[b.id]);
+            case SessionSortMode.SIZE_DESC:
+                return compare_int64(sizes[b.id], sizes[a.id]);
+            default:
+                return names[a.id].collate(names[b.id]);
+            }
+        }
+
+        private static int compare_int64(int64 a, int64 b) {
+            if (a < b) {
+                return -1;
+            }
+            if (a > b) {
+                return 1;
+            }
+            return 0;
+        }
+
+        private static int64 apk_file_size_bytes(string path) {
+            try {
+                var info = File.new_for_path(path).query_info(
+                    FileAttribute.STANDARD_SIZE,
+                    FileQueryInfoFlags.NONE,
+                    null
+                );
+                return info.get_size();
+            } catch (Error e) {
+                return -1;
+            }
         }
 
         private void attach_session_context_menu(Gtk.Widget widget, string apk_path) {
@@ -331,8 +565,35 @@ namespace ApkManager.Windows {
             if (context_menu_apk_path == null) {
                 return;
             }
-            remove_recent_session(context_menu_apk_path);
+            var apk_path = context_menu_apk_path;
             context_menu_apk_path = null;
+
+            var name = ApkDisplayName.resolve(apk_path);
+            if (name == null || name.strip() == "") {
+                name = Path.get_basename(apk_path);
+            }
+
+            var dialog = new RemoveSessionConfirmDialog(
+                name,
+                UiUtils.load_session_icon_paintable(apk_path)
+            );
+            dialog.confirmed.connect(() => {
+                remove_recent_session(apk_path);
+            });
+            dialog.delete_confirmed.connect(() => {
+                remove_recent_session_and_delete_file(apk_path);
+            });
+            dialog.present(this);
+        }
+
+        private void remove_recent_session_and_delete_file(string apk_path) {
+            remove_recent_session(apk_path);
+            try {
+                File.new_for_path(apk_path).delete();
+                status_label.set_text("Deleted %s".printf(apk_path));
+            } catch (Error e) {
+                status_label.set_text("Could not delete %s: %s".printf(apk_path, e.message));
+            }
         }
 
         private void remove_recent_session(string apk_path) {
@@ -349,7 +610,7 @@ namespace ApkManager.Windows {
 
         private Gtk.Widget build_session_grid_tile(string apk_path, string name) {
             var tile = new Gtk.Box(Gtk.Orientation.VERTICAL, 6);
-            tile.width_request = 96;
+            tile.width_request = SESSION_GRID_TILE_PX;
             tile.margin_top = 8;
             tile.margin_bottom = 8;
             tile.margin_start = 4;
@@ -367,7 +628,7 @@ namespace ApkManager.Windows {
             label.add_css_class("title-4");
             tile.append(label);
 
-            var size_label = new Gtk.Label(grid_tile_file_size(apk_path));
+            var size_label = new Gtk.Label(session_apk_file_size(apk_path));
             size_label.xalign = 0.5f;
             size_label.justify = Gtk.Justification.CENTER;
             size_label.add_css_class("dim-label");
@@ -376,7 +637,7 @@ namespace ApkManager.Windows {
             return tile;
         }
 
-        private string grid_tile_file_size(string apk_path) {
+        private string session_apk_file_size(string apk_path) {
             try {
                 var file = File.new_for_path(apk_path);
                 var info = file.query_info(FileAttribute.STANDARD_SIZE, FileQueryInfoFlags.NONE, null);
@@ -394,14 +655,74 @@ namespace ApkManager.Windows {
             row_box.margin_end = 12;
             row_box.append(UiUtils.load_session_apk_icon(apk_path, UiUtils.SESSION_LIST_ICON_PX));
 
+            var text_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 2);
+            text_box.hexpand = true;
+            text_box.halign = Gtk.Align.FILL;
+
             var title = new Gtk.Label(name);
             title.xalign = 0;
             title.hexpand = true;
             title.add_css_class("title-4");
             title.ellipsize = Pango.EllipsizeMode.MIDDLE;
-            row_box.append(title);
+            text_box.append(title);
+
+            var size_label = new Gtk.Label(session_apk_file_size(apk_path));
+            size_label.xalign = 0;
+            size_label.add_css_class("dim-label");
+            text_box.append(size_label);
+
+            row_box.append(text_box);
 
             return row_box;
+        }
+
+        private void clear_box_children(Gtk.Box box) {
+            Gtk.Widget? child = box.get_first_child();
+            while (child != null) {
+                box.remove(child);
+                child = box.get_first_child();
+            }
+        }
+
+        private bool session_has_decoded_manifest(DecodeSession session) {
+            if (session.cache_dir == null) {
+                return false;
+            }
+            var manifest = Path.build_filename(session.cache_dir, "AndroidManifest.xml");
+            var yml = Path.build_filename(session.cache_dir, "apktool.yml");
+            return FileUtils.test(manifest, FileTest.EXISTS)
+                || FileUtils.test(yml, FileTest.EXISTS);
+        }
+
+        private void refresh_properties_panel() {
+            clear_box_children(properties_content_box);
+
+            if (active_session == null || !session_has_decoded_manifest(active_session)) {
+                var empty = new Adw.StatusPage();
+                empty.icon_name = "text-x-generic";
+                empty.title = "No manifest yet";
+                empty.description = "Run Quick Manifest to view application properties.";
+                properties_content_box.append(empty);
+                return;
+            }
+
+            try {
+                var meta = ApkMetadata.from_decode_dir(active_session.cache_dir);
+                properties_content_box.append(
+                    ManifestPopup.build_properties_view(active_session.apk_path, meta)
+                );
+            } catch (Error e) {
+                var error_page = new Adw.StatusPage();
+                error_page.icon_name = "dialog-warning";
+                error_page.title = "Could not read manifest";
+                error_page.description = e.message;
+                properties_content_box.append(error_page);
+            }
+        }
+
+        private void show_properties_tab() {
+            refresh_properties_panel();
+            detail_stack.visible_child_name = "properties";
         }
 
         private void load_archive_entries(string apk_path) {
@@ -445,7 +766,13 @@ namespace ApkManager.Windows {
             status_before_decode = status_label.get_text();
             progress_bar.visible = true;
             progress_bar.pulse();
-            cancel_button.sensitive = true;
+            if (mode == DecodeMode.FULL) {
+                cancel_button.visible = true;
+                cancel_button.sensitive = true;
+            } else {
+                cancel_button.visible = false;
+                cancel_button.sensitive = false;
+            }
             decode_manifest_button.sensitive = false;
             decode_full_button.sensitive = false;
 
@@ -463,7 +790,16 @@ namespace ApkManager.Windows {
                     session.cache_dir = final_dir;
                     session.state = DecodeState.DECODED;
                     if (mode == DecodeMode.MANIFEST_ONLY) {
-                        show_manifest_popup(session.apk_path, final_dir);
+                        try {
+                            var meta = ApkMetadata.from_decode_dir(final_dir);
+                            session.label = meta.display_name(session.apk_path);
+                            refresh_sessions();
+                        } catch (Error e) {
+                            warning("Could not read manifest metadata: %s", e.message);
+                        }
+                        show_properties_tab();
+                    } else {
+                        refresh_properties_panel();
                     }
                 } catch (Error e) {
                     session.state = DecodeState.FAILED;
@@ -476,26 +812,13 @@ namespace ApkManager.Windows {
             registry.save();
         }
 
-        private void show_manifest_popup(string apk_path, string decode_dir) {
-            try {
-                var meta = ApkMetadata.from_decode_dir(decode_dir);
-                if (active_session != null) {
-                    active_session.label = meta.display_name(apk_path);
-                    registry.save();
-                }
-                var popup = new ManifestPopup(this, apk_path, meta);
-                popup.present();
-            } catch (Error e) {
-                status_label.set_text("Decoded, but metadata could not be read: %s".printf(e.message));
-            }
-        }
-
         private void on_phase_changed(ApktoolPhase phase, string message) {
             status_label.set_text(message);
         }
 
         private void on_decode_finished(bool success, string? error_message) {
             progress_bar.visible = false;
+            cancel_button.visible = false;
             cancel_button.sensitive = false;
             decode_manifest_button.sensitive = true;
             decode_full_button.sensitive = true;
@@ -535,6 +858,58 @@ namespace ApkManager.Windows {
             }
         }
 
+        private bool is_apk_in_recents(string apk_path) {
+            foreach (var session in registry.get_sessions()) {
+                if (session.apk_path == apk_path) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void scan_install_folder_for_missing_apks() {
+            var install_dir = AppSettings.get_default().get_install_path();
+            if (!FileUtils.test(install_dir, FileTest.IS_DIR)) {
+                status_label.set_text("Install folder not found: %s".printf(install_dir));
+                return;
+            }
+
+            int added = 0;
+            try {
+                var dir = Dir.open(install_dir, 0);
+                string? name = null;
+                while ((name = dir.read_name()) != null) {
+                    if (name == "." || name == "..") {
+                        continue;
+                    }
+                    var path = Path.build_filename(install_dir, name);
+                    if (!FileUtils.test(path, FileTest.IS_REGULAR)) {
+                        continue;
+                    }
+                    if (!ApkArchive.is_apk_path(path)) {
+                        continue;
+                    }
+                    if (is_apk_in_recents(path)) {
+                        continue;
+                    }
+                    registry.get_or_create(path);
+                    added++;
+                }
+            } catch (FileError e) {
+                status_label.set_text("Could not scan %s: %s".printf(install_dir, e.message));
+                return;
+            }
+
+            refresh_sessions();
+            if (added == 0) {
+                status_label.set_text("No new APKs found in %s".printf(install_dir));
+            } else if (added == 1) {
+                status_label.set_text("Added 1 APK from %s".printf(install_dir));
+            } else {
+                status_label.set_text("Added %d APKs from %s".printf(added, install_dir));
+            }
+        }
+
         private void clear_session_list_rows() {
             Gtk.Widget? child = session_list.get_first_child();
             while (child != null) {
@@ -563,6 +938,9 @@ namespace ApkManager.Windows {
             Gtk.ListBoxRow? selected_row = null;
             Gtk.FlowBoxChild? selected_grid_child = null;
 
+            var visible = new Gee.ArrayList<DecodeSession>();
+            var names = new Gee.HashMap<string, string>();
+            var sizes = new Gee.HashMap<string, int64?>();
             foreach (var session in registry.get_sessions()) {
                 var previous_label = session.label;
                 var name = ApkDisplayName.for_session(session);
@@ -572,6 +950,15 @@ namespace ApkManager.Windows {
                 if (!session_matches_search(session)) {
                     continue;
                 }
+                visible.add(session);
+                names[session.id] = name;
+                sizes[session.id] = apk_file_size_bytes(session.apk_path);
+            }
+
+            visible.sort((a, b) => compare_sessions(a, b, names, sizes));
+
+            foreach (var session in visible) {
+                var name = names[session.id];
                 recent_paths += session.apk_path;
 
                 if (session_view_mode == SessionViewMode.LIST) {
@@ -606,6 +993,7 @@ namespace ApkManager.Windows {
                 }
             } else {
                 session_stack.visible_child_name = "grid";
+                update_session_grid_columns();
                 if (selected_grid_child != null) {
                     session_grid.select_child(selected_grid_child);
                 } else {
