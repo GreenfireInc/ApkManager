@@ -76,7 +76,10 @@ namespace ApkManager.Windows {
 
             var sidebar_menu_model = new Menu();
             sidebar_menu_model.append("_Get APKs", "win.get-apks");
-            sidebar_menu_model.append("_Preferences", "win.preferences");
+            var settings_section = new Menu();
+            settings_section.append("_Preferences", "win.preferences");
+            settings_section.append("Keyboard _Shortcuts", "win.keyboard-shortcuts");
+            sidebar_menu_model.append_section(null, settings_section);
             sidebar_menu_model.append("_Quit", "win.quit");
             sidebar_menu.menu_model = sidebar_menu_model;
 
@@ -87,6 +90,12 @@ namespace ApkManager.Windows {
             var preferences_action = new SimpleAction("preferences", null);
             preferences_action.activate.connect(on_preferences_clicked);
             sidebar_actions.add_action(preferences_action);
+            var keyboard_shortcuts_action = new SimpleAction("keyboard-shortcuts", null);
+            keyboard_shortcuts_action.activate.connect(on_keyboard_shortcuts_clicked);
+            sidebar_actions.add_action(keyboard_shortcuts_action);
+            var focus_search_action = new SimpleAction("focus-search", null);
+            focus_search_action.activate.connect(on_focus_search);
+            sidebar_actions.add_action(focus_search_action);
             var quit_action = new SimpleAction("quit", null);
             quit_action.activate.connect(() => {
                 application.quit();
@@ -105,6 +114,7 @@ namespace ApkManager.Windows {
             });
             sidebar_actions.add_action(sort_action);
             insert_action_group("win", sidebar_actions);
+            setup_window_accelerators();
 
             var session_context_model = new Menu();
             session_context_model.append("_Remove from recents", "win.remove-session");
@@ -366,6 +376,14 @@ namespace ApkManager.Windows {
             cancel_button.clicked.connect(() => {
                 runner.cancel();
             });
+
+            var decode_cancel_keys = new Gtk.EventControllerKey();
+            decode_cancel_keys.key_released.connect((keyval, keycode, state) => {
+                if (keyval == Gdk.Key.Escape && cancel_button.visible && cancel_button.sensitive) {
+                    runner.cancel();
+                }
+            });
+            ((Gtk.Widget) this).add_controller(decode_cancel_keys);
 
             runner.phase_changed.connect(on_phase_changed);
             runner.finished.connect(on_decode_finished);
@@ -851,7 +869,7 @@ namespace ApkManager.Windows {
                         iter,
                         0, entry.path,
                         1, FileUtilsHelper.format_bytes(entry.uncompressed_size),
-                        2, entry.is_directory ? "directory" : "file",
+                        2, ApkArchive.entry_type_label(entry.path, entry.is_directory),
                         3, entry.uncompressed_size
                     );
                 }
@@ -1144,6 +1162,27 @@ namespace ApkManager.Windows {
         private void on_preferences_clicked() {
             var window = new PreferencesWindow(this);
             window.present();
+        }
+
+        private void on_keyboard_shortcuts_clicked() {
+            var window = new KeyboardShortcutsWindow(this);
+            window.present();
+        }
+
+        private void on_focus_search() {
+            session_search.grab_focus();
+        }
+
+        private void setup_window_accelerators() {
+            var app = get_application() as Gtk.Application;
+            if (app == null) {
+                return;
+            }
+            app.set_accels_for_action("win.get-apks", new string[] { "<Primary><Shift>g" });
+            app.set_accels_for_action("win.preferences", new string[] { "<Primary>comma" });
+            app.set_accels_for_action("win.keyboard-shortcuts", new string[] { "<Primary>question" });
+            app.set_accels_for_action("win.focus-search", new string[] { "<Primary>f" });
+            app.set_accels_for_action("win.quit", new string[] { "<Primary>q" });
         }
     }
 }

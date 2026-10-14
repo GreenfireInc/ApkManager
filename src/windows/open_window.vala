@@ -11,9 +11,11 @@ namespace ApkManager.Windows {
         public signal void install_requested(string installed_path);
 
         private string apk_path;
+        private Gtk.Label hint_label;
         private Gtk.Label title_label;
         private Gtk.Label subtitle_label;
         private Gtk.Label size_label;
+        private Adw.Banner installed_notice;
         private Gtk.Image icon_image;
         private Gtk.Widget icon_drag_handle;
         private Gtk.Widget install_folder_column;
@@ -24,6 +26,8 @@ namespace ApkManager.Windows {
         private bool icon_resolved = false;
         private bool closed = false;
         private bool installing = false;
+        private bool already_installed = false;
+        private string? existing_install_path = null;
 
         public OpenWindow(Adw.Application app, string path) {
             Object(
@@ -38,6 +42,7 @@ namespace ApkManager.Windows {
             build_ui();
             close_request.connect(on_close_request);
             start_icon_load();
+            check_install_state_async.begin();
         }
 
         private void build_ui() {
@@ -45,13 +50,19 @@ namespace ApkManager.Windows {
             content = toolbar;
 
             var header = new Adw.HeaderBar();
+            inspect_button = new Gtk.Button.with_label("Inspect");
+            inspect_button.clicked.connect(() => {
+                inspect_requested(apk_path);
+                close();
+            });
+            header.pack_end(inspect_button);
             var verify_button = new Gtk.Button.with_label("Verify");
             verify_button.clicked.connect(on_verify_clicked);
             header.pack_end(verify_button);
             toolbar.add_top_bar(header);
 
             var box = new Gtk.Box(Gtk.Orientation.VERTICAL, 16);
-            box.margin_top = 24;
+            box.margin_top = 16;
             box.margin_bottom = 24;
             box.margin_start = 24;
             box.margin_end = 24;
@@ -60,7 +71,13 @@ namespace ApkManager.Windows {
             box.valign = Gtk.Align.CENTER;
             toolbar.content = box;
 
-            var hint_label = new Gtk.Label("Drag and Drop to install in Applications");
+            installed_notice = new Adw.Banner("");
+            installed_notice.revealed = false;
+            installed_notice.button_label = "Open folder";
+            installed_notice.button_clicked.connect(on_open_install_folder);
+            box.append(installed_notice);
+
+            hint_label = new Gtk.Label("Drag and Drop to install in Applications");
             hint_label.add_css_class("dim-label");
             hint_label.wrap = true;
             hint_label.justify = Gtk.Justification.CENTER;
@@ -171,14 +188,6 @@ namespace ApkManager.Windows {
             icon_progress.width_request = 280;
             icon_progress.halign = Gtk.Align.CENTER;
             box.append(icon_progress);
-
-            inspect_button = new Gtk.Button.with_label("Inspect APK");
-            inspect_button.add_css_class("suggested-action");
-            inspect_button.clicked.connect(() => {
-                inspect_requested(apk_path);
-                close();
-            });
-            box.append(inspect_button);
 
             update_summary();
         }
@@ -314,7 +323,7 @@ namespace ApkManager.Windows {
         }
 
         private Gdk.ContentProvider? on_apk_drag_prepare(Gtk.DragSource source, double x, double y) {
-            if (installing) {
+            if (installing || already_installed) {
                 return null;
             }
             var value = Value(typeof(string));
@@ -355,7 +364,7 @@ namespace ApkManager.Windows {
 
         private bool on_install_folder_drop(Gtk.DropTarget target, GLib.Value value, double x, double y) {
             install_folder_button.remove_css_class("drop-active");
-            if (installing) {
+            if (installing || already_installed) {
                 return false;
             }
 
@@ -372,6 +381,11 @@ namespace ApkManager.Windows {
         }
 
         private void perform_install_confirm() {
+            if (already_installed) {
+                show_already_installed_message();
+                return;
+            }
+
             var name = ApkDisplayName.resolve(apk_path);
             if (name == null || name.strip() == "") {
                 name = Path.get_basename(apk_path);
@@ -387,7 +401,52 @@ namespace ApkManager.Windows {
             dialog.present(this);
         }
 
+        private async void check_install_state_async() {
+            bool installed = false;
+            string? path = null;
+            new Thread<void>("apk-install-check", () => {
+                installed = ApkInstall.is_already_installed(apk_path, out path);
+                Idle.add(check_install_state_async.callback);
+            });
+            yield;
+
+            if (closed) {
+                return;
+            }
+
+            already_installed = installed;
+            existing_install_path = path;
+            update_install_state_ui();
+        }
+
+        private void update_install_state_ui() {
+            if (!already_installed) {
+                return;
+            }
+
+            show_already_installed_message();
+            hint_label.set_text("This APK is already in your Applications folder.");
+            hint_label.remove_css_class("dim-label");
+            hint_label.add_css_class("warning");
+            icon_drag_handle.sensitive = false;
+            icon_drag_handle.tooltip_text = "This APK is already installed in Applications";
+            icon_drag_handle.set_cursor_from_name("default");
+            install_folder_button.sensitive = true;
+        }
+
+        private void show_already_installed_message() {
+            var shown_path = display_install_path(existing_install_path ?? apk_path);
+            installed_notice.title = "Already installed at %s".printf(shown_path);
+            installed_notice.revealed = true;
+            subtitle_label.set_text("Drag-and-drop install is disabled for this APK.");
+        }
+
         private async void perform_install_async() {
+            if (already_installed) {
+                show_already_installed_message();
+                return;
+            }
+
             installing = true;
             icon_progress.visible = true;
             icon_progress.pulse();
@@ -456,6 +515,10 @@ namespace ApkManager.Windows {
 
         private void update_summary() {
             size_label.set_text(apk_file_size(apk_path));
+
+            if (already_installed) {
+                return;
+            }
 
             try {
                 var entries = ApkArchive.list_entries(apk_path);

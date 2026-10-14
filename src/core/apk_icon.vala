@@ -14,11 +14,7 @@ namespace ApkManager.Core {
                 if (table == null) {
                     return null;
                 }
-                var path = new ResourceTable(table.get_data()).best_image_path(id);
-                if (path == null) {
-                    return null;
-                }
-                return ApkArchive.read_entry(apk_path, path);
+                return new ResourceTable(table.get_data()).load_icon(apk_path, id);
             } catch (Error e) {
                 warning("Failed to load APK icon: %s", e.message);
                 return null;
@@ -102,6 +98,220 @@ namespace ApkManager.Core {
             public string? best_image_path(uint32 resource_id) {
                 var seen = new Gee.HashSet<uint32>();
                 return resolve(resource_id, seen);
+            }
+
+            public Bytes? load_icon(string apk_path, uint32 resource_id) {
+                var seen = new Gee.HashSet<uint32>();
+                return load_icon_id(apk_path, resource_id, seen);
+            }
+
+            private Bytes? load_icon_id(string apk_path, uint32 resource_id, Gee.HashSet<uint32> seen) {
+                if (resource_id == 0 || seen.contains(resource_id)) {
+                    return null;
+                }
+                seen.add(resource_id);
+
+                try {
+                    var raster_path = resolve(resource_id, new Gee.HashSet<uint32>());
+                    if (raster_path != null) {
+                        return ApkArchive.read_entry(apk_path, raster_path);
+                    }
+
+                    var xml_path = resolve_xml(resource_id, new Gee.HashSet<uint32>());
+                    if (xml_path != null) {
+                        Bytes? xml = ApkArchive.read_entry(apk_path, xml_path);
+                        if (xml != null) {
+                            return render_drawable_xml(apk_path, xml.get_data(), seen);
+                        }
+                    }
+                } catch (Error e) {
+                    warning("Failed to load drawable icon: %s", e.message);
+                }
+                return null;
+            }
+
+            private Bytes? render_drawable_xml(string apk_path, uint8[] xml_data, Gee.HashSet<uint32> seen) {
+                var root = ApkBinaryXml.parse(xml_data);
+                if (root == null) {
+                    return null;
+                }
+                return render_drawable_element(apk_path, root, seen);
+            }
+
+            private Bytes? render_drawable_element(string apk_path, ApkBinaryXml.Element root, Gee.HashSet<uint32> seen) {
+                if (root.name == "vector") {
+                    return ApkVectorDrawable.render(root);
+                }
+                if (root.name == "adaptive-icon") {
+                    foreach (var child in root.children) {
+                        if (child.name == "foreground") {
+                            var drawable = ApkBinaryXml.reference_attribute(child, "drawable");
+                            if (drawable != null) {
+                                var bytes = load_icon_id(apk_path, drawable, seen);
+                                if (bytes != null) {
+                                    return bytes;
+                                }
+                            }
+                        }
+                    }
+                    foreach (var child in root.children) {
+                        if (child.name == "background") {
+                            var drawable = ApkBinaryXml.reference_attribute(child, "drawable");
+                            if (drawable != null) {
+                                var bytes = load_icon_id(apk_path, drawable, seen);
+                                if (bytes != null) {
+                                    return bytes;
+                                }
+                            }
+                        }
+                    }
+                    return null;
+                }
+                if (root.name == "layer-list") {
+                    foreach (var child in root.children) {
+                        if (child.name != "item") {
+                            continue;
+                        }
+                        var drawable = ApkBinaryXml.reference_attribute(child, "drawable");
+                        if (drawable != null) {
+                            var bytes = load_icon_id(apk_path, drawable, seen);
+                            if (bytes != null) {
+                                return bytes;
+                            }
+                        }
+                    }
+                    return null;
+                }
+                if (root.name == "inset" || root.name == "scale" || root.name == "clip-path" || root.name == "shape") {
+                    var drawable = ApkBinaryXml.reference_attribute(root, "drawable");
+                    if (drawable != null) {
+                        return load_icon_id(apk_path, drawable, seen);
+                    }
+                }
+                return null;
+            }
+
+            private string? resolve_xml(uint32 resource_id, Gee.HashSet<uint32> seen) {
+                if (resource_id == 0 || seen.contains(resource_id)) {
+                    return null;
+                }
+                seen.add(resource_id);
+                uint8 type_id = (uint8) ((resource_id >> 16) & 0xff);
+                uint16 entry_index = (uint16) (resource_id & 0xffff);
+                if (data.length < 12) {
+                    return null;
+                }
+
+                string? best_path = null;
+                int best_score = -1;
+                int pool_off = u16(2);
+                int pool_size = (int) u32(pool_off + 4);
+                consider_xml_chunk(pool_off + pool_size, data.length, type_id, entry_index, seen, ref best_path, ref best_score);
+                return best_path;
+            }
+
+            private void consider_xml_chunk(int start, int end, uint8 type_id, uint16 entry_index, Gee.HashSet<uint32> seen, ref string? best_path, ref int best_score) {
+                int off = start;
+                while (off + 8 <= end && off + 8 <= data.length) {
+                    uint16 typ = u16(off);
+                    int header = u16(off + 2);
+                    int size = (int) u32(off + 4);
+                    if (header < 8 || size < header || off + size > data.length) {
+                        return;
+                    }
+                    if (typ == 0x0200) {
+                        consider_xml_chunk(off + header, off + size, type_id, entry_index, seen, ref best_path, ref best_score);
+                    } else if (typ == 0x0201 && data[off + 8] == type_id) {
+                        note_xml_type(off, header, entry_index, seen, ref best_path, ref best_score);
+                    }
+                    off += size;
+                }
+            }
+
+            private void note_xml_type(int off, int header, uint16 entry_index, Gee.HashSet<uint32> seen, ref string? best_path, ref int best_score) {
+                uint8 flags = data[off + 9];
+                uint32 entry_count = u32(off + 12);
+                uint32 entries_start = u32(off + 16);
+                uint32 config_size = u32(off + 20);
+                int density = 0;
+                if (config_size >= 16 && off + 36 <= data.length) {
+                    density = u16(off + 34);
+                }
+
+                uint32 entry_offset = NO_ENTRY;
+                if ((flags & 0x01) != 0) {
+                    for (uint i = 0; i < entry_count; i++) {
+                        int pos = off + header + (int) i * 4;
+                        if (pos + 4 > data.length) {
+                            return;
+                        }
+                        if (u16(pos) == entry_index) {
+                            entry_offset = (uint32) u16(pos + 2) * 4;
+                            break;
+                        }
+                    }
+                } else if (entry_index < entry_count) {
+                    int pos = off + header + entry_index * 4;
+                    if (pos + 4 > data.length) {
+                        return;
+                    }
+                    entry_offset = u32(pos);
+                }
+                if (entry_offset == NO_ENTRY) {
+                    return;
+                }
+
+                int ent = off + (int) entries_start + (int) entry_offset;
+                if (ent + 8 > data.length) {
+                    return;
+                }
+                int entry_size = u16(ent);
+                uint16 entry_flags = u16(ent + 2);
+                if ((entry_flags & 0x0001) != 0 || entry_size < 8) {
+                    return;
+                }
+                int value = ent + entry_size;
+                if (value + 8 > data.length) {
+                    return;
+                }
+                uint8 data_type = data[value + 3];
+                uint32 data_value = u32(value + 4);
+                if (data_type == TYPE_REFERENCE) {
+                    var nested = resolve_xml(data_value, seen);
+                    int score = score_xml_path(nested, density);
+                    if (nested != null && score > best_score) {
+                        best_score = score;
+                        best_path = nested;
+                    }
+                    return;
+                }
+                if (data_type != TYPE_STRING || data_value >= pool.length) {
+                    return;
+                }
+                var path = pool[data_value];
+                int score = score_xml_path(path, density);
+                if (score > best_score) {
+                    best_score = score;
+                    best_path = path;
+                }
+            }
+
+            private static int score_xml_path(string? path, int density) {
+                if (path == null || path == "") {
+                    return -1;
+                }
+                if (!path.down().has_suffix(".xml")) {
+                    return -1;
+                }
+                int score;
+                if (density >= 65534) {
+                    score = 1;
+                } else if (density <= 0) {
+                    score = 2;
+                } else {
+                    score = density;
+                }
+                return score;
             }
 
             public string? best_display_string(uint32 resource_id) {

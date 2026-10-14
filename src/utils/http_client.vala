@@ -4,13 +4,21 @@ namespace ApkManager.Utils {
         public const string BROWSER_USER_AGENT =
             "Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0";
 
-        public static async string get_string(string url, string? user_agent = DEFAULT_USER_AGENT) throws Error {
-            var bytes = yield run_curl({ "-fsSL", "--max-time", "45", url }, user_agent, null);
+        public static async string get_string(
+            string url,
+            string? user_agent = DEFAULT_USER_AGENT,
+            string? referer = null
+        ) throws Error {
+            var bytes = yield run_curl({ "-fsSL", "--max-time", "45", url }, user_agent, null, referer);
             return (string) bytes.get_data();
         }
 
-        public static async Bytes get_bytes(string url, string? user_agent = DEFAULT_USER_AGENT) throws Error {
-            return yield run_curl({ "-fsSL", "--max-time", "45", url }, user_agent, null);
+        public static async Bytes get_bytes(
+            string url,
+            string? user_agent = DEFAULT_USER_AGENT,
+            string? referer = null
+        ) throws Error {
+            return yield run_curl({ "-fsSL", "--max-time", "45", url }, user_agent, null, referer);
         }
 
         public static async string post_form(
@@ -18,7 +26,7 @@ namespace ApkManager.Utils {
             string form_body,
             string? user_agent = DEFAULT_USER_AGENT
         ) throws Error {
-            var bytes = yield run_curl({ "-fsSL", "--max-time", "45", url }, user_agent, form_body);
+            var bytes = yield run_curl({ "-fsSL", "--max-time", "45", url }, user_agent, form_body, null);
             return (string) bytes.get_data();
         }
 
@@ -67,7 +75,8 @@ namespace ApkManager.Utils {
         private static async Bytes run_curl(
             owned string[] curl_args,
             string? user_agent,
-            string? post_body
+            string? post_body,
+            string? referer = null
         ) throws Error {
             // Vala string[] is NULL-terminated. Gee.ArrayList.to_array() is not,
             // and g_subprocess_newv() walks argv with g_strdupv() until NULL.
@@ -78,6 +87,10 @@ namespace ApkManager.Utils {
             if (user_agent != null && user_agent.strip() != "") {
                 argv += "-A";
                 argv += user_agent;
+            }
+            if (referer != null && referer.strip() != "") {
+                argv += "-H";
+                argv += "Referer: %s".printf(referer.strip());
             }
             if (post_body != null) {
                 argv += "-X";

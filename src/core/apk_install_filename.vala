@@ -38,6 +38,42 @@ namespace ApkManager.Core {
             );
         }
 
+        public static bool find_store_install(
+            string package_id,
+            string source_label,
+            out string? found_path
+        ) {
+            found_path = null;
+            var package = package_id.strip();
+            if (package == "") {
+                return false;
+            }
+
+            var install_dir = AppSettings.get_default().get_install_path();
+            if (!FileUtils.test(install_dir, FileTest.IS_DIR)) {
+                return false;
+            }
+
+            var prefix = "%s.from.%s.".printf(package, sanitize_source(source_label));
+            try {
+                var dir = Dir.open(install_dir, 0);
+                string? name = null;
+                while ((name = dir.read_name()) != null) {
+                    if (!name.has_prefix(prefix) || !name.has_suffix(".apk")) {
+                        continue;
+                    }
+                    var candidate = Path.build_filename(install_dir, name);
+                    if (FileUtils.test(candidate, FileTest.IS_REGULAR)) {
+                        found_path = candidate;
+                        return true;
+                    }
+                }
+            } catch (FileError e) {
+                warning("Failed to scan install folder for %s: %s", package, e.message);
+            }
+            return false;
+        }
+
         public static string sanitize_source(string source) {
             var normalized = source.strip();
             if (normalized == "") {

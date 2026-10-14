@@ -1,5 +1,36 @@
 namespace ApkManager.Core {
     public class ApkInstall {
+        public static bool is_already_installed(string apk_path, out string? installed_path) {
+            installed_path = null;
+            if (!FileUtils.test(apk_path, FileTest.IS_REGULAR)) {
+                return false;
+            }
+
+            var expected = ApkInstallFilename.expected_installed_path(
+                apk_path,
+                null,
+                ApkInstallFilename.DISK_SOURCE
+            );
+
+            try {
+                var src = File.new_for_path(apk_path);
+                var dst = File.new_for_path(expected);
+                if (src.equal(dst)) {
+                    installed_path = expected;
+                    return true;
+                }
+            } catch (Error e) {
+                warning("Could not compare install paths for %s: %s", apk_path, e.message);
+            }
+
+            if (FileUtils.test(expected, FileTest.IS_REGULAR)) {
+                installed_path = expected;
+                return true;
+            }
+
+            return false;
+        }
+
         public static string install(
             string apk_path,
             string? package_id = null,

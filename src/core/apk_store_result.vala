@@ -4,13 +4,14 @@ namespace ApkManager.Core {
         APTOIDE,
         UPTODOWN,
         IZZYONDROID,
-        OPENAPK
+        OPENAPK,
+        APKMIRROR
     }
 
     public class ApkStoreResult : Object {
         public ApkStoreSource source { get; construct; }
         public string name { get; construct; }
-        public string package_id { get; construct; }
+        public string package_id { get; construct set; default = ""; }
         public string summary { get; construct; }
         public string icon_url { get; construct; }
         public string page_url { get; construct; }
@@ -64,6 +65,8 @@ namespace ApkManager.Core {
                     return "IzzyOnDroid";
                 case ApkStoreSource.OPENAPK:
                     return "OpenAPK";
+                case ApkStoreSource.APKMIRROR:
+                    return "APKMirror";
                 default:
                     return "Unknown";
                 }
@@ -83,6 +86,8 @@ namespace ApkManager.Core {
                     return "appRepo.Izzy.svg";
                 case ApkStoreSource.OPENAPK:
                     return "appRepo.openapk.svg";
+                case ApkStoreSource.APKMIRROR:
+                    return "appRepo.apkMirror.svg";
                 default:
                     return "";
                 }

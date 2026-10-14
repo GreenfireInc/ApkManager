@@ -98,6 +98,123 @@ namespace ApkManager.Core {
             return null;
         }
 
+        public static string entry_type_label(string path, bool is_directory) {
+            if (is_directory) {
+                return "directory";
+            }
+
+            var lower_path = path.casefold();
+            var file_name = Path.get_basename(lower_path);
+
+            if (file_name.has_suffix(".dex")) {
+                return "dex";
+            }
+            if (file_name == "resources.arsc") {
+                return "resource";
+            }
+            if (file_name.has_suffix(".so")) {
+                return "native";
+            }
+            if (path_has_image_extension(file_name)) {
+                return "image";
+            }
+            if (path_has_text_extension(file_name)) {
+                return "text";
+            }
+            if (path_has_font_extension(file_name)) {
+                return "font";
+            }
+            if (path_has_audio_extension(file_name)) {
+                return "audio";
+            }
+            if (path_has_video_extension(file_name)) {
+                return "video";
+            }
+            if (path_has_archive_extension(file_name)) {
+                return "archive";
+            }
+            if (path_has_signature_extension(file_name, lower_path)) {
+                return "signature";
+            }
+            if (lower_path.has_prefix("res/")) {
+                return "resource";
+            }
+            if (lower_path.has_prefix("assets/")) {
+                return "asset";
+            }
+            return "binary";
+        }
+
+        private static bool path_has_image_extension(string file_name) {
+            return file_name.has_suffix(".png")
+                || file_name.has_suffix(".9.png")
+                || file_name.has_suffix(".jpg")
+                || file_name.has_suffix(".jpeg")
+                || file_name.has_suffix(".webp")
+                || file_name.has_suffix(".gif")
+                || file_name.has_suffix(".bmp")
+                || file_name.has_suffix(".svg");
+        }
+
+        private static bool path_has_text_extension(string file_name) {
+            return file_name.has_suffix(".xml")
+                || file_name.has_suffix(".txt")
+                || file_name.has_suffix(".json")
+                || file_name.has_suffix(".html")
+                || file_name.has_suffix(".htm")
+                || file_name.has_suffix(".css")
+                || file_name.has_suffix(".js")
+                || file_name.has_suffix(".yaml")
+                || file_name.has_suffix(".yml")
+                || file_name.has_suffix(".properties")
+                || file_name.has_suffix(".csv")
+                || file_name.has_suffix(".md")
+                || file_name.has_suffix(".kotlin_module")
+                || file_name.has_suffix(".proto")
+                || file_name.has_suffix(".conf")
+                || file_name.has_suffix(".cfg")
+                || file_name.has_suffix(".ini");
+        }
+
+        private static bool path_has_font_extension(string file_name) {
+            return file_name.has_suffix(".ttf")
+                || file_name.has_suffix(".otf")
+                || file_name.has_suffix(".ttc");
+        }
+
+        private static bool path_has_audio_extension(string file_name) {
+            return file_name.has_suffix(".ogg")
+                || file_name.has_suffix(".mp3")
+                || file_name.has_suffix(".wav")
+                || file_name.has_suffix(".m4a");
+        }
+
+        private static bool path_has_video_extension(string file_name) {
+            return file_name.has_suffix(".mp4")
+                || file_name.has_suffix(".webm")
+                || file_name.has_suffix(".mkv");
+        }
+
+        private static bool path_has_archive_extension(string file_name) {
+            return file_name.has_suffix(".zip")
+                || file_name.has_suffix(".jar")
+                || file_name.has_suffix(".gz")
+                || file_name.has_suffix(".bz2")
+                || file_name.has_suffix(".xz")
+                || file_name.has_suffix(".tar");
+        }
+
+        private static bool path_has_signature_extension(string file_name, string lower_path) {
+            if (!lower_path.has_prefix("meta-inf/")) {
+                return false;
+            }
+            return file_name.has_suffix(".rsa")
+                || file_name.has_suffix(".dsa")
+                || file_name.has_suffix(".ec")
+                || file_name.has_suffix(".sf")
+                || file_name.has_suffix(".mf");
+        }
+
         public static bool is_safe_archive_path(string name) {
             if (name.has_prefix("/") || name.has_prefix("\\")) {
                 return false;

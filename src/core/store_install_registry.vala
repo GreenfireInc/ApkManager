@@ -1,6 +1,14 @@
 using Json;
 
 namespace ApkManager.Core {
+    public class StoreInstallStatus : GLib.Object {
+        public bool has_existing { get; set; default = false; }
+        public StoreInstallRecord? existing_record { get; set; }
+        public string existing_path { get; set; default = ""; }
+        public string new_version_code { get; set; default = ""; }
+        public bool same_version { get; set; default = false; }
+    }
+
     public class StoreInstallRecord : GLib.Object {
         public ApkStoreSource source { get; construct; }
         public string package_id { get; construct; }
@@ -69,13 +77,25 @@ namespace ApkManager.Core {
             return false;
         }
 
+        public StoreInstallRecord? find_by_package(ApkStoreSource source, string package_id) {
+            prune_missing_files();
+            var normalized_package = package_id.strip();
+            foreach (var record in records) {
+                if (record.source == source
+                    && record.package_id == normalized_package
+                    && FileUtils.test(record.apk_path, FileTest.EXISTS)) {
+                    return record;
+                }
+            }
+            return null;
+        }
+
         public void record(StoreInstallRecord entry) {
             prune_missing_files();
             for (int i = records.size - 1; i >= 0; i--) {
                 var existing = records[i];
                 if (existing.source == entry.source
-                    && existing.package_id == entry.package_id
-                    && existing.version_code == entry.version_code) {
+                    && existing.package_id == entry.package_id) {
                     records.remove_at(i);
                 }
             }
@@ -153,6 +173,8 @@ namespace ApkManager.Core {
                 return "izzyondroid";
             case ApkStoreSource.OPENAPK:
                 return "openapk";
+            case ApkStoreSource.APKMIRROR:
+                return "apkmirror";
             default:
                 return "fdroid";
             }
@@ -168,6 +190,8 @@ namespace ApkManager.Core {
                 return ApkStoreSource.IZZYONDROID;
             case "openapk":
                 return ApkStoreSource.OPENAPK;
+            case "apkmirror":
+                return ApkStoreSource.APKMIRROR;
             default:
                 return ApkStoreSource.FDROID;
             }

@@ -6,5 +6,6 @@
     <file alias="appRepo.uptodown.svg">public/assets/icons/storesRepositories/appRepo.uptodown.svg</file>
     <file alias="appRepo.Izzy.svg">public/assets/icons/storesRepositories/appRepo.Izzy.svg</file>
     <file alias="appRepo.openapk.svg">public/assets/icons/storesRepositories/appRepo.openapk.svg</file>
+    <file alias="appRepo.apkMirror.svg">public/assets/icons/storesRepositories/appRepo.apkMirror.svg</file>
   </gresource>
 </gresources>
