@@ -5,6 +5,8 @@ namespace ApkManager.Core {
         private const string APTOIDE_USER_AGENT = "Aptoide/9.20.6";
         private const string IZZY_BASE_URL = "https://apt.izzysoft.de/fdroid";
         private const string OPENAPK_BASE_URL = "https://www.openapk.net";
+        private const string APKMIRROR_BASE_URL = "https://www.apkmirror.com";
+        private string? apkmirror_download_referer = null;
 
         public async Gee.List<ApkStoreResult> search_all(string query, Cancellable? cancellable = null) throws Error {
             if (query.strip() == "") {
@@ -16,6 +18,7 @@ namespace ApkManager.Core {
             string uptodown_html = "";
             string izzy_html = "";
             string openapk_html = "";
+            string apkmirror_html = "";
             int failures = 0;
             Error? last_error = null;
 
@@ -49,8 +52,14 @@ namespace ApkManager.Core {
                 failures++;
                 last_error = e;
             }
+            try {
+                apkmirror_html = yield search_apkmirror(query, cancellable);
+            } catch (Error e) {
+                failures++;
+                last_error = e;
+            }
 
-            if (failures == 5 && last_error != null) {
+            if (failures == 6 && last_error != null) {
                 throw last_error;
             }
 
@@ -69,6 +78,9 @@ namespace ApkManager.Core {
                 results.add(item);
             }
             foreach (var item in parse_openapk_results(openapk_html)) {
+                results.add(item);
+            }
+            foreach (var item in parse_apkmirror_results(apkmirror_html)) {
                 results.add(item);
             }
             return results;
@@ -98,6 +110,14 @@ namespace ApkManager.Core {
 
         private async string search_openapk(string query, Cancellable? cancellable) throws Error {
             var url = "%s/search/?q=%s".printf(OPENAPK_BASE_URL, Uri.escape_string(query.strip()));
+            return yield HttpClient.get_string(url, HttpClient.BROWSER_USER_AGENT);
+        }
+
+        private async string search_apkmirror(string query, Cancellable? cancellable) throws Error {
+            var url = "%s/?post_type=app_release&searchtype=apk&page=1&s=%s".printf(
+                APKMIRROR_BASE_URL,
+                Uri.escape_string(query.strip())
+            );
             return yield HttpClient.get_string(url, HttpClient.BROWSER_USER_AGENT);
         }
 
@@ -366,7 +386,56 @@ namespace ApkManager.Core {
             return results;
         }
 
+        private Gee.List<ApkStoreResult> parse_apkmirror_results(string html) {
+            var results = new Gee.ArrayList<ApkStoreResult>();
+            if (html.strip() == "" || looks_like_cloudflare_challenge(html)) {
+                if (looks_like_cloudflare_challenge(html)) {
+                    warning("APKMirror search blocked by Cloudflare challenge");
+                }
+                return results;
+            }
+
+            try {
+                var block_regex = new Regex(
+                    "<div class=\"appRow\"[\\s\\S]*?" +
+                    "<h5[^>]*>\\s*<a href=\"([^\"]+)\"[^>]*>([^<]+)</a>[\\s\\S]*?" +
+                    "<img[^>]*src=\"([^\"]+)\"",
+                    RegexCompileFlags.DOTALL
+                );
+                MatchInfo match;
+                if (!block_regex.match(html, 0, out match)) {
+                    return results;
+                }
+                while (true) {
+                    var href = (match.fetch(1) ?? "").strip().replace("&amp;", "&");
+                    var name = (match.fetch(2) ?? "").strip();
+                    var icon_path = (match.fetch(3) ?? "").strip().replace("&amp;", "&");
+                    if (href != "" && name != "") {
+                        var icon_url = icon_path.has_prefix("http")
+                            ? icon_path
+                            : normalize_apkmirror_url(icon_path);
+                        results.add(new ApkStoreResult(
+                            ApkStoreSource.APKMIRROR,
+                            name,
+                            "",
+                            "",
+                            icon_url,
+                            normalize_apkmirror_url(href)
+                        ));
+                    }
+                    if (!match.next()) {
+                        break;
+                    }
+                }
+            } catch (RegexError e) {
+                warning("APKMirror search parse failed: %s", e.message);
+            }
+
+            return results;
+        }
+
         public async string? resolve_download_url(ApkStoreResult result, Cancellable? cancellable = null) throws Error {
+            apkmirror_download_referer = null;
             switch (result.source) {
             case ApkStoreSource.FDROID:
                 return yield resolve_fdroid_download_url(result.package_id, cancellable);
@@ -378,6 +447,8 @@ namespace ApkManager.Core {
                 return yield resolve_izzy_download_url(result.package_id, cancellable);
             case ApkStoreSource.OPENAPK:
                 return yield resolve_openapk_download_url(result, cancellable);
+            case ApkStoreSource.APKMIRROR:
+                return yield resolve_apkmirror_download_url(result, cancellable);
             default:
                 return null;
             }
@@ -401,27 +472,51 @@ namespace ApkManager.Core {
             return null;
         }
 
+        public async StoreInstallStatus check_existing_install(
+            ApkStoreResult result,
+            Cancellable? cancellable = null
+        ) throws Error {
+            var status = new StoreInstallStatus();
+            if (requires_browser_download(result) || result.package_id.strip() == "") {
+                return status;
+            }
+
+            var download_url = yield resolve_download_url(result, cancellable);
+            status.new_version_code = installed_version_key(result, download_url);
+
+            status.existing_record = StoreInstallRegistry.get_default().find_by_package(
+                result.source,
+                result.package_id
+            );
+            if (status.existing_record != null) {
+                status.has_existing = true;
+                status.existing_path = status.existing_record.apk_path;
+                status.same_version = status.existing_record.version_code == status.new_version_code;
+                return status;
+            }
+
+            string? disk_path = null;
+            if (ApkInstallFilename.find_store_install(
+                result.package_id,
+                result.source_label,
+                out disk_path
+            )) {
+                status.has_existing = true;
+                status.existing_path = disk_path;
+            }
+            return status;
+        }
+
         public async bool is_already_installed(
             ApkStoreResult result,
             Cancellable? cancellable = null
         ) throws Error {
-            if (result.package_id.strip() == "" || requires_browser_download(result)) {
-                return false;
-            }
-
-            var download_url = yield resolve_download_url(result, cancellable);
-            var version_code = installed_version_key(result, download_url);
-
-            return StoreInstallRegistry.get_default().is_installed(
-                result.source,
-                result.package_id,
-                version_code,
-                ""
-            );
+            var status = yield check_existing_install(result, cancellable);
+            return status.has_existing;
         }
 
         public void record_installed(ApkStoreResult result, string download_url, string installed_path) {
-            if (result.package_id.strip() == "" || requires_browser_download(result)) {
+            if (requires_browser_download(result) || result.package_id.strip() == "") {
                 return;
             }
 
@@ -452,6 +547,50 @@ namespace ApkManager.Core {
             }
             var version_code = root.get_int_member("suggestedVersionCode");
             return "https://f-droid.org/repo/%s_%d.apk".printf(package_id, (int) version_code);
+        }
+
+        private async string resolve_apkmirror_download_url(
+            ApkStoreResult result,
+            Cancellable? cancellable
+        ) throws Error {
+            var page = normalize_apkmirror_url(result.page_url);
+            var html = yield HttpClient.get_string(page, HttpClient.BROWSER_USER_AGENT);
+            ensure_not_cloudflare(html, "APKMirror page");
+
+            string variant_page;
+            if (html.contains("downloadButton")) {
+                variant_page = page;
+            } else {
+                var variant_path = parse_apkmirror_latest_variant_href(html);
+                if (variant_path == null || variant_path.strip() == "") {
+                    throw new IOError.NOT_FOUND("APKMirror version link missing");
+                }
+                variant_page = normalize_apkmirror_url(variant_path);
+                html = yield HttpClient.get_string(variant_page, HttpClient.BROWSER_USER_AGENT);
+                ensure_not_cloudflare(html, "APKMirror version page");
+            }
+
+            enrich_apkmirror_from_variant_page(result, html);
+
+            var download_button_path = parse_apkmirror_download_button_href(html);
+            if (download_button_path == null || download_button_path.strip() == "") {
+                throw new IOError.NOT_FOUND("APKMirror download button missing");
+            }
+            var download_page_url = normalize_apkmirror_url(download_button_path);
+            var download_html = yield HttpClient.get_string(
+                download_page_url,
+                HttpClient.BROWSER_USER_AGENT,
+                variant_page
+            );
+            ensure_not_cloudflare(download_html, "APKMirror download page");
+
+            var direct_path = parse_apkmirror_direct_download_href(download_html);
+            if (direct_path == null || direct_path.strip() == "") {
+                throw new IOError.NOT_FOUND("APKMirror direct download link missing");
+            }
+
+            apkmirror_download_referer = download_page_url;
+            return normalize_apkmirror_url(direct_path);
         }
 
         private async string resolve_openapk_download_url(ApkStoreResult result, Cancellable? cancellable) throws Error {
@@ -615,12 +754,123 @@ namespace ApkManager.Core {
                 FileUtils.remove(destination);
             }
 
-            var bytes = yield HttpClient.get_bytes(
-                download_url,
-                result.source == ApkStoreSource.APTOIDE ? APTOIDE_USER_AGENT : HttpClient.DEFAULT_USER_AGENT
-            );
+            string? user_agent = HttpClient.DEFAULT_USER_AGENT;
+            string? referer = null;
+            if (result.source == ApkStoreSource.APTOIDE) {
+                user_agent = APTOIDE_USER_AGENT;
+            } else if (result.source == ApkStoreSource.APKMIRROR
+                || result.source == ApkStoreSource.OPENAPK) {
+                user_agent = HttpClient.BROWSER_USER_AGENT;
+                referer = apkmirror_download_referer;
+            }
+
+            var bytes = yield HttpClient.get_bytes(download_url, user_agent, referer);
             FileUtils.set_data(destination, bytes.get_data());
             return destination;
+        }
+
+        private static string normalize_apkmirror_url(string url_or_path) {
+            var trimmed = url_or_path.strip().replace("&amp;", "&");
+            if (trimmed.has_prefix("http")) {
+                return trimmed;
+            }
+            if (!trimmed.has_prefix("/")) {
+                trimmed = "/" + trimmed;
+            }
+            return APKMIRROR_BASE_URL + trimmed;
+        }
+
+        private static bool looks_like_cloudflare_challenge(string html) {
+            return html.contains("_cf_chl_") || html.contains("Just a moment...");
+        }
+
+        private static void ensure_not_cloudflare(string html, string context) throws Error {
+            if (looks_like_cloudflare_challenge(html)) {
+                throw new IOError.FAILED(
+                    "%s blocked by Cloudflare. Try again later or download from APKMirror in a browser.".printf(
+                        context
+                    )
+                );
+            }
+        }
+
+        private static string? parse_apkmirror_latest_variant_href(string html) {
+            try {
+                var regex = new Regex(
+                    "<h5 class=\"appRowTitle\">\\s*<a href=\"([^\"]+)\"",
+                    RegexCompileFlags.DOTALL
+                );
+                MatchInfo match;
+                if (regex.match(html, 0, out match)) {
+                    return (match.fetch(1) ?? "").strip();
+                }
+            } catch (RegexError e) {
+                warning("APKMirror variant parse failed: %s", e.message);
+            }
+            return null;
+        }
+
+        private static string? parse_apkmirror_download_button_href(string html) {
+            try {
+                var regex = new Regex(
+                    "<a class=\"downloadButton[^\"]*\"[^>]*href=\"([^\"]+)\"",
+                    RegexCompileFlags.DOTALL
+                );
+                MatchInfo match;
+                if (regex.match(html, 0, out match)) {
+                    return (match.fetch(1) ?? "").strip();
+                }
+            } catch (RegexError e) {
+                warning("APKMirror download button parse failed: %s", e.message);
+            }
+            return null;
+        }
+
+        private static string? parse_apkmirror_direct_download_href(string html) {
+            try {
+                var regex = new Regex(
+                    "<a[^>]*rel=\"nofollow\"[^>]*href=\"([^\"]+)\"",
+                    RegexCompileFlags.DOTALL
+                );
+                MatchInfo match;
+                if (regex.match(html, 0, out match)) {
+                    return (match.fetch(1) ?? "").strip();
+                }
+            } catch (RegexError e) {
+                warning("APKMirror direct download parse failed: %s", e.message);
+            }
+            return null;
+        }
+
+        private static void enrich_apkmirror_from_variant_page(ApkStoreResult result, string html) {
+            try {
+                var package_regex = new Regex(
+                    "<span class=\"infoSlide-name\">Package:</span>\\s*" +
+                    "<span class=\"infoSlide-value\">([^<]+)</span>",
+                    RegexCompileFlags.DOTALL
+                );
+                MatchInfo match;
+                if (package_regex.match(html, 0, out match)) {
+                    var package_id = (match.fetch(1) ?? "").strip();
+                    if (package_id != "") {
+                        result.package_id = package_id;
+                    }
+                }
+
+                var version_regex = new Regex(
+                    "<span class=\"infoSlide-name\">Version:</span>\\s*" +
+                    "<span class=\"infoSlide-value\">([^<]+)</span>",
+                    RegexCompileFlags.DOTALL
+                );
+                if (version_regex.match(html, 0, out match)) {
+                    var version_name = (match.fetch(1) ?? "").strip();
+                    if (version_name != "") {
+                        result.version_name = version_name;
+                    }
+                }
+            } catch (RegexError e) {
+                warning("APKMirror metadata parse failed: %s", e.message);
+            }
         }
 
     }

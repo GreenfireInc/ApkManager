@@ -7,6 +7,7 @@ app_sources = files(
   'windows/install_confirm_dialog.vala',
   'windows/remove_session_confirm_dialog.vala',
   'windows/preferences_window.vala',
+  'windows/keyboard_shortcuts_window.vala',
   'windows/get_apks_window.vala',
   'windows/get_apk_confirm_dialog.vala',
   'windows/manifest_popup.vala'
@@ -22,6 +23,7 @@ executable('apk-manager',
     json_glib_dep,
     gee_dep,
     archive_dep,
+    cairo_dep,
     gtksourceview_dep
   ],
   install: true

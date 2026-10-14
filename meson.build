@@ -12,6 +12,7 @@ gtk_dep = dependency('gtk4')
 json_glib_dep = dependency('json-glib-1.0')
 gee_dep = dependency('gee-0.8')
 archive_dep = dependency('libarchive')
+cairo_dep = dependency('cairo')
 gtksourceview_dep = dependency('gtksourceview-5')
 
 add_project_arguments(['--target-glib=2.74', '--pkg=posix'], language: 'vala')
@@ -32,6 +33,8 @@ core_sources = files(
   'src/core/store_install_registry.vala',
   'src/core/apk_metadata.vala',
   'src/core/apk_icon.vala',
+  'src/core/apk_binary_xml.vala',
+  'src/core/apk_vector_drawable.vala',
   'src/core/apk_display_name.vala',
   'src/core/apk_store_result.vala',
   'src/core/apk_store_search.vala',
