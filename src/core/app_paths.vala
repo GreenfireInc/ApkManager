@@ -22,6 +22,12 @@ namespace ApkManager.Core {
             }
         }
 
+        public static string store_installs_file {
+            owned get {
+                return Path.build_filename(data_dir, STORE_INSTALLS_FILENAME);
+            }
+        }
+
         public static string decoded_root {
             owned get {
                 var dir = Path.build_filename(cache_dir, DECODED_DIRNAME);

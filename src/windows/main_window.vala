@@ -49,7 +49,9 @@ namespace ApkManager.Windows {
         private string session_search_text = "";
         private string[] recent_paths = {};
         private Gtk.PopoverMenu session_context_menu;
-        private string? context_menu_apk_path;
+        private string[] context_menu_apk_paths = {};
+        private bool suppress_session_selection_open = false;
+        private bool last_selection_gesture_modified = false;
 
         public MainWindow(Adw.Application app, DecodeSessionRegistry registry) {
             Object(application: app, default_width: 960, default_height: 640);
@@ -180,13 +182,15 @@ namespace ApkManager.Windows {
             sidebar_box.append(session_status_bar);
 
             session_list = new Gtk.ListBox();
-            session_list.selection_mode = Gtk.SelectionMode.SINGLE;
-            session_list.activate_on_single_click = true;
+            session_list.selection_mode = Gtk.SelectionMode.MULTIPLE;
+            session_list.activate_on_single_click = false;
             session_list.row_activated.connect(on_session_activated);
+            session_list.selected_rows_changed.connect(on_session_selection_changed);
+            attach_session_selection_gesture(session_list);
 
             session_grid = new Gtk.FlowBox();
-            session_grid.selection_mode = Gtk.SelectionMode.SINGLE;
-            session_grid.activate_on_single_click = true;
+            session_grid.selection_mode = Gtk.SelectionMode.MULTIPLE;
+            session_grid.activate_on_single_click = false;
             session_grid.min_children_per_line = SESSION_GRID_MIN_COLUMNS;
             session_grid.max_children_per_line = SESSION_GRID_MIN_COLUMNS;
             session_grid.homogeneous = true;
@@ -197,6 +201,8 @@ namespace ApkManager.Windows {
             session_grid.margin_top = 4;
             session_grid.margin_bottom = 4;
             session_grid.child_activated.connect(on_session_grid_activated);
+            session_grid.selected_children_changed.connect(on_session_selection_changed);
+            attach_session_selection_gesture(session_grid);
 
             var list_scrolled = new Gtk.ScrolledWindow();
             list_scrolled.set_vexpand(true);
@@ -380,6 +386,59 @@ namespace ApkManager.Windows {
             present();
         }
 
+        private void attach_session_selection_gesture(Gtk.Widget widget) {
+            var gesture = new Gtk.GestureClick();
+            gesture.pressed.connect((n_press, x, y) => {
+                var state = gesture.get_current_event_state();
+                last_selection_gesture_modified =
+                    (state & Gdk.ModifierType.CONTROL_MASK) != 0
+                    || (state & Gdk.ModifierType.SHIFT_MASK) != 0;
+            });
+            widget.add_controller(gesture);
+        }
+
+        private string[] collect_selected_session_paths() {
+            var paths = new Gee.ArrayList<string>();
+            if (session_view_mode == SessionViewMode.LIST) {
+                foreach (unowned Gtk.ListBoxRow row in session_list.get_selected_rows()) {
+                    var index = row.get_index();
+                    if (index >= 0 && index < recent_paths.length) {
+                        paths.add(recent_paths[index]);
+                    }
+                }
+            } else {
+                foreach (unowned Gtk.FlowBoxChild child in session_grid.get_selected_children()) {
+                    var index = child.get_index();
+                    if (index >= 0 && index < recent_paths.length) {
+                        paths.add(recent_paths[index]);
+                    }
+                }
+            }
+            return paths.to_array();
+        }
+
+        private void on_session_selection_changed() {
+            if (suppress_session_selection_open || last_selection_gesture_modified) {
+                return;
+            }
+
+            var paths = collect_selected_session_paths();
+            if (paths.length != 1) {
+                return;
+            }
+
+            if (active_session != null && active_session.apk_path == paths[0]) {
+                return;
+            }
+
+            for (int i = 0; i < recent_paths.length; i++) {
+                if (recent_paths[i] == paths[0]) {
+                    activate_session_at_index(i);
+                    return;
+                }
+            }
+        }
+
         private void on_session_activated(Gtk.ListBoxRow row) {
             activate_session_at_index(row.get_index());
         }
@@ -549,7 +608,32 @@ namespace ApkManager.Windows {
             gesture.button = Gdk.BUTTON_SECONDARY;
             gesture.propagation_phase = Gtk.PropagationPhase.CAPTURE;
             gesture.pressed.connect((n_press, x, y) => {
-                context_menu_apk_path = apk_path;
+                var selected = collect_selected_session_paths();
+                var in_selection = false;
+                foreach (var path in selected) {
+                    if (path == apk_path) {
+                        in_selection = true;
+                        break;
+                    }
+                }
+
+                if (in_selection && selected.length > 0) {
+                    context_menu_apk_paths = selected;
+                } else {
+                    context_menu_apk_paths = { apk_path };
+                    suppress_session_selection_open = true;
+                    if (widget is Gtk.ListBoxRow) {
+                        var row = (Gtk.ListBoxRow) widget;
+                        session_list.select_row(null);
+                        session_list.select_row(row);
+                    } else if (widget is Gtk.FlowBoxChild) {
+                        var child = (Gtk.FlowBoxChild) widget;
+                        session_grid.unselect_all();
+                        session_grid.select_child(child);
+                    }
+                    suppress_session_selection_open = false;
+                }
+
                 var parent = session_context_menu.get_parent();
                 if (parent != null) {
                     session_context_menu.unparent();
@@ -562,48 +646,79 @@ namespace ApkManager.Windows {
         }
 
         private void on_remove_session_from_recents() {
-            if (context_menu_apk_path == null) {
+            if (context_menu_apk_paths.length == 0) {
                 return;
             }
-            var apk_path = context_menu_apk_path;
-            context_menu_apk_path = null;
+            var apk_paths = context_menu_apk_paths;
+            context_menu_apk_paths = {};
 
-            var name = ApkDisplayName.resolve(apk_path);
-            if (name == null || name.strip() == "") {
-                name = Path.get_basename(apk_path);
+            string title_name;
+            Gdk.Paintable? icon = null;
+            if (apk_paths.length == 1) {
+                title_name = ApkDisplayName.resolve(apk_paths[0]) ?? Path.get_basename(apk_paths[0]);
+                icon = UiUtils.load_session_icon_paintable(apk_paths[0]);
+            } else {
+                title_name = "%d APKs".printf(apk_paths.length);
             }
 
-            var dialog = new RemoveSessionConfirmDialog(
-                name,
-                UiUtils.load_session_icon_paintable(apk_path)
-            );
+            var dialog = new RemoveSessionConfirmDialog(title_name, icon, apk_paths.length);
             dialog.confirmed.connect(() => {
-                remove_recent_session(apk_path);
+                remove_recent_sessions(apk_paths);
             });
             dialog.delete_confirmed.connect(() => {
-                remove_recent_session_and_delete_file(apk_path);
+                remove_recent_sessions_and_delete_files(apk_paths);
             });
             dialog.present(this);
         }
 
-        private void remove_recent_session_and_delete_file(string apk_path) {
-            remove_recent_session(apk_path);
-            try {
-                File.new_for_path(apk_path).delete();
-                status_label.set_text("Deleted %s".printf(apk_path));
-            } catch (Error e) {
-                status_label.set_text("Could not delete %s: %s".printf(apk_path, e.message));
+        private void remove_recent_sessions_and_delete_files(string[] apk_paths) {
+            remove_recent_sessions(apk_paths);
+
+            int deleted = 0;
+            var failures = new Gee.ArrayList<string>();
+            foreach (var path in apk_paths) {
+                try {
+                    File.new_for_path(path).delete();
+                    deleted++;
+                } catch (Error e) {
+                    failures.add("%s: %s".printf(path, e.message));
+                }
+            }
+
+            if (failures.size == 0) {
+                if (deleted == 1) {
+                    status_label.set_text("Deleted 1 APK from disk");
+                } else {
+                    status_label.set_text("Deleted %d APKs from disk".printf(deleted));
+                }
+            } else if (deleted == 0) {
+                status_label.set_text("Could not delete selected APKs");
+            } else {
+                status_label.set_text(
+                    "Deleted %d APKs; %d could not be deleted".printf(deleted, failures.size)
+                );
             }
         }
 
-        private void remove_recent_session(string apk_path) {
-            registry.remove_by_apk_path(apk_path);
-            if (active_session != null && active_session.apk_path == apk_path) {
+        private void remove_recent_sessions(string[] apk_paths) {
+            bool active_removed = false;
+            foreach (var path in apk_paths) {
+                registry.remove_by_apk_path(path);
+                if (active_session != null && active_session.apk_path == path) {
+                    active_removed = true;
+                }
+            }
+
+            if (active_removed) {
                 active_session = null;
                 title = "ApkManager";
                 archive_store.clear();
                 content_stack.visible_child_name = "empty";
                 status_label.set_text("Open an APK to inspect its contents.");
+            } else if (apk_paths.length == 1) {
+                status_label.set_text("Removed from recents");
+            } else {
+                status_label.set_text("Removed %d APKs from recents".printf(apk_paths.length));
             }
             refresh_sessions();
         }
@@ -851,10 +966,18 @@ namespace ApkManager.Windows {
 
         private void update_session_count_label() {
             var total = registry.get_sessions().size;
+            int64 total_bytes = 0;
+            foreach (var session in registry.get_sessions()) {
+                var size = apk_file_size_bytes(session.apk_path);
+                if (size >= 0) {
+                    total_bytes += size;
+                }
+            }
+            var size_text = FileUtilsHelper.format_bytes(total_bytes);
             if (total == 1) {
-                session_count_label.set_text("1 APK");
+                session_count_label.set_text("1 APK (%s)".printf(size_text));
             } else {
-                session_count_label.set_text("%d APKs".printf(total));
+                session_count_label.set_text("%d APKs (%s)".printf(total, size_text));
             }
         }
 
@@ -927,6 +1050,15 @@ namespace ApkManager.Windows {
         }
 
         private void refresh_sessions() {
+            var active_path = active_session?.apk_path;
+            var paths_to_select = new Gee.HashSet<string>();
+            foreach (var path in collect_selected_session_paths()) {
+                paths_to_select.add(path);
+            }
+            if (paths_to_select.size == 0 && active_path != null) {
+                paths_to_select.add(active_path);
+            }
+
             clear_session_list_rows();
             clear_session_grid_children();
 
@@ -934,9 +1066,8 @@ namespace ApkManager.Windows {
 
             recent_paths = {};
             var labels_dirty = false;
-            var active_path = active_session?.apk_path;
-            Gtk.ListBoxRow? selected_row = null;
-            Gtk.FlowBoxChild? selected_grid_child = null;
+            var rows_to_select = new Gee.ArrayList<Gtk.ListBoxRow>();
+            var grid_children_to_select = new Gee.ArrayList<Gtk.FlowBoxChild>();
 
             var visible = new Gee.ArrayList<DecodeSession>();
             var names = new Gee.HashMap<string, string>();
@@ -966,16 +1097,16 @@ namespace ApkManager.Windows {
                     row.child = build_session_list_row(session.apk_path, name);
                     attach_session_context_menu(row, session.apk_path);
                     session_list.append(row);
-                    if (active_path != null && session.apk_path == active_path) {
-                        selected_row = row;
+                    if (paths_to_select.contains(session.apk_path)) {
+                        rows_to_select.add(row);
                     }
                 } else {
                     var grid_item = new Gtk.FlowBoxChild();
                     grid_item.child = build_session_grid_tile(session.apk_path, name);
                     attach_session_context_menu(grid_item, session.apk_path);
                     session_grid.append(grid_item);
-                    if (active_path != null && session.apk_path == active_path) {
-                        selected_grid_child = grid_item;
+                    if (paths_to_select.contains(session.apk_path)) {
+                        grid_children_to_select.add(grid_item);
                     }
                 }
             }
@@ -984,22 +1115,22 @@ namespace ApkManager.Windows {
                 registry.save();
             }
 
+            suppress_session_selection_open = true;
             if (session_view_mode == SessionViewMode.LIST) {
                 session_stack.visible_child_name = "list";
-                if (selected_row != null) {
-                    session_list.select_row(selected_row);
-                } else {
-                    session_list.unselect_all();
+                session_list.select_row(null);
+                foreach (var row in rows_to_select) {
+                    session_list.select_row(row);
                 }
             } else {
                 session_stack.visible_child_name = "grid";
                 update_session_grid_columns();
-                if (selected_grid_child != null) {
-                    session_grid.select_child(selected_grid_child);
-                } else {
-                    session_grid.unselect_all();
+                session_grid.unselect_all();
+                foreach (var child in grid_children_to_select) {
+                    session_grid.select_child(child);
                 }
             }
+            suppress_session_selection_open = false;
         }
 
         private void on_get_apks_clicked() {

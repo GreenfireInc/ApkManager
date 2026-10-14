@@ -34,6 +34,23 @@ namespace ApkManager.Core {
             return read_label_from_manifest_xml(apk_path);
         }
 
+        public static string? package_name(string apk_path) {
+            if (!FileUtils.test(apk_path, FileTest.IS_REGULAR)) {
+                return null;
+            }
+
+            try {
+                Bytes? manifest = ApkArchive.read_entry(apk_path, "AndroidManifest.xml");
+                if (manifest == null) {
+                    return null;
+                }
+                return parse_manifest_package(manifest.get_data());
+            } catch (Error e) {
+                warning("Failed to read manifest for package name: %s", e.message);
+                return null;
+            }
+        }
+
         public static string? application_icon_ref(string apk_path) {
             if (!FileUtils.test(apk_path, FileTest.IS_REGULAR)) {
                 return null;
@@ -106,6 +123,63 @@ namespace ApkManager.Core {
                 warning("Failed to read manifest for display name: %s", e.message);
                 return null;
             }
+        }
+
+        private static string? parse_manifest_package(uint8[] data) {
+            if (data.length < 8 || u32(data, 0) != RES_XML_TYPE) {
+                return null;
+            }
+
+            int off = 8;
+            if (off + 8 > data.length || u16(data, off) != CHUNK_STRING_POOL) {
+                return null;
+            }
+
+            string[] pool;
+            off = read_string_pool(data, off, out pool);
+            if (off < 0 || pool.length == 0) {
+                return null;
+            }
+
+            if (off + 8 <= data.length && u16(data, off) == RES_XML_RESOURCE_MAP) {
+                off += (int) u32(data, off + 4);
+            }
+
+            while (off + 8 <= data.length) {
+                uint16 typ = u16(data, off);
+                int size = (int) u32(data, off + 4);
+                if (size < 8 || off + size > data.length) {
+                    break;
+                }
+
+                if (typ == RES_XML_START_ELEMENT) {
+                    int name_index = (int) u32(data, off + 20);
+                    if (name_index >= 0 && name_index < pool.length && pool[name_index] == "manifest") {
+                        uint16 attr_count = u16(data, off + 28);
+                        int attr_size = u16(data, off + 26);
+                        int attrs_off = off + 36;
+                        for (int i = 0; i < attr_count; i++) {
+                            int a = attrs_off + i * attr_size;
+                            if (a + 20 > data.length) {
+                                break;
+                            }
+                            int name_idx = (int) u32(data, a + 4);
+                            if (name_idx < 0 || name_idx >= pool.length) {
+                                continue;
+                            }
+                            if (pool[name_idx] == "package") {
+                                uint8 value_type = data[a + 15];
+                                uint32 value_data = u32(data, a + 16);
+                                if (value_type == TYPE_STRING && value_data < pool.length) {
+                                    return pool[value_data];
+                                }
+                            }
+                        }
+                    }
+                }
+                off += size;
+            }
+            return null;
         }
 
         private static void parse_application_attrs(string apk_path, uint8[] data, out string? label, out string? icon_ref) {

@@ -13,6 +13,15 @@ namespace ApkManager.Utils {
             return yield run_curl({ "-fsSL", "--max-time", "45", url }, user_agent, null);
         }
 
+        public static async string post_form(
+            string url,
+            string form_body,
+            string? user_agent = DEFAULT_USER_AGENT
+        ) throws Error {
+            var bytes = yield run_curl({ "-fsSL", "--max-time", "45", url }, user_agent, form_body);
+            return (string) bytes.get_data();
+        }
+
         public static async string get_string_with_query(
             string base_url,
             Gee.Map<string, string> query,
