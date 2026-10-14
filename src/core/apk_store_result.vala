@@ -2,7 +2,9 @@ namespace ApkManager.Core {
     public enum ApkStoreSource {
         FDROID,
         APTOIDE,
-        UPTODOWN
+        UPTODOWN,
+        IZZYONDROID,
+        OPENAPK
     }
 
     public class ApkStoreResult : Object {
@@ -58,6 +60,10 @@ namespace ApkManager.Core {
                     return "Aptoide";
                 case ApkStoreSource.UPTODOWN:
                     return "Uptodown";
+                case ApkStoreSource.IZZYONDROID:
+                    return "IzzyOnDroid";
+                case ApkStoreSource.OPENAPK:
+                    return "OpenAPK";
                 default:
                     return "Unknown";
                 }
@@ -73,6 +79,10 @@ namespace ApkManager.Core {
                     return "appRepo.aptoide.svg";
                 case ApkStoreSource.UPTODOWN:
                     return "appRepo.uptodown.svg";
+                case ApkStoreSource.IZZYONDROID:
+                    return "appRepo.Izzy.svg";
+                case ApkStoreSource.OPENAPK:
+                    return "appRepo.openapk.svg";
                 default:
                     return "";
                 }

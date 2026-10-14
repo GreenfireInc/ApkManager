@@ -16,8 +16,10 @@ namespace ApkManager.Windows {
         private Gtk.DropDown source_filter;
         private Gee.ArrayList<ApkStoreResult> results = new Gee.ArrayList<ApkStoreResult>();
         private ApkStoreResult? selected_result;
+        private bool selected_already_installed = false;
         private Cancellable? search_cancellable;
         private Cancellable? download_cancellable;
+        private Cancellable? install_check_cancellable;
 
         public GetApksWindow(Gtk.Window parent) {
             Object(
@@ -36,7 +38,7 @@ namespace ApkManager.Windows {
             content = toolbar;
 
             var header = new Adw.HeaderBar();
-            header.title_widget = new Adw.WindowTitle("Get APKs", "Search F-Droid, Aptoide, and Uptodown");
+            header.title_widget = new Adw.WindowTitle("Get APKs", "Search F-Droid, Aptoide, IzzyOnDroid, OpenAPK, and Uptodown");
             toolbar.add_top_bar(header);
 
             var root = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
@@ -74,6 +76,8 @@ namespace ApkManager.Windows {
             filter_store.append(new StoreSourceFilterItem("All Sources"));
             filter_store.append(new StoreSourceFilterItem("Aptoide", "appRepo.aptoide.svg"));
             filter_store.append(new StoreSourceFilterItem("F-Droid", "appRepo.fdroid.svg"));
+            filter_store.append(new StoreSourceFilterItem("IzzyOnDroid", "appRepo.Izzy.svg"));
+            filter_store.append(new StoreSourceFilterItem("OpenAPK", "appRepo.openapk.svg"));
             filter_store.append(new StoreSourceFilterItem("Uptodown", "appRepo.uptodown.svg"));
 
             source_filter = new Gtk.DropDown(
@@ -101,7 +105,7 @@ namespace ApkManager.Windows {
             results_list.set_placeholder(new Adw.StatusPage() {
                 icon_name = "system-search-symbolic",
                 title = "No results yet",
-                description = "Enter an app name and search F-Droid, Aptoide, and Uptodown."
+                description = "Enter an app name and search F-Droid, Aptoide, IzzyOnDroid, OpenAPK, and Uptodown."
             });
             results_list.row_selected.connect(on_row_selected);
             results_list.row_activated.connect(on_row_activated);
@@ -139,7 +143,7 @@ namespace ApkManager.Windows {
             search_spinner.start();
             search_button.sensitive = false;
             download_button.sensitive = false;
-            status_label.set_text("Searching F-Droid, Aptoide, and Uptodown…");
+            status_label.set_text("Searching F-Droid, Aptoide, IzzyOnDroid, OpenAPK, and Uptodown…");
             clear_results();
 
             run_search.begin(query, search_cancellable);
@@ -251,10 +255,14 @@ namespace ApkManager.Windows {
         private ApkStoreSource? active_source_filter() {
             switch (source_filter.get_selected()) {
             case 1:
-                return ApkStoreSource.FDROID;
-            case 2:
                 return ApkStoreSource.APTOIDE;
+            case 2:
+                return ApkStoreSource.FDROID;
             case 3:
+                return ApkStoreSource.IZZYONDROID;
+            case 4:
+                return ApkStoreSource.OPENAPK;
+            case 5:
                 return ApkStoreSource.UPTODOWN;
             default:
                 return null;
@@ -382,17 +390,74 @@ namespace ApkManager.Windows {
         }
 
         private void on_row_selected(Gtk.ListBoxRow? row) {
+            if (install_check_cancellable != null) {
+                install_check_cancellable.cancel();
+            }
+
             if (row == null) {
                 selected_result = null;
+                selected_already_installed = false;
                 download_button.sensitive = false;
                 return;
             }
+
             selected_result = row.get_data<ApkStoreResult>("result");
-            download_button.sensitive = selected_result != null;
-            if (selected_result != null && store_search.requires_browser_download(selected_result)) {
+            selected_already_installed = false;
+            update_download_button_for_selection();
+
+            if (selected_result == null || store_search.requires_browser_download(selected_result)) {
+                return;
+            }
+
+            install_check_cancellable = new Cancellable();
+            check_selected_install_state.begin(selected_result, install_check_cancellable);
+        }
+
+        private void update_download_button_for_selection() {
+            if (selected_result == null) {
+                download_button.sensitive = false;
+                return;
+            }
+
+            if (selected_already_installed) {
+                download_button.sensitive = false;
+                download_button.label = "Already installed";
+                return;
+            }
+
+            download_button.sensitive = true;
+            if (store_search.requires_browser_download(selected_result)) {
                 download_button.label = "Open in browser";
             } else {
                 download_button.label = "Download and install";
+            }
+        }
+
+        private async void check_selected_install_state(ApkStoreResult result, Cancellable cancellable) {
+            bool installed = false;
+            Error? error = null;
+            try {
+                installed = yield store_search.is_already_installed(result, cancellable);
+            } catch (Error e) {
+                error = e;
+            }
+
+            if (cancellable.is_cancelled() || selected_result != result) {
+                return;
+            }
+
+            selected_already_installed = installed;
+            update_download_button_for_selection();
+
+            if (error != null) {
+                warning("Could not check install state for %s: %s", result.package_id, error.message);
+                return;
+            }
+
+            if (installed) {
+                status_label.set_text(
+                    "%s is already installed from %s.".printf(result.name, result.source_label)
+                );
             }
         }
 
@@ -402,6 +467,16 @@ namespace ApkManager.Windows {
 
         private void on_download_clicked() {
             if (selected_result == null) {
+                return;
+            }
+
+            if (selected_already_installed) {
+                status_label.set_text(
+                    "%s is already installed from %s.".printf(
+                        selected_result.name,
+                        selected_result.source_label
+                    )
+                );
                 return;
             }
 
@@ -463,9 +538,15 @@ namespace ApkManager.Windows {
 
         private async void run_download(ApkStoreResult result, Cancellable cancellable) {
             string? path = null;
+            string? download_url = null;
+            bool already_installed = false;
             Error? error = null;
             try {
-                path = yield store_search.download_apk(result, cancellable);
+                already_installed = yield store_search.is_already_installed(result, cancellable);
+                if (!already_installed) {
+                    download_url = yield store_search.resolve_download_url(result, cancellable);
+                    path = yield store_search.download_apk(result, cancellable);
+                }
             } catch (Error e) {
                 error = e;
             }
@@ -475,7 +556,16 @@ namespace ApkManager.Windows {
             }
 
             download_progress.visible = false;
-            download_button.sensitive = true;
+            update_download_button_for_selection();
+
+            if (already_installed) {
+                selected_already_installed = true;
+                update_download_button_for_selection();
+                status_label.set_text(
+                    "%s is already installed from %s.".printf(result.name, result.source_label)
+                );
+                return;
+            }
 
             if (error != null) {
                 status_label.set_text("Download failed: %s".printf(error.message));
@@ -485,10 +575,18 @@ namespace ApkManager.Windows {
             status_label.set_text("Installing %s…".printf(result.name));
             string? installed_path = null;
             try {
-                installed_path = yield install_downloaded_async(path);
+                installed_path = yield install_downloaded_async(
+                    path,
+                    result.package_id,
+                    result.source_label
+                );
             } catch (Error e) {
                 status_label.set_text("Downloaded, but install failed: %s".printf(e.message));
                 return;
+            }
+
+            if (download_url != null) {
+                store_search.record_installed(result, download_url, installed_path);
             }
 
             status_label.set_text("Installed to %s".printf(installed_path));
@@ -496,12 +594,16 @@ namespace ApkManager.Windows {
             close();
         }
 
-        private async string install_downloaded_async(string path) throws Error {
+        private async string install_downloaded_async(
+            string path,
+            string package_id,
+            string source_label
+        ) throws Error {
             string? result = null;
             Error? error = null;
             new Thread<void>("apk-get-install", () => {
                 try {
-                    result = ApkInstall.install(path);
+                    result = ApkInstall.install(path, package_id, source_label);
                 } catch (Error e) {
                     error = e;
                 }

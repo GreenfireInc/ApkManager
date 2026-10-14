@@ -3,6 +3,8 @@ using ApkManager.Utils;
 namespace ApkManager.Core {
     public class ApkStoreSearch : Object {
         private const string APTOIDE_USER_AGENT = "Aptoide/9.20.6";
+        private const string IZZY_BASE_URL = "https://apt.izzysoft.de/fdroid";
+        private const string OPENAPK_BASE_URL = "https://www.openapk.net";
 
         public async Gee.List<ApkStoreResult> search_all(string query, Cancellable? cancellable = null) throws Error {
             if (query.strip() == "") {
@@ -12,6 +14,8 @@ namespace ApkManager.Core {
             string fdroid_html = "";
             string aptoide_json = "";
             string uptodown_html = "";
+            string izzy_html = "";
+            string openapk_html = "";
             int failures = 0;
             Error? last_error = null;
 
@@ -33,8 +37,20 @@ namespace ApkManager.Core {
                 failures++;
                 last_error = e;
             }
+            try {
+                izzy_html = yield search_izzy(query, cancellable);
+            } catch (Error e) {
+                failures++;
+                last_error = e;
+            }
+            try {
+                openapk_html = yield search_openapk(query, cancellable);
+            } catch (Error e) {
+                failures++;
+                last_error = e;
+            }
 
-            if (failures == 3 && last_error != null) {
+            if (failures == 5 && last_error != null) {
                 throw last_error;
             }
 
@@ -47,6 +63,12 @@ namespace ApkManager.Core {
                 results.add(item);
             }
             foreach (var item in parse_uptodown_results(uptodown_html)) {
+                results.add(item);
+            }
+            foreach (var item in parse_izzy_results(izzy_html)) {
+                results.add(item);
+            }
+            foreach (var item in parse_openapk_results(openapk_html)) {
                 results.add(item);
             }
             return results;
@@ -71,6 +93,20 @@ namespace ApkManager.Core {
             return yield HttpClient.get_string(
                 url,
                 "Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0"
+            );
+        }
+
+        private async string search_openapk(string query, Cancellable? cancellable) throws Error {
+            var url = "%s/search/?q=%s".printf(OPENAPK_BASE_URL, Uri.escape_string(query.strip()));
+            return yield HttpClient.get_string(url, HttpClient.BROWSER_USER_AGENT);
+        }
+
+        private async string search_izzy(string query, Cancellable? cancellable) throws Error {
+            var form = "searchterm=%s&doFilter=Go!".printf(Uri.escape_string(query.strip()));
+            return yield HttpClient.post_form(
+                "%s/index.php".printf(IZZY_BASE_URL),
+                form,
+                HttpClient.BROWSER_USER_AGENT
             );
         }
 
@@ -229,6 +265,107 @@ namespace ApkManager.Core {
             return results;
         }
 
+        private Gee.List<ApkStoreResult> parse_izzy_results(string html) {
+            var results = new Gee.ArrayList<ApkStoreResult>();
+            if (html.strip() == "") {
+                return results;
+            }
+
+            try {
+                var block_regex = new Regex(
+                    "<div class='approw'>\\s*" +
+                    "<div class='appiconbig'><img src='([^']+)'[\\s\\S]*?" +
+                    "<span class='boldname'>([^<]+)</span>[\\s\\S]*?" +
+                    "<span class='minor-details'>([^/]+)/\\s*([^<]+)</span>[\\s\\S]*?" +
+                    "<div class='appdetailcell'>([^<]+)</div>[\\s\\S]*?" +
+                    "href='index/apk/([^']+)'",
+                    RegexCompileFlags.DOTALL
+                );
+                MatchInfo match;
+                if (!block_regex.match(html, 0, out match)) {
+                    return results;
+                }
+                while (true) {
+                    var icon_path = (match.fetch(1) ?? "").strip();
+                    var name = (match.fetch(2) ?? "").strip();
+                    var version_name = (match.fetch(3) ?? "").strip();
+                    var version_date = yyyymmdd_from_timestamp((match.fetch(4) ?? "").strip());
+                    var summary = (match.fetch(5) ?? "").strip();
+                    var package_id = (match.fetch(6) ?? "").strip();
+                    if (package_id != "" && name != "") {
+                        var icon_url = icon_path.has_prefix("http")
+                            ? icon_path
+                            : "%s/%s".printf(IZZY_BASE_URL, icon_path);
+                        results.add(new ApkStoreResult(
+                            ApkStoreSource.IZZYONDROID,
+                            name,
+                            package_id,
+                            summary,
+                            icon_url,
+                            "%s/index.php/index/apk/%s".printf(IZZY_BASE_URL, package_id),
+                            version_name,
+                            version_date
+                        ));
+                    }
+                    if (!match.next()) {
+                        break;
+                    }
+                }
+            } catch (RegexError e) {
+                warning("IzzyOnDroid search parse failed: %s", e.message);
+            }
+
+            return results;
+        }
+
+        private Gee.List<ApkStoreResult> parse_openapk_results(string html) {
+            var results = new Gee.ArrayList<ApkStoreResult>();
+            if (html.strip() == "") {
+                return results;
+            }
+
+            try {
+                var block_regex = new Regex(
+                    "<a href=\"/([^/]+)/([A-Za-z0-9_.]+)/\" title=\"[^\"]*\" class=\"list-item\">\\s*" +
+                    "<figure[^>]*><img src=\"([^\"]+)\"[\\s\\S]*?" +
+                    "<span class=\"name\">([^<]+)</span>\\s*" +
+                    "<span class=\"desc\">([^<]*)</span>",
+                    RegexCompileFlags.DOTALL
+                );
+                MatchInfo match;
+                if (!block_regex.match(html, 0, out match)) {
+                    return results;
+                }
+                while (true) {
+                    var slug = (match.fetch(1) ?? "").strip();
+                    var package_id = (match.fetch(2) ?? "").strip();
+                    var icon_path = (match.fetch(3) ?? "").strip();
+                    var name = (match.fetch(4) ?? "").strip();
+                    var summary = (match.fetch(5) ?? "").strip();
+                    if (slug != "" && package_id != "" && name != "") {
+                        var icon_url = icon_path.has_prefix("http")
+                            ? icon_path
+                            : "%s%s".printf(OPENAPK_BASE_URL, icon_path);
+                        results.add(new ApkStoreResult(
+                            ApkStoreSource.OPENAPK,
+                            name,
+                            package_id,
+                            summary,
+                            icon_url,
+                            "%s/%s/%s/".printf(OPENAPK_BASE_URL, slug, package_id)
+                        ));
+                    }
+                    if (!match.next()) {
+                        break;
+                    }
+                }
+            } catch (RegexError e) {
+                warning("OpenAPK search parse failed: %s", e.message);
+            }
+
+            return results;
+        }
+
         public async string? resolve_download_url(ApkStoreResult result, Cancellable? cancellable = null) throws Error {
             switch (result.source) {
             case ApkStoreSource.FDROID:
@@ -237,6 +374,10 @@ namespace ApkManager.Core {
                 return yield resolve_aptoide_download_url(result.package_id, cancellable);
             case ApkStoreSource.UPTODOWN:
                 return null;
+            case ApkStoreSource.IZZYONDROID:
+                return yield resolve_izzy_download_url(result.package_id, cancellable);
+            case ApkStoreSource.OPENAPK:
+                return yield resolve_openapk_download_url(result, cancellable);
             default:
                 return null;
             }
@@ -244,6 +385,53 @@ namespace ApkManager.Core {
 
         public bool requires_browser_download(ApkStoreResult result) {
             return result.source == ApkStoreSource.UPTODOWN;
+        }
+
+        public static string? version_code_from_download_url(string url) {
+            var basename = Path.get_basename(url);
+            try {
+                var regex = new Regex("_(\\d+)\\.apk$", RegexCompileFlags.CASELESS);
+                MatchInfo match;
+                if (regex.match(basename, 0, out match)) {
+                    return match.fetch(1);
+                }
+            } catch (RegexError e) {
+                warning("Could not parse version code from %s: %s", url, e.message);
+            }
+            return null;
+        }
+
+        public async bool is_already_installed(
+            ApkStoreResult result,
+            Cancellable? cancellable = null
+        ) throws Error {
+            if (result.package_id.strip() == "" || requires_browser_download(result)) {
+                return false;
+            }
+
+            var download_url = yield resolve_download_url(result, cancellable);
+            var version_code = installed_version_key(result, download_url);
+
+            return StoreInstallRegistry.get_default().is_installed(
+                result.source,
+                result.package_id,
+                version_code,
+                ""
+            );
+        }
+
+        public void record_installed(ApkStoreResult result, string download_url, string installed_path) {
+            if (result.package_id.strip() == "" || requires_browser_download(result)) {
+                return;
+            }
+
+            StoreInstallRegistry.get_default().record(new StoreInstallRecord(
+                result.source,
+                result.package_id,
+                installed_version_key(result, download_url),
+                result.version_name,
+                installed_path
+            ));
         }
 
         public string browser_download_url(ApkStoreResult result) {
@@ -264,6 +452,74 @@ namespace ApkManager.Core {
             }
             var version_code = root.get_int_member("suggestedVersionCode");
             return "https://f-droid.org/repo/%s_%d.apk".printf(package_id, (int) version_code);
+        }
+
+        private async string resolve_openapk_download_url(ApkStoreResult result, Cancellable? cancellable) throws Error {
+            var page = result.page_url.strip();
+            if (page == "") {
+                throw new IOError.NOT_FOUND("OpenAPK app page missing");
+            }
+            if (page.has_suffix("/")) {
+                page = page.substring(0, page.length - 1);
+            }
+            var html = yield HttpClient.get_string(page + "/apk/download", HttpClient.BROWSER_USER_AGENT);
+            try {
+                var serve_regex = new Regex(
+                    "href=\"(/serve/\\?token=[^\"]+)\"[\\s\\S]*?<span>\\(([^)]+)\\)</span>",
+                    RegexCompileFlags.DOTALL
+                );
+                MatchInfo match;
+                if (!serve_regex.match(html, 0, out match)) {
+                    throw new IOError.NOT_FOUND("OpenAPK download link missing");
+                }
+                var serve_path = (match.fetch(1) ?? "").strip();
+                var version_name = (match.fetch(2) ?? "").strip();
+                if (version_name != "") {
+                    result.version_name = version_name;
+                }
+                if (serve_path == "") {
+                    throw new IOError.NOT_FOUND("OpenAPK download link missing");
+                }
+                return "%s%s".printf(OPENAPK_BASE_URL, serve_path);
+            } catch (RegexError e) {
+                throw new IOError.FAILED("OpenAPK download parse failed: %s".printf(e.message));
+            }
+        }
+
+        private static string installed_version_key(ApkStoreResult result, string download_url) {
+            var from_url = version_code_from_download_url(download_url);
+            if (from_url != null && from_url != "") {
+                return from_url;
+            }
+            return result.version_name.strip();
+        }
+
+        private static string apk_download_filename(ApkStoreResult result, string download_url) {
+            var filename = Path.get_basename(download_url);
+            if (filename.has_suffix(".apk")) {
+                return filename;
+            }
+            var version = result.version_name.strip().replace(" ", "");
+            if (result.package_id != "" && version != "") {
+                return "%s_%s.apk".printf(result.package_id, version);
+            }
+            if (result.package_id != "") {
+                return "%s.apk".printf(result.package_id);
+            }
+            return "%s.apk".printf(result.name.replace(" ", "-").casefold());
+        }
+
+        private async string resolve_izzy_download_url(string package_id, Cancellable? cancellable) throws Error {
+            var url = "%s/api/v1/packages/%s".printf(IZZY_BASE_URL, Uri.escape_string(package_id));
+            var json_text = yield HttpClient.get_string(url, HttpClient.DEFAULT_USER_AGENT);
+            var parser = new Json.Parser();
+            parser.load_from_data(json_text, -1);
+            var root = parser.get_root().get_object();
+            if (root == null || !root.has_member("suggestedVersionCode")) {
+                throw new IOError.NOT_FOUND("IzzyOnDroid package metadata missing version code");
+            }
+            var version_code = int.parse(root.get_string_member("suggestedVersionCode"));
+            return "%s/repo/%s_%d.apk".printf(IZZY_BASE_URL, package_id, version_code);
         }
 
         private async string resolve_aptoide_download_url(string package_id, Cancellable? cancellable) throws Error {
@@ -352,12 +608,7 @@ namespace ApkManager.Core {
                 throw new IOError.NOT_SUPPORTED("No direct download for this source");
             }
 
-            var filename = Path.get_basename(download_url);
-            if (!filename.has_suffix(".apk")) {
-                filename = "%s.apk".printf(
-                    result.package_id != "" ? result.package_id : result.name.replace(" ", "-").casefold()
-                );
-            }
+            var filename = apk_download_filename(result, download_url);
 
             var destination = Path.build_filename(AppPaths.downloads_dir, filename);
             if (FileUtils.test(destination, FileTest.EXISTS)) {

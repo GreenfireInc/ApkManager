@@ -1,10 +1,14 @@
 namespace ApkManager.Core {
     public class ApkInstall {
-        public static string install(string apk_path) throws Error {
+        public static string install(
+            string apk_path,
+            string? package_id = null,
+            string? source_label = null
+        ) throws Error {
             var install_dir = AppSettings.get_default().get_install_path();
             DirUtils.create_with_parents(install_dir, 0755);
 
-            var basename = Path.get_basename(apk_path);
+            var basename = ApkInstallFilename.install_basename(apk_path, package_id, source_label);
             var dest = Path.build_filename(install_dir, basename);
 
             var src = File.new_for_path(apk_path);

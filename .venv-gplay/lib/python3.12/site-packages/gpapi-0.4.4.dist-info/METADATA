@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: gpapi
+Version: 0.4.4
+Summary: Unofficial python api for google play
+Home-page: https://github.com/NoMore201/googleplay-api
+Author: NoMore201
+Author-email: domenico.iezzi.201@gmail.com
+License: GPL3
+Platform: UNKNOWN
+Requires-Dist: cryptography (>=2.2)
+Requires-Dist: protobuf (>=3.5.2)
+Requires-Dist: requests
+
+UNKNOWN
+
+

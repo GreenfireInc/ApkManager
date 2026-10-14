@@ -3,23 +3,33 @@ namespace ApkManager.Windows {
         public signal void confirmed();
         public signal void delete_confirmed();
 
-        public RemoveSessionConfirmDialog(string app_name, Gdk.Paintable? icon) {
+        public RemoveSessionConfirmDialog(string app_name, Gdk.Paintable? icon, int count = 1) {
             title = "Remove from recents?";
             content_width = 360;
             content_height = -1;
             follows_content_size = true;
             presentation_mode = Adw.DialogPresentationMode.FLOATING;
-            build_ui(app_name, icon);
+            build_ui(app_name, icon, count);
         }
 
-        private void build_ui(string app_name, Gdk.Paintable? icon) {
+        private void build_ui(string app_name, Gdk.Paintable? icon, int count) {
             var box = new Gtk.Box(Gtk.Orientation.VERTICAL, 12);
             box.margin_top = 20;
             box.margin_bottom = 20;
             box.margin_start = 18;
             box.margin_end = 18;
 
-            var title = new Gtk.Label("Remove %s from recents?".printf(app_name));
+            string heading;
+            string body;
+            if (count > 1) {
+                heading = "Remove %s from recents?".printf(app_name);
+                body = "Remove these %d APKs from recents, or delete the APK files from disk permanently.".printf(count);
+            } else {
+                heading = "Remove %s from recents?".printf(app_name);
+                body = "Remove %s from recents, or delete the APK file from disk permanently.".printf(app_name);
+            }
+
+            var title = new Gtk.Label(heading);
             title.add_css_class("title-2");
             title.wrap = true;
             title.justify = Gtk.Justification.CENTER;
@@ -39,9 +49,7 @@ namespace ApkManager.Windows {
             app_icon.margin_bottom = 4;
             box.append(app_icon);
 
-            var message = new Gtk.Label(
-                "Remove %s from recents, or delete the APK file from disk permanently.".printf(app_name)
-            );
+            var message = new Gtk.Label(body);
             message.wrap = true;
             message.max_width_chars = 36;
             message.width_request = 320;
@@ -61,7 +69,9 @@ namespace ApkManager.Windows {
             });
             actions.append(remove_button);
 
-            var delete_button = new Gtk.Button.with_label("Delete APK from disk");
+            var delete_button = new Gtk.Button.with_label(
+                count > 1 ? "Delete APKs from disk" : "Delete APK from disk"
+            );
             delete_button.hexpand = true;
             delete_button.add_css_class("destructive-action");
             delete_button.clicked.connect(() => {

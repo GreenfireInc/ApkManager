@@ -56,7 +56,9 @@ store_repo_icon_dir = join_paths(get_option('datadir'), 'apk-manager', 'icons', 
 foreach icon : [
   'appRepo.fdroid.svg',
   'appRepo.aptoide.svg',
-  'appRepo.uptodown.svg'
+  'appRepo.uptodown.svg',
+  'appRepo.Izzy.svg',
+  'appRepo.openapk.svg'
 ]
   install_data('../public/assets/icons/storesRepositories/' + icon, install_dir: store_repo_icon_dir)
 endforeach

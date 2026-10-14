@@ -4,5 +4,7 @@
     <file alias="appRepo.fdroid.svg">public/assets/icons/storesRepositories/appRepo.fdroid.svg</file>
     <file alias="appRepo.aptoide.svg">public/assets/icons/storesRepositories/appRepo.aptoide.svg</file>
     <file alias="appRepo.uptodown.svg">public/assets/icons/storesRepositories/appRepo.uptodown.svg</file>
+    <file alias="appRepo.Izzy.svg">public/assets/icons/storesRepositories/appRepo.Izzy.svg</file>
+    <file alias="appRepo.openapk.svg">public/assets/icons/storesRepositories/appRepo.openapk.svg</file>
   </gresource>
 </gresources>
