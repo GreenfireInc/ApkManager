@@ -25,6 +25,7 @@ namespace ApkManager {
 
         protected override void startup() {
             base.startup();
+            FileManagerIcons.sync_from_settings();
             // Exported over D-Bus with the app, so a newer launcher can ask an
             // older primary instance to exit instead of handing its files to it.
             var quit_action = new SimpleAction("quit", null);

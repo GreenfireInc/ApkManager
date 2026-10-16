@@ -9,6 +9,11 @@ int main(string[] args) {
         }
     }
 
+    var thumbnail_status = FileManagerIcons.handle_thumbnail_cli(args);
+    if (thumbnail_status != null) {
+        return thumbnail_status;
+    }
+
     ApkManager.Application.retire_stale_instance();
     var app = new ApkManager.Application();
     return app.run(args);
