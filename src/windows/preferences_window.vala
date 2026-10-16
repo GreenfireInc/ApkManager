@@ -85,6 +85,17 @@ namespace ApkManager.Windows {
             });
             preferred_repository_row.notify["selected"].connect(on_preferred_repository_changed);
             store_group.add(preferred_repository_row);
+
+            var clear_store_row = new Adw.ActionRow();
+            clear_store_row.title = "Clear store";
+            clear_store_row.subtitle =
+                "Reset settings, forget store installs, and clear the download cache";
+            var clear_store_button = new Gtk.Button.with_label("Clear Store");
+            clear_store_button.valign = Gtk.Align.CENTER;
+            clear_store_button.add_css_class("destructive-action");
+            clear_store_button.clicked.connect(on_clear_store_clicked);
+            clear_store_row.add_suffix(clear_store_button);
+            store_group.add(clear_store_row);
             page.add(store_group);
 
             var updates_group = new Adw.PreferencesGroup();
@@ -208,6 +219,41 @@ namespace ApkManager.Windows {
                 return;
             }
             settings.set_check_for_updates(update_checks_row.active);
+        }
+
+        private void on_clear_store_clicked() {
+            var dialog = new ClearStoreConfirmDialog();
+            dialog.confirmed.connect(() => {
+                finish_clear_store(false);
+            });
+            dialog.delete_confirmed.connect(() => {
+                finish_clear_store(true);
+            });
+            dialog.present(this);
+        }
+
+        private void finish_clear_store(bool delete_from_disk) {
+            var result = StoreClearer.clear(delete_from_disk);
+            load_from_settings();
+
+            string message;
+            if (delete_from_disk) {
+                if (result.apk_files_failed > 0) {
+                    message = "Store cleared. Deleted %d APKs; %d could not be deleted.".printf(
+                        result.apk_files_deleted,
+                        result.apk_files_failed
+                    );
+                } else if (result.apk_files_deleted > 0) {
+                    message = "Store cleared and %d installed APKs deleted from disk.".printf(
+                        result.apk_files_deleted
+                    );
+                } else {
+                    message = "Store cleared. No installed store APK files were found on disk.";
+                }
+            } else {
+                message = "Store data and settings were reset.";
+            }
+            add_toast(new Adw.Toast(message));
         }
     }
 }

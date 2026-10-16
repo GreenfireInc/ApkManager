@@ -80,6 +80,12 @@ namespace ApkManager.Core {
             settings.set_boolean("check-for-updates", enabled);
         }
 
+        public void reset_to_defaults() {
+            foreach (var key in settings.list_keys()) {
+                settings.reset(key);
+            }
+        }
+
         public static string default_install_path() {
             return Path.build_filename(Environment.get_home_dir(), "Applications", "android");
         }

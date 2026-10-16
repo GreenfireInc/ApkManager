@@ -46,8 +46,7 @@ Rebuild and run:
 
 ```bash
 cd ~/Workspace/Applications/apkManager
-meson compile -C build
-meson install -C build
+meson compile -C build && meson install -C build
 export PATH="$HOME/.local/bin:$PATH"
 apk-manager
 ```

@@ -79,6 +79,7 @@ namespace ApkManager.Windows {
             var settings_section = new Menu();
             settings_section.append("_Preferences", "win.preferences");
             settings_section.append("Keyboard _Shortcuts", "win.keyboard-shortcuts");
+            settings_section.append("_About", "win.about");
             sidebar_menu_model.append_section(null, settings_section);
             sidebar_menu_model.append("_Quit", "win.quit");
             sidebar_menu.menu_model = sidebar_menu_model;
@@ -93,6 +94,9 @@ namespace ApkManager.Windows {
             var keyboard_shortcuts_action = new SimpleAction("keyboard-shortcuts", null);
             keyboard_shortcuts_action.activate.connect(on_keyboard_shortcuts_clicked);
             sidebar_actions.add_action(keyboard_shortcuts_action);
+            var about_action = new SimpleAction("about", null);
+            about_action.activate.connect(on_about_clicked);
+            sidebar_actions.add_action(about_action);
             var focus_search_action = new SimpleAction("focus-search", null);
             focus_search_action.activate.connect(on_focus_search);
             sidebar_actions.add_action(focus_search_action);
@@ -1167,6 +1171,10 @@ namespace ApkManager.Windows {
         private void on_keyboard_shortcuts_clicked() {
             var window = new KeyboardShortcutsWindow(this);
             window.present();
+        }
+
+        private void on_about_clicked() {
+            AboutDialog.present(this);
         }
 
         private void on_focus_search() {

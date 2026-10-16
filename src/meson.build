@@ -8,6 +8,8 @@ app_sources = files(
   'windows/remove_session_confirm_dialog.vala',
   'windows/preferences_window.vala',
   'windows/keyboard_shortcuts_window.vala',
+  'windows/about_window.vala',
+  'windows/clear_store_confirm_dialog.vala',
   'windows/get_apks_window.vala',
   'windows/get_apk_confirm_dialog.vala',
   'windows/manifest_popup.vala'
