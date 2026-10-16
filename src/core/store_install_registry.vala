@@ -103,6 +103,22 @@ namespace ApkManager.Core {
             save();
         }
 
+        public Gee.ArrayList<string> collect_apk_paths() {
+            prune_missing_files();
+            var paths = new Gee.ArrayList<string>();
+            foreach (var record in records) {
+                if (record.apk_path.strip() != "") {
+                    paths.add(record.apk_path);
+                }
+            }
+            return paths;
+        }
+
+        public void clear_all() {
+            records.clear();
+            save();
+        }
+
         private void prune_missing_files() {
             for (int i = records.size - 1; i >= 0; i--) {
                 if (!FileUtils.test(records[i].apk_path, FileTest.EXISTS)) {
