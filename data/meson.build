@@ -15,6 +15,30 @@ install_data('com.github.ApkManager.metainfo.xml',
   install_dir: join_paths(get_option('datadir'), 'metainfo')
 )
 
+install_data('mime/application-vnd.android.package-archive.xml',
+  install_dir: join_paths(get_option('datadir'), 'mime', 'packages')
+)
+
+thumbnailer_conf = configuration_data()
+thumbnailer_conf.set('bindir', join_paths(get_option('prefix'), get_option('bindir')))
+thumbnailer_file = configure_file(
+  input: 'com.github.ApkManager.thumbnailer.in',
+  output: 'com.github.ApkManager.thumbnailer',
+  configuration: thumbnailer_conf
+)
+install_data(thumbnailer_file,
+  install_dir: join_paths(get_option('datadir'), 'thumbnailers')
+)
+
+install_data('../public/assets/icons/operatingSystems/android.svg',
+  install_dir: join_paths(get_option('datadir'), 'apk-manager', 'icons', 'operatingSystems')
+)
+
+install_data('../public/assets/icons/operatingSystems/android.svg',
+  install_dir: join_paths(get_option('datadir'), 'icons', 'hicolor', 'scalable', 'mimetypes'),
+  rename: 'application-vnd.android.package-archive.svg'
+)
+
 gsettings_schemas = files('com.github.ApkManager.gschema.xml')
 schema_dir = join_paths(get_option('datadir'), 'glib-2.0', 'schemas')
 

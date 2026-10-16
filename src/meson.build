@@ -10,6 +10,7 @@ app_sources = files(
   'windows/keyboard_shortcuts_window.vala',
   'windows/about_window.vala',
   'windows/clear_store_confirm_dialog.vala',
+  'windows/extract_apk_icons_info_dialog.vala',
   'windows/get_apks_window.vala',
   'windows/get_apk_confirm_dialog.vala',
   'windows/manifest_popup.vala'

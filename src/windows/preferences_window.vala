@@ -191,10 +191,32 @@ namespace ApkManager.Windows {
             if (loading) {
                 return;
             }
-            var mode = file_manager_icon_row.selected == 1
-                ? FileManagerIconMode.EXTRACT_APK
-                : FileManagerIconMode.ANDROID_LOGO;
-            settings.set_file_manager_icon_mode(mode);
+
+            if (file_manager_icon_row.selected == 1) {
+                if (settings.get_file_manager_icon_mode() == FileManagerIconMode.EXTRACT_APK) {
+                    return;
+                }
+                show_extract_apk_icons_dialog();
+                return;
+            }
+
+            settings.set_file_manager_icon_mode(FileManagerIconMode.ANDROID_LOGO);
+            FileManagerIcons.sync_from_settings();
+        }
+
+        private void show_extract_apk_icons_dialog() {
+            var dialog = new ExtractApkIconsInfoDialog();
+            dialog.confirmed.connect(() => {
+                settings.set_file_manager_icon_mode(FileManagerIconMode.EXTRACT_APK);
+                FileManagerIcons.sync_from_settings();
+                add_toast(new Adw.Toast("File manager APK icon extraction enabled"));
+            });
+            dialog.cancelled.connect(() => {
+                loading = true;
+                file_manager_icon_row.selected = 0;
+                loading = false;
+            });
+            dialog.present(this);
         }
 
         private void on_runtime_engine_changed() {
@@ -235,6 +257,7 @@ namespace ApkManager.Windows {
         private void finish_clear_store(bool delete_from_disk) {
             var result = StoreClearer.clear(delete_from_disk);
             load_from_settings();
+            FileManagerIcons.sync_from_settings();
 
             string message;
             if (delete_from_disk) {

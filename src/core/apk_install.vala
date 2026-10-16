@@ -52,6 +52,7 @@ namespace ApkManager.Core {
             } else {
                 src.copy(dst, FileCopyFlags.OVERWRITE, null, null);
             }
+            FileManagerIcons.notify_apk_changed(dest);
             return dest;
         }
     }
