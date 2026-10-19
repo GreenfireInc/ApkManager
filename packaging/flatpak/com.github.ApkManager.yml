@@ -1,0 +1,40 @@
+app-id: com.github.ApkManager
+runtime: org.gnome.Platform
+runtime-version: '47'
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.openjdk17
+command: apk-manager
+rename-desktop-file: com.github.ApkManager.desktop
+rename-icon: com.github.ApkManager
+
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  - --filesystem=home
+  - --talk-name=org.freedesktop.FileManager1
+  - --talk-name=org.freedesktop.portal.Desktop
+  - --talk-name=org.freedesktop.portal.FileChooser
+  - --env=JAVA_HOME=/app/jre
+  - --env=PATH=/app/jre/bin:/app/bin:/usr/bin
+
+modules:
+  - name: jre
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/openjdk17/bin
+    build-commands:
+      - cp -a /usr/lib/sdk/openjdk17 /app/jre
+
+  - name: apk-manager
+    buildsystem: meson
+    build-options:
+      append-path: /usr/lib/sdk/openjdk17/bin
+    config-opts:
+      - --prefix=/app
+    sources:
+      - type: dir
+        path: ../..

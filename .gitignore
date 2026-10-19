@@ -1,5 +1,19 @@
 # Build artifacts
-build/
+build/**
+!build/debian/
+!build/debian/**
+!build/snap/
+!build/snap/**
+build/snap/parts/
+build/snap/stage/
+build/snap/prime/
+build/debian/apk-manager/
+build/debian/.debhelper/
+build/debian/debhelper-build-stamp
+build/debian/files
+build/debian/*.substvars
+/debian
+dist/
 .meson-private/
 meson-logs/
 meson-info/

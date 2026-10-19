@@ -1,0 +1,5 @@
+apk-manager (0.1.0-1) unstable; urgency=medium
+
+  * Initial Debian package for ApkManager 0.1.0.
+
+ -- Corey Stedman <cordesir@gmail.com>  Sat, 18 Oct 2026 20:00:00 -0400
