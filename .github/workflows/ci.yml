@@ -25,8 +25,8 @@ jobs:
 
       - name: Meson setup and compile
         run: |
-          meson setup build --prefix=/usr
-          meson compile -C build
+          meson setup build/meson --prefix=/usr
+          meson compile -C build/meson
 
       - name: Smoke test CLI
-        run: ./build/src/apk-manager --version
+        run: ./build/meson/src/apk-manager --version

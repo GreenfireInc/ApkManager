@@ -37,16 +37,16 @@ First-time setup:
 ```bash
 cd ~/Workspace/Applications/apkManager
 chmod +x scripts/fetch-apktool.sh
-meson setup build --prefix=$HOME/.local
-meson compile -C build
-meson install -C build
+meson setup build/meson --prefix=$HOME/.local
+meson compile -C build/meson
+meson install -C build/meson
 update-desktop-database ~/.local/share/applications
 ```
 Rebuild and run:
 
 ```bash
 cd ~/Workspace/Applications/apkManager
-meson compile -C build && meson install -C build
+meson compile -C build/meson && meson install -C build/meson
 export PATH="$HOME/.local/bin:$PATH"
 apk-manager
 ```
