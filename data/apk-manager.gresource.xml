@@ -8,4 +8,22 @@
     <file alias="appRepo.openapk.svg">public/assets/icons/storesRepositories/appRepo.openapk.svg</file>
     <file alias="appRepo.apkMirror.svg">public/assets/icons/storesRepositories/appRepo.apkMirror.svg</file>
   </gresource>
+  <gresource prefix="/com/github/ApkManager/icons/crypto">
+    <file alias="bch.svg">public/assets/icons/crypto/bch.svg</file>
+    <file alias="btc.svg">public/assets/icons/crypto/btc.svg</file>
+    <file alias="ltc.svg">public/assets/icons/crypto/ltc.svg</file>
+    <file alias="eth.svg">public/assets/icons/crypto/eth.svg</file>
+    <file alias="doge.svg">public/assets/icons/crypto/doge.svg</file>
+    <file alias="xtz.svg">public/assets/icons/crypto/xtz.svg</file>
+    <file alias="lunc.svg">public/assets/icons/crypto/lunc.svg</file>
+    <file alias="sol.svg">public/assets/icons/crypto/sol.svg</file>
+    <file alias="bnb.svg">public/assets/icons/crypto/bnb.svg</file>
+  </gresource>
+  <gresource prefix="/com/github/ApkManager/icons/scalable/actions">
+    <file alias="qr-code-symbolic.svg">public/assets/icons/actions/qr-code-symbolic.svg</file>
+    <file alias="github-symbolic.svg">public/assets/icons/other/github.svg</file>
+  </gresource>
+  <gresource prefix="/com/github/ApkManager/icons/fiatPlatforms">
+    <file alias="kofi.wordmark.svg">public/assets/icons/fiatPlatforms/kofi.wordmark.svg</file>
+  </gresource>
 </gresources>

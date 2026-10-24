@@ -71,7 +71,7 @@ gnome.post_install(
   update_desktop_database: true
 )
 
-install_data('../public/icons/androidRobot.svg',
+install_data('../public/assets/icons/operatingSystems/android.svg',
   install_dir: join_paths(get_option('datadir'), 'icons', 'hicolor', 'scalable', 'apps'),
   rename: 'com.github.ApkManager.svg'
 )
@@ -86,3 +86,22 @@ foreach icon : [
 ]
   install_data('../public/assets/icons/storesRepositories/' + icon, install_dir: store_repo_icon_dir)
 endforeach
+
+crypto_icon_dir = join_paths(get_option('datadir'), 'apk-manager', 'icons', 'crypto')
+foreach icon : [
+  'bch.svg',
+  'btc.svg',
+  'ltc.svg',
+  'eth.svg',
+  'doge.svg',
+  'xtz.svg',
+  'lunc.svg',
+  'sol.svg',
+  'bnb.svg'
+]
+  install_data('../public/assets/icons/crypto/' + icon, install_dir: crypto_icon_dir)
+endforeach
+
+install_data('../public/assets/icons/fiatPlatforms/kofi.wordmark.svg',
+  install_dir: join_paths(get_option('datadir'), 'apk-manager', 'icons', 'fiatPlatforms')
+)

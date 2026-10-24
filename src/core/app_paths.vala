@@ -143,6 +143,61 @@ namespace ApkManager.Core {
             }
         }
 
+        public static string crypto_icon(string filename) {
+            return asset_icon("crypto", filename);
+        }
+
+        public static string? crypto_icon_resource(string filename) {
+            return asset_icon_resource("crypto", filename);
+        }
+
+        public static string fiat_platform_icon(string filename) {
+            return asset_icon("fiatPlatforms", filename);
+        }
+
+        public static string? fiat_platform_icon_resource(string filename) {
+            return asset_icon_resource("fiatPlatforms", filename);
+        }
+
+        private static string asset_icon(string category, string filename) {
+            var env = Environment.get_variable("APK_MANAGER_ASSETS_DIR");
+            if (env != null && env.strip() != "") {
+                var from_env = Path.build_filename(
+                    env.strip(), "icons", category, filename
+                );
+                if (FileUtils.test(from_env, FileTest.EXISTS)) {
+                    return from_env;
+                }
+            }
+
+            var installed = Path.build_filename(
+                get_install_prefix(), "share", "apk-manager", "icons", category, filename
+            );
+            if (FileUtils.test(installed, FileTest.EXISTS)) {
+                return installed;
+            }
+
+            var relative = Path.build_filename(
+                "public", "assets", "icons", category, filename
+            );
+            string[] starts = { Environment.get_current_dir(), executable_dir() };
+            foreach (var start in starts) {
+                var found = find_ancestor_file(start, relative);
+                if (found != null) {
+                    return found;
+                }
+            }
+
+            return installed;
+        }
+
+        private static string? asset_icon_resource(string category, string filename) {
+            if (filename == null || filename.strip() == "") {
+                return null;
+            }
+            return "/com/github/ApkManager/icons/%s/%s".printf(category, filename);
+        }
+
         public static string store_repository_icon(string filename) {
             var env = Environment.get_variable("APK_MANAGER_ASSETS_DIR");
             if (env != null && env.strip() != "") {
