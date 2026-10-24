@@ -1,0 +1,116 @@
+10/24/2026
+
+apkManager.Development: Modal.Donations
+
+
+
+
+
+
+
+%currencyIcon% %currencyTicker%://%publicWalletAddress%
+
+%platformIcon% 
+
+https://ko-fi.com/
+
+
+
+
+
+
+
+Shoudl have cryptocurrency
+Kofi?
+Paypal?
+
+
+
+
+    const cryptoWallets = [
+      {
+        name: "Bitcoin Cash",
+        address: "BCH://1PHveXq678AcmhmoGupo36hpovU3mSK3tz"
+      },
+      {
+        name: "Bitcoin",
+        address: "BTC://1PHveXq678AcmhmoGupo36hpovU3mSK3tz"
+      },
+      {
+        name: "Litecoin",
+        address: "LTC://LdmVDneQWKJf2T98KNV6BtRetpDtrHTZQK"
+      },
+      {
+        name: "Ethereum",
+        address: "ETH://0xD0607e1C8d2e6db204Db80A891a3014201017423"
+      },
+      {
+        name: "Dogecoin",
+        address: "DOGE://DHS4dKs4sTNEP6JKittxcYJSKr3V1W5ify"
+      },
+      {
+        name: "Tezos",
+        address: "XTZ://tz1Yypqjtxwp8p7Hg6roJm4GArcAfFhLg9Pr"
+      },
+      {
+        name: "Terra Classic",
+        address: "LUNC://terra1aacapxkck24yrf7mj06za3wz0fy3dxrll7gcrm"
+      },
+      {
+        name: "Solana",
+        address: "SOL://3BdhtQJPZ6vhWzfj6qQTUqSPdVyVNQ1BnBjTSjdaQyLu"
+      },
+      {
+        name: "Binance Coin",
+        address: "BNB://0xD0607e1C8d2e6db204Db80A891a3014201017423"
+      }
+    ];
+
+
+
+
+
+
+
+
+
+
+modal.about.donations.vue
+
+##############################3Other:
+
+Inception: 8/1/16; Writings.Research: SoftwareDonationPlatforms
+
+10/23/2026
+
+Research.WebInternet: SoftwareDonationPlatforms.2026
+
+
+
+https://flattr.com/
+
+https://GoFundme.com
+
+https://gratipay.com/
+
+https://www.patreon.com/
+
+https://paypal.com
+
+Pledgie
+
+Indiegogo
+
+Kickstarter
+
+Amazon
+
+https://opencollective.com/actual
+
+##############Other:
+
+https://www.patreon.com/xtraeme
+
+https://ko-fi.com/
+
+

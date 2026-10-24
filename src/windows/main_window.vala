@@ -126,6 +126,14 @@ namespace ApkManager.Windows {
 
             sidebar_header.pack_start(sidebar_menu);
 
+            var donate_button = new Gtk.Button();
+            donate_button.icon_name = "emblem-favorite-symbolic";
+            donate_button.tooltip_text = "Support development";
+            donate_button.add_css_class("flat");
+            donate_button.add_css_class("donate-heart-button");
+            donate_button.clicked.connect(on_donate_clicked);
+            sidebar_header.pack_start(donate_button);
+
             session_search = new Gtk.SearchEntry();
             session_search.placeholder_text = "Search recent APKs";
             session_search.hexpand = true;
@@ -155,6 +163,7 @@ namespace ApkManager.Windows {
             session_count_label.set_cursor_from_name("pointer");
             session_count_label.tooltip_text = "Scan install folder for APKs not in recents";
             ensure_session_view_controls_css();
+            ensure_donate_heart_css();
 
             var count_click = new Gtk.GestureClick();
             count_click.released.connect(() => {
@@ -527,6 +536,31 @@ namespace ApkManager.Windows {
             if (session_grid.max_children_per_line != column_count) {
                 session_grid.max_children_per_line = column_count;
             }
+        }
+
+        private static bool donate_heart_css_installed = false;
+
+        private static void ensure_donate_heart_css() {
+            if (donate_heart_css_installed) {
+                return;
+            }
+            donate_heart_css_installed = true;
+
+            var css = new Gtk.CssProvider();
+            css.load_from_string("""
+                .donate-heart-button image {
+                    color: @window_fg_color;
+                }
+                .donate-heart-button:hover image,
+                .donate-heart-button:focus-visible image {
+                    color: #e53935;
+                }
+            """);
+            Gtk.StyleContext.add_provider_for_display(
+                Gdk.Display.get_default(),
+                css,
+                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+            );
         }
 
         private static bool session_view_controls_css_installed = false;
@@ -1171,6 +1205,10 @@ namespace ApkManager.Windows {
         private void on_keyboard_shortcuts_clicked() {
             var window = new KeyboardShortcutsWindow(this);
             window.present();
+        }
+
+        private void on_donate_clicked() {
+            DonationsDialog.open_for(this);
         }
 
         private void on_about_clicked() {
