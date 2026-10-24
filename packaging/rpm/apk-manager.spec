@@ -1,10 +1,10 @@
 Name:           apk-manager
-Version:        0.1.0
+Version:        0.2.0
 Release:        1%{?dist}
 Summary:        Inspect Android APK package contents on Linux
 
 License:        GPL-3.0-or-later
-URL:            https://github.com/
+URL:            https://github.com/GreenfireInc/ApkManager
 Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  meson
@@ -66,5 +66,12 @@ to decode manifests, resources, and smali for deeper inspection.
 /usr/bin/update-mime-database %{_datadir}/mime &>/dev/null || :
 
 %changelog
-* Sat Oct 18 2026 Corey Stedman <cordesir@gmail.com> - 0.1.0-1
+* Sat Oct 24 2026 Corey Stedman <cordesir@gmail.com> - 0.2.0-1
+- Update to ApkManager 0.2.0
+- Add donations dialog with wallet QR codes and Ko-fi link
+- Link About credits (ApkManager on GitHub, AppManager, APKTool)
+- Move packaging and build trees under build/; packages are written to dist/
+- Headless-safe --version; CI-gated package builds on merge into main
+
+* Sun Oct 18 2026 Corey Stedman <cordesir@gmail.com> - 0.1.0-1
 - Initial RPM package for ApkManager 0.1.0

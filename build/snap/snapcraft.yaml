@@ -9,6 +9,7 @@ description: |
   Java 17+ is bundled for Apktool decode. Raw archive listing works without
   invoking Java.
 
+version: '0.2.0'
 base: core22
 grade: devel
 confinement: strict

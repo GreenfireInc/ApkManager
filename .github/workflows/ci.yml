@@ -3,10 +3,12 @@ name: CI
 on:
   push:
     branches:
-      - main
-      - master
       - 'CS.*'
   pull_request:
+    branches:
+      - main
+  workflow_call:
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -28,5 +30,7 @@ jobs:
           meson setup build/meson --prefix=/usr
           meson compile -C build/meson
 
-      - name: Smoke test CLI
-        run: ./build/meson/src/apk-manager --version
+      - name: Smoke test CLI (headless)
+        run: |
+          unset DISPLAY WAYLAND_DISPLAY
+          ./build/meson/src/apk-manager --version

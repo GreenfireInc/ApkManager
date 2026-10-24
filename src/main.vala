@@ -9,6 +9,12 @@ int main(string[] args) {
         }
     }
 
+    // Answered before GApplication startup, which initializes GTK and needs a display.
+    if (wants_version(args)) {
+        stdout.printf("ApkManager %s\n", APPLICATION_VERSION);
+        return 0;
+    }
+
     var thumbnail_status = FileManagerIcons.handle_thumbnail_cli(args);
     if (thumbnail_status != null) {
         return thumbnail_status;
@@ -17,4 +23,16 @@ int main(string[] args) {
     ApkManager.Application.retire_stale_instance();
     var app = new ApkManager.Application();
     return app.run(args);
+}
+
+bool wants_version(string[] args) {
+    for (int i = 1; i < args.length; i++) {
+        if (args[i] == "--") {
+            return false;
+        }
+        if (args[i] == "--version") {
+            return true;
+        }
+    }
+    return false;
 }

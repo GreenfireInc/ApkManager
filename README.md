@@ -83,12 +83,25 @@ chmod +x scripts/build-packages.sh
 
 See [packaging/README.md](packaging/README.md) for host dependencies and install commands.
 
-**CI:** push/PR runs compile checks; push a `v*` tag (e.g. `v0.1.0`) to build all packages and publish a GitHub Release.
+**CI:** pull requests into `main` run compile checks; merging into `main` runs CI and then builds all packages; push a `v*` tag (e.g. `v0.2.0`) to also publish a GitHub Release.
 
 ## Status
 
-Initial foundation (Phase 0–1): Meson scaffold, raw archive browser, Apktool
-subprocess integration, session registry, desktop metadata.
+Version **0.2.0**. Working today:
 
-See `docs/methodologies/` for the full implementation roadmap.
+- Open or drop an APK, browse raw archive entries, run **Quick Manifest** or
+  **Full Decode** (Apktool 2.9.3), and view package metadata and the app icon
+  (including adaptive and vector-drawable icons) on the Properties tab
+- **Get APKs** search and download from F-Droid, IzzyOnDroid, Aptoide, OpenAPK,
+  APKMirror, and Uptodown, with install to a managed folder
+- Drag-and-drop install, SHA-256 verification, and APK thumbnails in
+  Nemo/Nautilus
+- Preferences, keyboard shortcuts, About, and a Donations dialog
+- deb, rpm, Flatpak, Snap, and AppImage packages built by GitHub Actions
+
+Not yet done: browsing the decoded file tree after Full Decode, opening decoded
+files in a viewer or editor, and an Apktool framework install UI.
+
+See `docs/progress/` for detailed progress reports and `docs/methodologies/`
+for the full implementation roadmap.
 
