@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+SNAP_JAVA="$(find "$SNAP/usr/lib/jvm" -maxdepth 1 -type d -name 'java-17-openjdk*' 2>/dev/null | head -1)"
+if [ -n "$SNAP_JAVA" ]; then
+  export JAVA_HOME="$SNAP_JAVA"
+  export PATH="$JAVA_HOME/bin:$PATH"
+fi
+exec "$SNAP/usr/bin/apk-manager" "$@"

@@ -1,0 +1,170 @@
+name: Release packages
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deb:
+    name: Debian (.deb)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: bash .github/scripts/install-debian-build-deps.sh
+
+      - name: Build .deb
+        run: |
+          ./scripts/build-packages.sh deb
+          ls -lh dist/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deb
+          path: dist/*.deb
+          if-no-files-found: error
+
+  rpm:
+    name: RPM (.rpm)
+    runs-on: ubuntu-24.04
+    container:
+      image: fedora:41
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          dnf install -y \
+            rpm-build meson ninja-build vala gcc gcc-c++ \
+            gtk4-devel libadwaita-devel gtksourceview5-devel \
+            glib2-devel json-glib-devel libgee-devel libarchive-devel \
+            cairo-devel curl desktop-file-utils git
+
+      - name: Build source tarball and RPM
+        run: |
+          packaging/make-dist.sh
+          VERSION="$(grep "version:" meson.build | head -1 | sed "s/.*'\\([^']*\\)'.*/\\1/")"
+          mkdir -p ~/rpmbuild/SOURCES
+          cp "dist/apk-manager-${VERSION}.tar.gz" ~/rpmbuild/SOURCES/
+          rpmbuild -ba packaging/rpm/apk-manager.spec
+          mkdir -p dist
+          cp ~/rpmbuild/RPMS/*/*.rpm dist/
+          cp ~/rpmbuild/SRPMS/*.rpm dist/
+          ls -lh dist/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpm
+          path: dist/*.rpm
+          if-no-files-found: error
+
+  flatpak:
+    name: Flatpak
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Flatpak tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder
+
+      - name: Build Flatpak bundle
+        run: |
+          flatpak remote-add --if-not-exists --user flathub \
+            https://flathub.org/repo/flathub.flatpakrepo
+          VERSION="$(grep "version:" meson.build | head -1 | sed "s/.*'\\([^']*\\)'.*/\\1/")"
+          flatpak-builder --user --install-deps-from=flathub --force-clean \
+            --repo=dist/flatpak-repo dist/flatpak-build \
+            packaging/flatpak/com.github.ApkManager.yml
+          flatpak build-bundle dist/flatpak-repo \
+            "dist/com.github.ApkManager-${VERSION}.flatpak" com.github.ApkManager
+          ls -lh dist/*.flatpak
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flatpak
+          path: dist/*.flatpak
+          if-no-files-found: error
+
+  snap:
+    name: Snap
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build snap
+        uses: snapcore/action-build@v1
+        id: snapcraft
+        with:
+          path: build/snap
+          snapcraft-args: --verbose
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: snap
+          path: ${{ steps.snapcraft.outputs.snap }}
+          if-no-files-found: error
+
+  appimage:
+    name: AppImage
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: bash .github/scripts/install-debian-build-deps.sh
+
+      - name: Install AppImage tools
+        run: bash .github/scripts/install-appimage-tools.sh
+
+      - name: Build AppImage
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          packaging/appimage/build-appimage.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: appimage
+          path: dist/*.AppImage
+          if-no-files-found: error
+
+  github-release:
+    name: Publish GitHub Release
+    needs: [deb, rpm, flatpak, snap, appimage]
+    runs-on: ubuntu-24.04
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Download all package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: List release assets
+        run: find release-assets -type f -ls
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: release-assets/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

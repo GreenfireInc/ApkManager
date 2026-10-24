@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - 'CS.*'
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compile:
+    name: Compile (Ubuntu)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: bash .github/scripts/install-debian-build-deps.sh
+
+      - name: Meson setup and compile
+        run: |
+          meson setup build --prefix=/usr
+          meson compile -C build
+
+      - name: Smoke test CLI
+        run: ./build/src/apk-manager --version

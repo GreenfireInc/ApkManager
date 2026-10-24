@@ -1,0 +1,39 @@
+Source: apk-manager
+Section: utils
+Priority: optional
+Maintainer: Corey Stedman <cordesir@gmail.com>
+Build-Depends: debhelper-compat (= 13),
+               meson,
+               ninja-build,
+               valac (>= 0.56),
+               pkg-config,
+               libgtk-4-dev,
+               libadwaita-1-dev (>= 1.4),
+               libgtksourceview-5-dev,
+               libglib2.0-dev,
+               libjson-glib-dev,
+               libgee-0.8-dev,
+               libarchive-dev,
+               libcairo2-dev,
+               curl,
+               desktop-file-utils,
+               libglib2.0-bin
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+Homepage: https://github.com/
+Vcs-Browser: https://github.com/
+Vcs-Git: https://github.com/
+
+Package: apk-manager
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         default-jre-headless | openjdk-17-jre-headless | java17-runtime-headless
+Recommends: nemo | nautilus | dolphin | thunar
+Description: Inspect Android APK package contents on Linux
+ ApkManager is a native GTK 4 / Libadwaita desktop application for reading
+ Android APK files. It lists raw archive contents instantly and uses Apktool
+ to decode manifests, resources, and smali for deeper inspection.
+ .
+ A pinned Apktool JAR is bundled. Java 17+ is required for decode operations;
+ raw archive listing works without Java.

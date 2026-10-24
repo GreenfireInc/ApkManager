@@ -72,6 +72,19 @@ scripts/fetch-apktool.sh    # Pin and download apktool.jar at build time
 docs/methodologies/         # Architecture and implementation plans
 docs/progress/              # Build progress reports
 ```
+## Distribution packages
+
+Build **deb**, **rpm**, **Flatpak**, **Snap**, and **AppImage** from the repo:
+
+```bash
+chmod +x scripts/build-packages.sh
+./scripts/build-packages.sh deb        # or: rpm | flatpak | snap | appimage | all
+```
+
+See [packaging/README.md](packaging/README.md) for host dependencies and install commands.
+
+**CI:** push/PR runs compile checks; push a `v*` tag (e.g. `v0.1.0`) to build all packages and publish a GitHub Release.
+
 ## Status
 
 Initial foundation (Phase 0–1): Meson scaffold, raw archive browser, Apktool

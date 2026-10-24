@@ -1,0 +1,69 @@
+name: apk-manager
+title: ApkManager
+summary: Inspect Android APK package contents on Linux
+description: |
+  ApkManager is a native GTK 4 / Libadwaita desktop application for reading
+  Android APK files. It lists raw archive contents instantly and uses Apktool
+  to decode manifests, resources, and smali for deeper inspection.
+
+  Java 17+ is bundled for Apktool decode. Raw archive listing works without
+  invoking Java.
+
+base: core22
+grade: devel
+confinement: strict
+license: GPL-3.0-or-later
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+
+apps:
+  apk-manager:
+    command: bin/apk-manager-launch
+    extensions: [gnome]
+    plugs:
+      - home
+      - network
+      - desktop
+      - desktop-legacy
+      - wayland
+      - x11
+      - opengl
+      - removable-media
+    desktop: usr/share/applications/com.github.ApkManager.desktop
+    common-id: com.github.ApkManager
+
+parts:
+  launcher:
+    plugin: dump
+    source: local/bin
+    organize:
+      apk-manager-launch: bin/apk-manager-launch
+
+  apk-manager:
+    after: [launcher]
+    plugin: meson
+    meson-parameters:
+      - --prefix=/usr
+    source: ../..
+    build-packages:
+      - valac
+      - libgtk-4-dev
+      - libadwaita-1-dev
+      - libgtksourceview-5-dev
+      - libglib2.0-dev
+      - libjson-glib-dev
+      - libgee-0.8-dev
+      - libarchive-dev
+      - libcairo2-dev
+      - curl
+      - desktop-file-utils
+      - libglib2.0-bin
+    stage-packages:
+      - openjdk-17-jre-headless
+    override-build: |
+      craftctl default
+
+layout:
+  /usr/lib/apk-manager:
+    bind: $SNAP/usr/lib/apk-manager
