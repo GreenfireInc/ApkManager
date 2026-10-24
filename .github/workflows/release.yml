@@ -2,6 +2,8 @@ name: Release packages
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
   workflow_dispatch:
@@ -11,11 +13,16 @@ permissions:
 
 concurrency:
   group: release-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.ref == 'refs/heads/main' }}
 
 jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
   deb:
     name: Debian (.deb)
+    needs: ci
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +44,7 @@ jobs:
 
   rpm:
     name: RPM (.rpm)
+    needs: ci
     runs-on: ubuntu-24.04
     container:
       image: fedora:41
@@ -72,6 +80,7 @@ jobs:
 
   flatpak:
     name: Flatpak
+    needs: ci
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -102,6 +111,7 @@ jobs:
 
   snap:
     name: Snap
+    needs: ci
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -124,6 +134,7 @@ jobs:
 
   appimage:
     name: AppImage
+    needs: ci
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4

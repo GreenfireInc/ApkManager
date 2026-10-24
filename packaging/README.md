@@ -8,8 +8,8 @@ Version is taken from `meson.build` (currently **0.1.0**).
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) | Push / PR to `main`, `master`, `CS.*` | Meson compile smoke test |
-| [`.github/workflows/release.yml`](../.github/workflows/release.yml) | Tag `v*` or **Run workflow** | Build deb, rpm, Flatpak, Snap, AppImage; publish a GitHub Release on tags |
+| [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) | PR into `main`, push to `CS.*`, called by release | Meson compile + headless `--version` smoke test |
+| [`.github/workflows/release.yml`](../.github/workflows/release.yml) | Push/merge to `main`, tag `v*`, or **Run workflow** | Run CI, then build deb, rpm, Flatpak, Snap, AppImage; publish a GitHub Release on tags |
 
 **Cut a release:**
 
