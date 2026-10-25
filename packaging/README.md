@@ -121,7 +121,7 @@ flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flat
 **Install locally:**
 
 ```bash
-flatpak install --user dist/com.github.ApkManager-0.1.0.flatpak
+flatpak install --user dist/com.github.ApkManager-0.2.0.flatpak
 flatpak run com.github.ApkManager
 ```
 
@@ -131,7 +131,8 @@ flatpak run com.github.ApkManager
 
 **Files:** `build/snap/snapcraft.yaml`
 
-Uses **core22** + **gnome** extension and stages **openjdk-17-jre-headless**.
+Uses **core24** + **gnome** extension (GNOME 46: GTK 4.14, libadwaita 1.5) and stages **openjdk-17-jre-headless**.
+Snapcraft only reads `snap/snapcraft.yaml` from the project root, so the build script symlinks `snap` → `build/snap` at the repo root for the duration of the build (like `debian` → `build/debian`).
 
 **Host tools:**
 
@@ -148,7 +149,7 @@ sudo snap install snapcraft --classic
 **Install locally:**
 
 ```bash
-sudo snap install --dangerous dist/apk-manager_0.1.0_amd64.snap
+sudo snap install --dangerous dist/apk-manager_0.2.0_amd64.snap
 apk-manager
 ```
 
@@ -167,7 +168,8 @@ Bundles the GTK application and libraries via **linuxdeploy** + **linuxdeploy-pl
 ```bash
 # Meson toolchain (see README.md) plus:
 # - linuxdeploy + linuxdeploy-plugin-gtk (https://github.com/linuxdeploy)
-# - appimagetool (https://github.com/AppImage/AppImageKit)
+# - appimagetool (https://github.com/AppImage/appimagetool)
+# Or install all three: bash .github/scripts/install-appimage-tools.sh
 ```
 
 **Build:**

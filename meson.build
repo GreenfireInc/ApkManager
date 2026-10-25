@@ -60,7 +60,7 @@ fetch_apktool_script = files('scripts/fetch-apktool.sh')
 apktool_jar = custom_target('apktool-jar',
   output: 'apktool.jar',
   build_by_default: true,
-  command: ['bash', fetch_apktool_script, meson.current_build_dir()],
+  command: ['bash', fetch_apktool_script, meson.current_build_dir(), meson.project_source_root()],
   # Deliberately NOT `install: true`. Meson runs depfixer.fix_jar() on every
   # installed build-target output ending in .jar, which requires the JDK `jar`
   # tool and rewrites the manifest's Class-Path. Hosts with only a headless JRE

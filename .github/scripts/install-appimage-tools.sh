@@ -2,6 +2,10 @@
 # Install linuxdeploy, the GTK plugin script, and appimagetool into /usr/local/bin.
 set -euo pipefail
 
+# GitHub's ubuntu-24.04 runners have no libfuse2, so AppImages cannot mount
+# themselves; make them extract to a temp dir instead.
+export APPIMAGE_EXTRACT_AND_RUN=1
+
 ARCH="$(uname -m)"
 case "$ARCH" in
   x86_64)
@@ -25,7 +29,7 @@ curl -fsSL "https://github.com/linuxdeploy/linuxdeploy/releases/download/continu
   -o "$tmpdir/linuxdeploy"
 curl -fsSL "https://raw.githubusercontent.com/linuxdeploy/linuxdeploy-plugin-gtk/master/linuxdeploy-plugin-gtk.sh" \
   -o "$tmpdir/linuxdeploy-plugin-gtk.sh"
-curl -fsSL "https://github.com/AppImage/AppImageKit/releases/download/continuous/${APPIMAGETOOL}" \
+curl -fsSL "https://github.com/AppImage/appimagetool/releases/download/continuous/${APPIMAGETOOL}" \
   -o "$tmpdir/appimagetool"
 
 BINDIR="${APPIMAGE_TOOLS_DIR:-$HOME/.local/bin}"
