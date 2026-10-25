@@ -58,22 +58,36 @@ sed -i 's|^Exec=/usr/bin/apk-manager|Exec=apk-manager|; s|^TryExec=/usr/bin/apk-
 echo "==> Bundle GTK and dependencies with linuxdeploy"
 cd "$BUILD_DIR"
 # appimagetool writes into $OWD when set (e.g. a terminal inside another AppImage
-# such as Cursor), so pin the output path instead of relying on the cwd.
+# such as Cursor), so clear it and pass an explicit output path.
 unset OWD
-export LDAI_OUTPUT="$OUTPUT"
 linuxdeploy \
   --appdir="$APPDIR" \
   --desktop-file="$DESKTOP" \
   --icon-file="$ICON" \
   --executable="$APPDIR/usr/bin/apk-manager" \
-  --plugin gtk \
-  --output appimage
+  --plugin gtk
 
-generated="$(ls -1t "$BUILD_DIR"/*.AppImage 2>/dev/null | head -1 || true)"
-if [[ -n "$generated" ]]; then
-  mv -f "$generated" "$OUTPUT"
-elif [[ ! -f "$OUTPUT" ]]; then
-  appimagetool "$APPDIR" "$OUTPUT"
+# linuxdeploy-plugin-gtk's AppRun hook forces GTK_THEME=Adwaita:<variant> and
+# GDK_BACKEND=x11. GTK_THEME makes libadwaita apps render with GTK's built-in
+# theme instead of the libadwaita stylesheet (plain GTK header bar and window
+# controls), and the X11 override bypasses native Wayland. Drop both.
+GTK_HOOK="$APPDIR/apprun-hooks/linuxdeploy-plugin-gtk.sh"
+if [[ ! -f "$GTK_HOOK" ]]; then
+  echo "Expected GTK AppRun hook not found at $GTK_HOOK" >&2
+  exit 1
+fi
+sed -i '/^export GTK_THEME=/d; /^export GDK_BACKEND=/d' "$GTK_HOOK"
+if grep -qE '^export (GTK_THEME|GDK_BACKEND)=' "$GTK_HOOK"; then
+  echo "Failed to remove GTK_THEME/GDK_BACKEND from $GTK_HOOK" >&2
+  exit 1
+fi
+
+echo "==> Pack AppImage"
+# Second pass without --plugin gtk, so the edited hook is kept as-is.
+LDAI_OUTPUT="$OUTPUT" linuxdeploy --appdir="$APPDIR" --output appimage
+if [[ ! -f "$OUTPUT" ]]; then
+  echo "linuxdeploy did not produce $OUTPUT" >&2
+  exit 1
 fi
 
 chmod +x "$OUTPUT"
