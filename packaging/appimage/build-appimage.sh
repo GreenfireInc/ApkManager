@@ -5,6 +5,9 @@
 # Java 17+ must be available on the host at runtime (not bundled in this script).
 set -euo pipefail
 
+# Run linuxdeploy/appimagetool without FUSE (CI runners and containers lack libfuse2).
+export APPIMAGE_EXTRACT_AND_RUN=1
+
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 VERSION="$(grep "version:" "$ROOT/meson.build" | head -1 | sed "s/.*'\\([^']*\\)'.*/\\1/")"
 DIST="$ROOT/dist"
@@ -54,6 +57,10 @@ sed -i 's|^Exec=/usr/bin/apk-manager|Exec=apk-manager|; s|^TryExec=/usr/bin/apk-
 
 echo "==> Bundle GTK and dependencies with linuxdeploy"
 cd "$BUILD_DIR"
+# appimagetool writes into $OWD when set (e.g. a terminal inside another AppImage
+# such as Cursor), so pin the output path instead of relying on the cwd.
+unset OWD
+export LDAI_OUTPUT="$OUTPUT"
 linuxdeploy \
   --appdir="$APPDIR" \
   --desktop-file="$DESKTOP" \

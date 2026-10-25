@@ -54,8 +54,11 @@ compiled_schemas = custom_target('gschemas.compiled',
     '--targetdir=@OUTDIR@',
     meson.current_source_dir()
   ],
-  install: true,
-  install_dir: schema_dir
+  # Build-tree copy only. The installed gschemas.compiled is a system-wide cache
+  # shared by every app; packages must not ship it (rpmbuild rejects it as an
+  # unpackaged file, dpkg would let it clash). post_install below regenerates it
+  # for plain `meson install`; distro triggers regenerate it for packages.
+  build_by_default: true
 )
 
 gnome.post_install(

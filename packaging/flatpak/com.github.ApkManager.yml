@@ -5,8 +5,6 @@ sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.openjdk17
 command: apk-manager
-rename-desktop-file: com.github.ApkManager.desktop
-rename-icon: com.github.ApkManager
 
 finish-args:
   - --share=ipc
@@ -38,3 +36,14 @@ modules:
     sources:
       - type: dir
         path: ../..
+        skip:
+          - .git
+          - .flatpak-builder
+          - build
+          - dist
+      # Flatpak builds have no network, so fetch-apktool.sh cannot download it.
+      - type: file
+        url: https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.9.3.jar
+        sha256: 7956eb04194300ce0d0a84ad18771eebc94b89fb8d1ddcce8ea4c056818646f4
+        dest: third_party/apktool
+        dest-filename: apktool_2.9.3.jar

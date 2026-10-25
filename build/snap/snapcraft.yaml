@@ -1,3 +1,7 @@
+# Snapcraft only looks for snap/snapcraft.yaml under the project root, and the
+# build container only sees the project root. Build from the repository root
+# with snap/ symlinked here (scripts/build-packages.sh snap and release.yml do
+# this), so every path below is relative to the repository root.
 name: apk-manager
 title: ApkManager
 summary: Inspect Android APK package contents on Linux
@@ -10,13 +14,15 @@ description: |
   invoking Java.
 
 version: '0.2.0'
-base: core22
+# core24's gnome extension provides GNOME 46 (GTK 4.14, libadwaita 1.5).
+# core22 only has libadwaita 1.1, which cannot build Adw.Dialog.
+base: core24
 grade: devel
 confinement: strict
 license: GPL-3.0-or-later
-architectures:
-  - build-on: amd64
-  - build-on: arm64
+platforms:
+  amd64:
+  arm64:
 
 apps:
   apk-manager:
@@ -37,7 +43,7 @@ apps:
 parts:
   launcher:
     plugin: dump
-    source: local/bin
+    source: build/snap/local/bin
     organize:
       apk-manager-launch: bin/apk-manager-launch
 
@@ -46,24 +52,22 @@ parts:
     plugin: meson
     meson-parameters:
       - --prefix=/usr
-    source: ../..
+      - --libdir=lib
+    source: .
+    source-type: local
     build-packages:
       - valac
-      - libgtk-4-dev
-      - libadwaita-1-dev
       - libgtksourceview-5-dev
-      - libglib2.0-dev
       - libjson-glib-dev
       - libgee-0.8-dev
       - libarchive-dev
-      - libcairo2-dev
       - curl
       - desktop-file-utils
       - libglib2.0-bin
     stage-packages:
       - openjdk-17-jre-headless
-    override-build: |
-      craftctl default
+      - libgee-0.8-2
+      - libarchive13t64
 
 layout:
   /usr/lib/apk-manager:

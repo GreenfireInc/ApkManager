@@ -60,7 +60,7 @@ unlink_debian_dir() {
 
 build_deb() {
   need dpkg-buildpackage
-  need debhelper
+  need dh
   link_debian_dir
   trap unlink_debian_dir RETURN
   echo "==> Building Debian package"
@@ -101,10 +101,24 @@ build_flatpak() {
   echo "Flatpak bundle: dist/com.github.ApkManager-${VERSION}.flatpak"
 }
 
+link_snap_dir() {
+  if [[ -e snap && ! -L snap ]]; then
+    echo "Refusing to overwrite snap/ (expected symlink to build/snap)." >&2
+    exit 1
+  fi
+  ln -sfn build/snap snap
+}
+
+unlink_snap_dir() {
+  [[ -L snap ]] && rm -f snap
+}
+
 build_snap() {
   need snapcraft
+  link_snap_dir
+  trap unlink_snap_dir RETURN
   echo "==> Building Snap"
-  (cd build/snap && snapcraft --output "../../dist/apk-manager_${VERSION}_amd64.snap")
+  snapcraft pack --output "dist/apk-manager_${VERSION}_amd64.snap"
   echo "Snap: dist/apk-manager_${VERSION}_amd64.snap"
 }
 
