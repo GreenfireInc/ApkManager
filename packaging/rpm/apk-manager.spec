@@ -1,5 +1,5 @@
 Name:           apk-manager
-Version:        0.2.0
+Version:        0.2.4
 Release:        1%{?dist}
 Summary:        Inspect Android APK package contents on Linux
 
@@ -66,6 +66,12 @@ to decode manifests, resources, and smali for deeper inspection.
 /usr/bin/update-mime-database %{_datadir}/mime &>/dev/null || :
 
 %changelog
+* Tue Nov 10 2026 Corey Stedman <cordesir@gmail.com> - 0.2.4-1
+- Update to ApkManager 0.2.4
+- Show the host Linux distribution with its logo in the About window
+- AppImage keeps libadwaita styling (no forced GTK_THEME / X11 backend)
+- Fix release packaging for deb, rpm, Flatpak, Snap (core24) and AppImage
+
 * Sat Oct 24 2026 Corey Stedman <cordesir@gmail.com> - 0.2.0-1
 - Update to ApkManager 0.2.0
 - Add donations dialog with wallet QR codes and Ko-fi link

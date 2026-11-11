@@ -2,7 +2,7 @@
 
 Build scripts and metadata for **deb**, **rpm**, **Flatpak**, **Snap**, and **AppImage**.
 
-Version is taken from `meson.build` (currently **0.1.0**).
+Version is taken from `meson.build` (currently **0.2.4**).
 
 ## GitHub Actions
 
@@ -14,8 +14,8 @@ Version is taken from `meson.build` (currently **0.1.0**).
 **Cut a release:**
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.2.4
+git push origin v0.2.4
 ```
 
 The release workflow uploads all five package types to the GitHub Release page.  
@@ -65,7 +65,7 @@ sudo apt install build-essential debhelper meson ninja-build valac pkg-config \
 **Install:**
 
 ```bash
-sudo apt install ./dist/apk-manager_0.1.0-1_amd64.deb
+sudo apt install ./dist/apk-manager_0.2.4-1_amd64.deb
 ```
 
 **Runtime:** `default-jre-headless` or OpenJDK 17+ for Apktool decode.
@@ -93,7 +93,7 @@ sudo dnf install rpm-build meson ninja-build vala gtk4-devel libadwaita-devel \
 **Install:**
 
 ```bash
-sudo dnf install dist/apk-manager-0.1.0-1.*.rpm
+sudo dnf install dist/apk-manager-0.2.4-1.*.rpm
 ```
 
 ---
@@ -121,7 +121,7 @@ flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flat
 **Install locally:**
 
 ```bash
-flatpak install --user dist/com.github.ApkManager-0.2.0.flatpak
+flatpak install --user dist/com.github.ApkManager-0.2.4.flatpak
 flatpak run com.github.ApkManager
 ```
 
@@ -149,7 +149,7 @@ sudo snap install snapcraft --classic
 **Install locally:**
 
 ```bash
-sudo snap install --dangerous dist/apk-manager_0.2.0_amd64.snap
+sudo snap install --dangerous dist/apk-manager_0.2.4_amd64.snap
 apk-manager
 ```
 
@@ -189,8 +189,8 @@ Or via the package helper:
 **Run:**
 
 ```bash
-chmod +x dist/ApkManager-0.1.0-x86_64.AppImage
-./dist/ApkManager-0.1.0-x86_64.AppImage
+chmod +x dist/ApkManager-0.2.4-x86_64.AppImage
+./dist/ApkManager-0.2.4-x86_64.AppImage
 ```
 
 ---
