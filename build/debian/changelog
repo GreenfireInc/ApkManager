@@ -1,3 +1,12 @@
+apk-manager (0.2.4-1) unstable; urgency=medium
+
+  * Update to ApkManager 0.2.4.
+  * Show the host Linux distribution with its logo in the About window.
+  * AppImage keeps libadwaita styling (no forced GTK_THEME / X11 backend).
+  * Fix release packaging for deb, rpm, Flatpak, Snap (core24) and AppImage.
+
+ -- Corey Stedman <cordesir@gmail.com>  Tue, 10 Nov 2026 20:10:00 -0500
+
 apk-manager (0.2.0-1) unstable; urgency=medium
 
   * Update to ApkManager 0.2.0.

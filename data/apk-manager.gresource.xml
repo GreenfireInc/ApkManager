@@ -23,6 +23,13 @@
     <file alias="qr-code-symbolic.svg">public/assets/icons/actions/qr-code-symbolic.svg</file>
     <file alias="github-symbolic.svg">public/assets/icons/other/github.svg</file>
   </gresource>
+  <gresource prefix="/com/github/ApkManager/icons/scalable/apps">
+    <file alias="apk-manager-distro-debian.svg">public/assets/icons/operatingSystems/debian.svg</file>
+    <file alias="apk-manager-distro-fedora.svg">public/assets/icons/operatingSystems/fedora.svg</file>
+    <file alias="apk-manager-distro-linuxmint.svg">public/assets/icons/operatingSystems/linuxmint.svg</file>
+    <file alias="apk-manager-distro-ubuntu.svg">public/assets/icons/operatingSystems/ubuntu.svg</file>
+    <file alias="apk-manager-distro-linux.svg">public/assets/icons/operatingSystems/linux.svg</file>
+  </gresource>
   <gresource prefix="/com/github/ApkManager/icons/fiatPlatforms">
     <file alias="kofi.wordmark.svg">public/assets/icons/fiatPlatforms/kofi.wordmark.svg</file>
   </gresource>

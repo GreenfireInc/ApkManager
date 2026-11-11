@@ -1,5 +1,5 @@
 project('apk-manager', ['vala', 'c'],
-  version: '0.2.0',
+  version: '0.2.4',
   meson_version: '>=0.64.0'
 )
 
@@ -40,6 +40,7 @@ core_sources = files(
   'src/core/apk_display_name.vala',
   'src/core/apk_store_result.vala',
   'src/core/apk_store_search.vala',
+  'src/core/host_distro.vala',
   'src/utils/file_utils.vala',
   'src/utils/http_client.vala',
   'src/utils/qr_code.vala',
