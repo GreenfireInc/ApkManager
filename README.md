@@ -83,11 +83,11 @@ chmod +x scripts/build-packages.sh
 
 See [packaging/README.md](packaging/README.md) for host dependencies and install commands.
 
-**CI:** pull requests into `main` run compile checks; merging into `main` runs CI and then builds all packages; push a `v*` tag (e.g. `v0.2.4`) to also publish a GitHub Release.
+**CI:** pull requests into `main` run compile checks; merging into `main` runs CI and then builds all packages; push a `v*` tag (e.g. `v0.2.5`) to also publish a GitHub Release.
 
 ## Status
 
-Version **0.2.4**. Working today:
+Version **0.2.5**. Working today:
 
 - Open or drop an APK, browse raw archive entries, run **Quick Manifest** or
   **Full Decode** (Apktool 2.9.3), and view package metadata and the app icon

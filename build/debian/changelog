@@ -1,7 +1,15 @@
+apk-manager (0.2.5-1) unstable; urgency=medium
+
+  * Update to ApkManager 0.2.5.
+  * Show the host Linux distribution (Debian, Ubuntu, Linux Mint, Fedora)
+    with its logo in the About window.
+  * Add distribution and GTK/libadwaita versions to About > Troubleshooting.
+
+ -- Corey Stedman <cordesir@gmail.com>  Tue, 10 Nov 2026 20:58:00 -0500
+
 apk-manager (0.2.4-1) unstable; urgency=medium
 
   * Update to ApkManager 0.2.4.
-  * Show the host Linux distribution with its logo in the About window.
   * AppImage keeps libadwaita styling (no forced GTK_THEME / X11 backend).
   * Fix release packaging for deb, rpm, Flatpak, Snap (core24) and AppImage.
 
