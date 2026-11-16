@@ -37,7 +37,7 @@
     <key name="runtime-engine" type="s">
       <default>'waydroid'</default>
       <summary>Android runtime engine</summary>
-      <description>Container runtime used to run installed Android apps.</description>
+      <description>Runtime used to run installed Android apps: 'waydroid', 'android-translation-layer', or 'lepton'.</description>
     </key>
     <key name="preferred-repository" type="s">
       <default>'fdroid'</default>

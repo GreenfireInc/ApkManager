@@ -2,6 +2,8 @@ using ApkManager.Core;
 
 namespace ApkManager.Windows {
     public class PreferencesWindow : Adw.PreferencesWindow {
+        private const int RUNTIME_ICON_PX = 20;
+
         private AppSettings settings;
         private Adw.EntryRow install_path_row;
         private Adw.SwitchRow remove_original_row;
@@ -68,8 +70,23 @@ namespace ApkManager.Windows {
 
             runtime_engine_row = new Adw.ComboRow();
             runtime_engine_row.title = "Runtime engine";
-            runtime_engine_row.model = new Gtk.StringList(new string[] { "Waydroid" });
+            // Order must match the RuntimeEngine enum values.
+            runtime_engine_row.model = new Gtk.StringList(new string[] {
+                "Waydroid",
+                "Android Translation Layer",
+                "Lepton"
+            });
+            runtime_engine_row.factory = build_runtime_engine_factory();
             runtime_engine_row.notify["selected"].connect(on_runtime_engine_changed);
+
+            var runtime_help_button = new Gtk.Button.from_icon_name("help-about-symbolic");
+            runtime_help_button.tooltip_text = "How to install each runtime";
+            runtime_help_button.valign = Gtk.Align.CENTER;
+            runtime_help_button.add_css_class("flat");
+            runtime_help_button.clicked.connect(() => {
+                new RuntimeInstallDialog((RuntimeEngine) runtime_engine_row.selected).present(this);
+            });
+            runtime_engine_row.add_prefix(runtime_help_button);
             runtime_group.add(runtime_engine_row);
             page.add(runtime_group);
 
@@ -126,7 +143,7 @@ namespace ApkManager.Windows {
                 break;
             }
 
-            runtime_engine_row.selected = 0;
+            runtime_engine_row.selected = (uint) settings.get_runtime_engine();
 
             switch (settings.get_preferred_repository()) {
             case PreferredRepository.APTOIDE:
@@ -223,7 +240,81 @@ namespace ApkManager.Windows {
             if (loading) {
                 return;
             }
-            settings.set_runtime_engine(RuntimeEngine.WAYDROID);
+            settings.set_runtime_engine((RuntimeEngine) runtime_engine_row.selected);
+        }
+
+        private Gtk.ListItemFactory build_runtime_engine_factory() {
+            var factory = new Gtk.SignalListItemFactory();
+            factory.setup.connect((object) => {
+                var list_item = (Gtk.ListItem) object;
+                var box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 8);
+                var icon = new Gtk.Image();
+                icon.pixel_size = RUNTIME_ICON_PX;
+                box.append(icon);
+                var label = new Gtk.Label(null);
+                label.xalign = 0;
+                box.append(label);
+                list_item.child = box;
+            });
+            factory.bind.connect((object) => {
+                var list_item = (Gtk.ListItem) object;
+                var box = (Gtk.Box) list_item.child;
+                var icon = (Gtk.Image) box.get_first_child();
+                var label = (Gtk.Label) icon.get_next_sibling();
+                label.label = ((Gtk.StringObject) list_item.item).string;
+                apply_runtime_engine_icon(icon, (RuntimeEngine) runtime_engine_index(list_item.item));
+            });
+            return factory;
+        }
+
+        // The combo's selected-value widget does not get a model position, so match by item.
+        private uint runtime_engine_index(Object? item) {
+            var model = runtime_engine_row.model;
+            for (uint i = 0; i < model.get_n_items(); i++) {
+                if (model.get_item(i) == item) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+
+        internal static void apply_runtime_engine_icon(Gtk.Image icon, RuntimeEngine engine) {
+            string filename;
+            switch (engine) {
+            case RuntimeEngine.LEPTON:
+                // White-on-transparent mark: load it as a symbolic icon so GTK tints it to the
+                // theme's foreground color instead of drawing it invisibly on light themes.
+                icon.icon_name = "runtime-lepton-symbolic";
+                return;
+            case RuntimeEngine.ANDROID_TRANSLATION_LAYER:
+                filename = "runtime.androidTranslationLayer.svg";
+                break;
+            default:
+                filename = "runtime.waydroid.svg";
+                break;
+            }
+
+            var resource = AppPaths.runtime_icon_resource(filename);
+            if (resource != null) {
+                try {
+                    var bytes = GLib.resources_lookup_data(resource, ResourceLookupFlags.NONE);
+                    icon.paintable = Gdk.Texture.from_bytes(bytes);
+                    return;
+                } catch (Error e) {
+                    warning("Could not load icon %s: %s", resource, e.message);
+                }
+            }
+
+            var path = AppPaths.runtime_icon(filename);
+            if (FileUtils.test(path, FileTest.EXISTS)) {
+                try {
+                    icon.paintable = Gdk.Texture.from_filename(path);
+                    return;
+                } catch (Error e) {
+                    warning("Could not load icon file %s: %s", path, e.message);
+                }
+            }
+            icon.icon_name = "application-x-executable-symbolic";
         }
 
         private void on_preferred_repository_changed() {

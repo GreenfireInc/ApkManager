@@ -5,7 +5,9 @@ namespace ApkManager.Core {
     }
 
     public enum RuntimeEngine {
-        WAYDROID
+        WAYDROID,
+        ANDROID_TRANSLATION_LAYER,
+        LEPTON
     }
 
     public enum PreferredRepository {
@@ -114,11 +116,25 @@ namespace ApkManager.Core {
         }
 
         public static RuntimeEngine parse_runtime_engine(string value) {
-            return RuntimeEngine.WAYDROID;
+            switch (value) {
+            case "android-translation-layer":
+                return RuntimeEngine.ANDROID_TRANSLATION_LAYER;
+            case "lepton":
+                return RuntimeEngine.LEPTON;
+            default:
+                return RuntimeEngine.WAYDROID;
+            }
         }
 
         public static string runtime_engine_to_string(RuntimeEngine engine) {
-            return "waydroid";
+            switch (engine) {
+            case RuntimeEngine.ANDROID_TRANSLATION_LAYER:
+                return "android-translation-layer";
+            case RuntimeEngine.LEPTON:
+                return "lepton";
+            default:
+                return "waydroid";
+            }
         }
 
         public static PreferredRepository parse_preferred_repository(string value) {

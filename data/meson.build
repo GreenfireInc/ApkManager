@@ -105,6 +105,15 @@ foreach icon : [
   install_data('../public/assets/icons/crypto/' + icon, install_dir: crypto_icon_dir)
 endforeach
 
+runtime_icon_dir = join_paths(get_option('datadir'), 'apk-manager', 'icons', 'runtimes')
+foreach icon : [
+  'runtime.waydroid.svg',
+  'runtime.androidTranslationLayer.svg',
+  'runtime.lepton.svg'
+]
+  install_data('../public/assets/icons/runtimes/' + icon, install_dir: runtime_icon_dir)
+endforeach
+
 install_data('../public/assets/icons/fiatPlatforms/kofi.wordmark.svg',
   install_dir: join_paths(get_option('datadir'), 'apk-manager', 'icons', 'fiatPlatforms')
 )
