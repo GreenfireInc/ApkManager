@@ -14,7 +14,7 @@ namespace ApkManager.Windows {
         SIZE_DESC
     }
 
-    private const int SESSION_GRID_TILE_PX = 96;
+    private const int SESSION_GRID_TILE_PX = 88;
     private const int SESSION_GRID_TILE_MARGIN_PX = 8;
     private const int SESSION_GRID_MIN_COLUMNS = 2;
 
@@ -205,6 +205,7 @@ namespace ApkManager.Windows {
             sidebar_box.append(session_status_bar);
 
             session_list = new Gtk.ListBox();
+            session_list.add_css_class("navigation-sidebar");
             session_list.selection_mode = Gtk.SelectionMode.MULTIPLE;
             session_list.activate_on_single_click = false;
             session_list.row_activated.connect(on_session_activated);
@@ -217,8 +218,10 @@ namespace ApkManager.Windows {
             session_grid.min_children_per_line = SESSION_GRID_MIN_COLUMNS;
             session_grid.max_children_per_line = SESSION_GRID_MIN_COLUMNS;
             session_grid.homogeneous = true;
-            session_grid.column_spacing = 8;
-            session_grid.row_spacing = 8;
+            session_grid.add_css_class("session-grid");
+            ensure_session_items_css();
+            session_grid.column_spacing = 6;
+            session_grid.row_spacing = 6;
             session_grid.margin_start = 12;
             session_grid.margin_end = 12;
             session_grid.margin_top = 4;
@@ -525,8 +528,9 @@ namespace ApkManager.Windows {
                 return;
             }
 
-            int cell = SESSION_GRID_TILE_PX + SESSION_GRID_TILE_MARGIN_PX;
-            int available = width - (int) session_grid.margin_start - (int) session_grid.margin_end;
+            int spacing = (int) session_grid.column_spacing;
+            int cell = SESSION_GRID_TILE_PX + SESSION_GRID_TILE_MARGIN_PX + spacing;
+            int available = width - (int) session_grid.margin_start - (int) session_grid.margin_end + spacing;
             int columns = available / cell;
             if (columns < SESSION_GRID_MIN_COLUMNS) {
                 columns = SESSION_GRID_MIN_COLUMNS;
@@ -554,6 +558,40 @@ namespace ApkManager.Windows {
                 .donate-heart-button:hover image,
                 .donate-heart-button:focus-visible image {
                     color: #e53935;
+                }
+            """);
+            Gtk.StyleContext.add_provider_for_display(
+                Gdk.Display.get_default(),
+                css,
+                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+            );
+        }
+
+        private static bool session_items_css_installed = false;
+
+        private static void ensure_session_items_css() {
+            if (session_items_css_installed) {
+                return;
+            }
+            session_items_css_installed = true;
+
+            // Padding must stay in sync with SESSION_GRID_TILE_MARGIN_PX (left + right).
+            var css = new Gtk.CssProvider();
+            css.load_from_string("""
+                flowbox.session-grid > flowboxchild {
+                    padding: 4px;
+                    border-radius: 8px;
+                    outline-offset: -2px;
+                }
+                flowbox.session-grid > flowboxchild:hover {
+                    background-color: alpha(currentColor, 0.05);
+                }
+                flowbox.session-grid > flowboxchild:selected {
+                    background-color: alpha(currentColor, 0.1);
+                    color: inherit;
+                }
+                flowbox.session-grid > flowboxchild:selected:hover {
+                    background-color: alpha(currentColor, 0.13);
                 }
             """);
             Gtk.StyleContext.add_provider_for_display(
@@ -780,12 +818,8 @@ namespace ApkManager.Windows {
         }
 
         private Gtk.Widget build_session_grid_tile(string apk_path, string name) {
-            var tile = new Gtk.Box(Gtk.Orientation.VERTICAL, 6);
+            var tile = new Gtk.Box(Gtk.Orientation.VERTICAL, 4);
             tile.width_request = SESSION_GRID_TILE_PX;
-            tile.margin_top = 8;
-            tile.margin_bottom = 8;
-            tile.margin_start = 4;
-            tile.margin_end = 4;
             tile.halign = Gtk.Align.CENTER;
 
             tile.append(UiUtils.load_session_apk_icon(apk_path, UiUtils.SESSION_GRID_ICON_PX));
@@ -795,13 +829,19 @@ namespace ApkManager.Windows {
             label.justify = Gtk.Justification.CENTER;
             label.wrap = true;
             label.wrap_mode = Pango.WrapMode.WORD_CHAR;
-            label.max_width_chars = 14;
+            // Homogeneous FlowBox rows take the tallest tile's height, so names are capped at two lines.
+            label.lines = 2;
+            label.ellipsize = Pango.EllipsizeMode.END;
+            label.max_width_chars = 1;
+            label.tooltip_text = name;
             label.add_css_class("title-4");
             tile.append(label);
 
             var size_label = new Gtk.Label(session_apk_file_size(apk_path));
             size_label.xalign = 0.5f;
             size_label.justify = Gtk.Justification.CENTER;
+            size_label.ellipsize = Pango.EllipsizeMode.END;
+            size_label.max_width_chars = 1;
             size_label.add_css_class("dim-label");
             tile.append(size_label);
 
@@ -819,11 +859,9 @@ namespace ApkManager.Windows {
         }
 
         private Gtk.Widget build_session_list_row(string apk_path, string name) {
-            var row_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 10);
-            row_box.margin_top = 6;
-            row_box.margin_bottom = 6;
-            row_box.margin_start = 12;
-            row_box.margin_end = 12;
+            var row_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 8);
+            row_box.margin_top = 4;
+            row_box.margin_bottom = 4;
             row_box.append(UiUtils.load_session_apk_icon(apk_path, UiUtils.SESSION_LIST_ICON_PX));
 
             var text_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 2);
@@ -1158,6 +1196,8 @@ namespace ApkManager.Windows {
                     }
                 } else {
                     var grid_item = new Gtk.FlowBoxChild();
+                    grid_item.halign = Gtk.Align.CENTER;
+                    grid_item.valign = Gtk.Align.START;
                     grid_item.child = build_session_grid_tile(session.apk_path, name);
                     attach_session_context_menu(grid_item, session.apk_path);
                     session_grid.append(grid_item);
