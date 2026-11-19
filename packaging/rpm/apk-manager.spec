@@ -1,5 +1,5 @@
 Name:           apk-manager
-Version:        0.2.6
+Version:        0.2.7
 Release:        1%{?dist}
 Summary:        Inspect Android APK package contents on Linux
 
@@ -66,6 +66,12 @@ to decode manifests, resources, and smali for deeper inspection.
 /usr/bin/update-mime-database %{_datadir}/mime &>/dev/null || :
 
 %changelog
+* Sun Nov 15 2026 Corey Stedman <cordesir@gmail.com> - 0.2.7-1
+- Update to ApkManager 0.2.7
+- Runtime engine picker offers Waydroid, Android Translation Layer, and Lepton, each with its icon
+- New install guide dialog for each runtime, opened from the Runtime engine row in Preferences
+- Fix session bus detection when the D-Bus address carries extra options
+
 * Sun Nov 15 2026 Corey Stedman <cordesir@gmail.com> - 0.2.6-1
 - Update to ApkManager 0.2.6
 - Tighter, cleaner selection highlight for recent APKs in list and grid views

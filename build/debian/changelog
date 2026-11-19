@@ -1,3 +1,14 @@
+apk-manager (0.2.7-1) unstable; urgency=medium
+
+  * Update to ApkManager 0.2.7.
+  * Runtime engine picker offers Waydroid, Android Translation Layer, and
+    Lepton, each with its icon.
+  * New install guide dialog for each runtime, opened from the Runtime
+    engine row in Preferences.
+  * Fix session bus detection when the D-Bus address carries extra options.
+
+ -- Corey Stedman <cordesir@gmail.com>  Sun, 15 Nov 2026 22:37:00 -0500
+
 apk-manager (0.2.6-1) unstable; urgency=medium
 
   * Update to ApkManager 0.2.6.

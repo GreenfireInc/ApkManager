@@ -12,6 +12,7 @@ app_sources = files(
   'windows/donations_dialog.vala',
   'windows/clear_store_confirm_dialog.vala',
   'windows/extract_apk_icons_info_dialog.vala',
+  'windows/runtime_install_dialog.vala',
   'windows/get_apks_window.vala',
   'windows/get_apk_confirm_dialog.vala',
   'windows/manifest_popup.vala'

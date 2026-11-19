@@ -159,6 +159,14 @@ namespace ApkManager.Core {
             return asset_icon_resource("fiatPlatforms", filename);
         }
 
+        public static string runtime_icon(string filename) {
+            return asset_icon("runtimes", filename);
+        }
+
+        public static string? runtime_icon_resource(string filename) {
+            return asset_icon_resource("runtimes", filename);
+        }
+
         private static string asset_icon(string category, string filename) {
             var env = Environment.get_variable("APK_MANAGER_ASSETS_DIR");
             if (env != null && env.strip() != "") {
