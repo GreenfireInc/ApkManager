@@ -1,5 +1,5 @@
 Name:           apk-manager
-Version:        0.2.7
+Version:        0.2.8
 Release:        1%{?dist}
 Summary:        Inspect Android APK package contents on Linux
 
@@ -66,6 +66,12 @@ to decode manifests, resources, and smali for deeper inspection.
 /usr/bin/update-mime-database %{_datadir}/mime &>/dev/null || :
 
 %changelog
+* Sat Nov 21 2026 Corey Stedman <cordesir@gmail.com> - 0.2.8-1
+- Update to ApkManager 0.2.8
+- Runtime install buttons open a terminal for that row's dependencies
+- Android Translation Layer install downloads the AppImage and installs it with AppManager
+- Preferences prefixes each runtime with a green circle when installed and a red circle when not
+
 * Sun Nov 15 2026 Corey Stedman <cordesir@gmail.com> - 0.2.7-1
 - Update to ApkManager 0.2.7
 - Runtime engine picker offers Waydroid, Android Translation Layer, and Lepton, each with its icon

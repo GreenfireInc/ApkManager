@@ -70,11 +70,11 @@ namespace ApkManager.Windows {
 
             runtime_engine_row = new Adw.ComboRow();
             runtime_engine_row.title = "Runtime engine";
-            // Order must match the RuntimeEngine enum values.
+            // Alphabetical. Order must match the RuntimeEngine enum values.
             runtime_engine_row.model = new Gtk.StringList(new string[] {
-                "Waydroid",
                 "Android Translation Layer",
-                "Lepton"
+                "Lepton",
+                "Waydroid"
             });
             runtime_engine_row.factory = build_runtime_engine_factory();
             runtime_engine_row.notify["selected"].connect(on_runtime_engine_changed);
@@ -84,7 +84,11 @@ namespace ApkManager.Windows {
             runtime_help_button.valign = Gtk.Align.CENTER;
             runtime_help_button.add_css_class("flat");
             runtime_help_button.clicked.connect(() => {
-                new RuntimeInstallDialog((RuntimeEngine) runtime_engine_row.selected).present(this);
+                var dialog = new RuntimeInstallDialog((RuntimeEngine) runtime_engine_row.selected);
+                dialog.closed.connect(() => {
+                    runtime_engine_row.factory = build_runtime_engine_factory();
+                });
+                dialog.present(this);
             });
             runtime_engine_row.add_prefix(runtime_help_button);
             runtime_group.add(runtime_engine_row);
@@ -248,6 +252,10 @@ namespace ApkManager.Windows {
             factory.setup.connect((object) => {
                 var list_item = (Gtk.ListItem) object;
                 var box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 8);
+                var presence = new Gtk.Label("●");
+                presence.valign = Gtk.Align.CENTER;
+                presence.add_css_class("title-4");
+                box.append(presence);
                 var icon = new Gtk.Image();
                 icon.pixel_size = RUNTIME_ICON_PX;
                 box.append(icon);
@@ -259,10 +267,17 @@ namespace ApkManager.Windows {
             factory.bind.connect((object) => {
                 var list_item = (Gtk.ListItem) object;
                 var box = (Gtk.Box) list_item.child;
-                var icon = (Gtk.Image) box.get_first_child();
+                var presence = (Gtk.Label) box.get_first_child();
+                var icon = (Gtk.Image) presence.get_next_sibling();
                 var label = (Gtk.Label) icon.get_next_sibling();
+                var engine = (RuntimeEngine) runtime_engine_index(list_item.item);
+                var installed = runtime_engine_installed(engine);
                 label.label = ((Gtk.StringObject) list_item.item).string;
-                apply_runtime_engine_icon(icon, (RuntimeEngine) runtime_engine_index(list_item.item));
+                presence.remove_css_class("success");
+                presence.remove_css_class("error");
+                presence.add_css_class(installed ? "success" : "error");
+                presence.tooltip_text = installed ? "Installed" : "Not installed";
+                apply_runtime_engine_icon(icon, engine);
             });
             return factory;
         }
@@ -276,6 +291,135 @@ namespace ApkManager.Windows {
                 }
             }
             return 0;
+        }
+
+        // Installed means the program is on the system. See
+        // docs/research/20261121.research.apkmanager.android-runtime.detect-installed.grok-4.7.md.
+        internal static bool runtime_engine_installed(RuntimeEngine engine) {
+            switch (engine) {
+            case RuntimeEngine.WAYDROID:
+                return program_present("waydroid")
+                    || program_present("waydroid-launcher");
+            case RuntimeEngine.ANDROID_TRANSLATION_LAYER:
+                return program_present("android-translation-layer")
+                    || atl_appimage_in_home();
+            case RuntimeEngine.LEPTON:
+                return lepton_installed();
+            default:
+                return false;
+            }
+        }
+
+        private static bool program_present(string name) {
+            if (Environment.find_program_in_path(name) != null) {
+                return true;
+            }
+            return FileUtils.test("/usr/bin/%s".printf(name), FileTest.IS_EXECUTABLE)
+                || FileUtils.test("/run/host/usr/bin/%s".printf(name), FileTest.IS_EXECUTABLE);
+        }
+
+        private static bool atl_appimage_in_home() {
+            var home = Environment.get_home_dir();
+            string[] dirs = {
+                Path.build_filename(home, "Applications"),
+                Path.build_filename(home, ".local", "bin"),
+                Path.build_filename(home, "Downloads")
+            };
+            foreach (var dir in dirs) {
+                Dir handle;
+                try {
+                    handle = Dir.open(dir);
+                } catch (FileError e) {
+                    continue;
+                }
+                unowned string? name = null;
+                while ((name = handle.read_name()) != null) {
+                    var folded = name.down();
+                    if (folded.contains("android_translation_layer")
+                        || folded.contains("android translation layer")) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private static bool lepton_installed() {
+            var home = Environment.get_home_dir();
+            string[] roots = {
+                Path.build_filename(home, ".local", "share", "Steam"),
+                Path.build_filename(home, ".steam", "steam"),
+                Path.build_filename(home, "snap", "steam", "common", ".local", "share", "Steam"),
+                Path.build_filename(home, ".snap", "data", "steam", "common", ".local", "share", "Steam"),
+                Path.build_filename(home, ".var", "app", "com.valvesoftware.Steam", ".local", "share", "Steam"),
+                Path.build_filename(home, ".var", "app", "com.valvesoftware.Steam", "data", "Steam")
+            };
+            foreach (var root in roots) {
+                if (lepton_in_steam_root(root)) {
+                    return true;
+                }
+            }
+            if (lepton_in_steam_root("/usr/share/steam/compatibilitytools.d")
+                || lepton_in_steam_root("/usr/local/share/steam/compatibilitytools.d")) {
+                return true;
+            }
+            foreach (var root in roots) {
+                if (lepton_in_extra_libraries(Path.build_filename(root, "steamapps", "libraryfolders.vdf"))) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool lepton_in_steam_root(string root) {
+            return FileUtils.test(
+                    Path.build_filename(root, "steamapps", "appmanifest_3029110.acf"),
+                    FileTest.EXISTS
+                )
+                || FileUtils.test(
+                    Path.build_filename(root, "compatibilitytools.d", "lepton-x86_64", "compatibilitytool.vdf"),
+                    FileTest.EXISTS
+                )
+                || FileUtils.test(
+                    Path.build_filename(root, "lepton-x86_64", "compatibilitytool.vdf"),
+                    FileTest.EXISTS
+                );
+        }
+
+        private static bool lepton_in_extra_libraries(string vdf_path) {
+            string contents;
+            try {
+                if (!FileUtils.get_contents(vdf_path, out contents)) {
+                    return false;
+                }
+            } catch (FileError e) {
+                return false;
+            }
+            int cursor = 0;
+            while (true) {
+                var at = contents.index_of("\"path\"", cursor);
+                if (at < 0) {
+                    return false;
+                }
+                cursor = at + 6;
+                var library = next_quoted(contents, ref cursor);
+                if (library != null && lepton_in_steam_root(library)) {
+                    return true;
+                }
+            }
+        }
+
+        private static string? next_quoted(string text, ref int cursor) {
+            var start = text.index_of_char('"', cursor);
+            if (start < 0) {
+                return null;
+            }
+            var end = text.index_of_char('"', start + 1);
+            if (end < 0) {
+                return null;
+            }
+            cursor = end + 1;
+            return text.substring(start + 1, end - start - 1);
         }
 
         internal static void apply_runtime_engine_icon(Gtk.Image icon, RuntimeEngine engine) {

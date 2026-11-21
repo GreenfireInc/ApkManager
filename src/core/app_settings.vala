@@ -5,9 +5,9 @@ namespace ApkManager.Core {
     }
 
     public enum RuntimeEngine {
-        WAYDROID,
         ANDROID_TRANSLATION_LAYER,
-        LEPTON
+        LEPTON,
+        WAYDROID
     }
 
     public enum PreferredRepository {
