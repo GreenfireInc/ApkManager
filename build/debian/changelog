@@ -1,3 +1,15 @@
+apk-manager (0.2.9-1) unstable; urgency=medium
+
+  * Update to ApkManager 0.2.9.
+  * Run an open APK with the runtime selected in Preferences, from the main
+    window and the Install APK window.
+  * Debug runs the APK in Android Translation Layer and shows errors that can
+    be saved as JSON.
+  * Files and Properties use the same icon-and-label style as Run and Debug.
+  * Preferences lists the runtime engines alphabetically.
+
+ -- Corey Stedman <cordesir@gmail.com>  Sat, 21 Nov 2026 14:59:00 -0500
+
 apk-manager (0.2.8-1) unstable; urgency=medium
 
   * Update to ApkManager 0.2.8.

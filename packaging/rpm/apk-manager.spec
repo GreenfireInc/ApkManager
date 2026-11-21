@@ -1,5 +1,5 @@
 Name:           apk-manager
-Version:        0.2.8
+Version:        0.2.9
 Release:        1%{?dist}
 Summary:        Inspect Android APK package contents on Linux
 
@@ -66,6 +66,13 @@ to decode manifests, resources, and smali for deeper inspection.
 /usr/bin/update-mime-database %{_datadir}/mime &>/dev/null || :
 
 %changelog
+* Sat Nov 21 2026 Corey Stedman <cordesir@gmail.com> - 0.2.9-1
+- Update to ApkManager 0.2.9
+- Run an open APK with the runtime selected in Preferences, from the main window and the Install APK window
+- Debug runs the APK in Android Translation Layer and shows errors that can be saved as JSON
+- Files and Properties use the same icon-and-label style as Run and Debug
+- Preferences lists the runtime engines alphabetically
+
 * Sat Nov 21 2026 Corey Stedman <cordesir@gmail.com> - 0.2.8-1
 - Update to ApkManager 0.2.8
 - Runtime install buttons open a terminal for that row's dependencies

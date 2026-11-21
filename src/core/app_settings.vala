@@ -137,6 +137,17 @@ namespace ApkManager.Core {
             }
         }
 
+        public static string runtime_engine_label(RuntimeEngine engine) {
+            switch (engine) {
+            case RuntimeEngine.ANDROID_TRANSLATION_LAYER:
+                return "Android Translation Layer";
+            case RuntimeEngine.LEPTON:
+                return "Lepton";
+            default:
+                return "Waydroid";
+            }
+        }
+
         public static PreferredRepository parse_preferred_repository(string value) {
             if (value == "aptoide") {
                 return PreferredRepository.APTOIDE;

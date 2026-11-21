@@ -22,6 +22,9 @@ namespace ApkManager.Windows {
         private Gtk.Button install_folder_button;
         private Gtk.ProgressBar icon_progress;
         private Gtk.Button inspect_button;
+        private Gtk.Button run_button;
+        private Adw.ToastOverlay toast_overlay;
+        private bool run_in_progress = false;
         private uint icon_progress_timeout = 0;
         private bool icon_resolved = false;
         private bool closed = false;
@@ -47,7 +50,9 @@ namespace ApkManager.Windows {
 
         private void build_ui() {
             var toolbar = new Adw.ToolbarView();
-            content = toolbar;
+            toast_overlay = new Adw.ToastOverlay();
+            toast_overlay.child = toolbar;
+            content = toast_overlay;
 
             var header = new Adw.HeaderBar();
             inspect_button = new Gtk.Button.with_label("Inspect");
@@ -59,6 +64,10 @@ namespace ApkManager.Windows {
             var verify_button = new Gtk.Button.with_label("Verify");
             verify_button.clicked.connect(on_verify_clicked);
             header.pack_end(verify_button);
+            run_button = new Gtk.Button.with_label("Run");
+            run_button.tooltip_text = "Run this APK with the runtime selected in Preferences";
+            run_button.clicked.connect(on_run_clicked);
+            header.pack_end(run_button);
             toolbar.add_top_bar(header);
 
             var box = new Gtk.Box(Gtk.Orientation.VERTICAL, 16);
@@ -498,6 +507,76 @@ namespace ApkManager.Windows {
         private void on_verify_clicked() {
             var verify = new VerifyApkWindow(this, apk_path);
             verify.present();
+        }
+
+        private void on_run_clicked() {
+            run_selected_runtime.begin();
+        }
+
+        private async void run_selected_runtime() {
+            if (run_in_progress || closed) {
+                return;
+            }
+            run_in_progress = true;
+            run_button.sensitive = false;
+            var engine = AppSettings.get_default().get_runtime_engine();
+            var label = AppSettings.runtime_engine_label(engine);
+            try {
+                if (!PreferencesWindow.runtime_engine_installed(engine)) {
+                    yield offer_runtime_install(engine, label);
+                    return;
+                }
+                toast_overlay.add_toast(new Adw.Toast("Starting %s".printf(label)));
+                yield RuntimeRunner.run(engine, apk_path, (message) => {
+                    if (!closed) {
+                        show_run_error(label, message);
+                    }
+                });
+            } catch (RuntimeRunError e) {
+                if (closed) {
+                    return;
+                }
+                if (e.code == RuntimeRunError.NOT_INSTALLED) {
+                    yield offer_runtime_install(engine, label);
+                } else {
+                    show_run_error(label, e.message);
+                }
+            } catch (Error e) {
+                if (!closed) {
+                    show_run_error(label, e.message);
+                }
+            } finally {
+                run_in_progress = false;
+                if (!closed) {
+                    run_button.sensitive = true;
+                }
+            }
+        }
+
+        private async void offer_runtime_install(RuntimeEngine engine, string label) {
+            var dialog = new Adw.AlertDialog(
+                "%s is not installed".printf(label),
+                "Run uses the runtime selected in Preferences."
+            );
+            dialog.add_response("close", "Close");
+            dialog.add_response("guide", "How to install");
+            dialog.set_response_appearance("guide", Adw.ResponseAppearance.SUGGESTED);
+            dialog.default_response = "guide";
+            dialog.close_response = "close";
+            var response = yield dialog.choose(this, null);
+            if (!closed && response == "guide") {
+                new RuntimeInstallDialog(engine).present(this);
+            }
+        }
+
+        private void show_run_error(string label, string message) {
+            var body = message.strip();
+            if (body == "") {
+                body = "The runtime exited with an error.";
+            }
+            var dialog = new Adw.AlertDialog("Could not run with %s".printf(label), body);
+            dialog.add_response("close", "Close");
+            dialog.present(this);
         }
 
         private void on_open_install_folder() {
