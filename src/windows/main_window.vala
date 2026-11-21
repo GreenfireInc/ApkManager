@@ -41,7 +41,24 @@ namespace ApkManager.Windows {
         private string status_before_decode = "";
         private Gtk.Button decode_manifest_button;
         private Gtk.Button decode_full_button;
+        private Gtk.Button run_apk_button;
+        private Gtk.Button debug_apk_button;
+        private Gtk.Button save_debug_button;
+        private Gtk.Box debug_section;
+        private Gtk.Label debug_placeholder;
+        private Gtk.ScrolledWindow debug_scrolled;
+        private Gtk.TextView debug_view;
         private Gtk.Button cancel_button;
+        private bool run_in_progress = false;
+        private bool closed = false;
+        private Gee.ArrayList<string> debug_streams = new Gee.ArrayList<string>();
+        private Gee.ArrayList<string> debug_texts = new Gee.ArrayList<string>();
+        private string[] debug_command = {};
+        private string debug_apk_path = "";
+        private string debug_started_at = "";
+        private bool debug_egl = false;
+        private Subprocess? debug_process = null;
+        private Cancellable? debug_cancellable = null;
         private Adw.NavigationSplitView split_view;
         private Adw.ViewStack content_stack;
         private Gtk.SearchEntry session_search;
@@ -58,6 +75,11 @@ namespace ApkManager.Windows {
             this.registry = registry;
             title = "ApkManager";
             build_ui();
+            close_request.connect(() => {
+                closed = true;
+                stop_atl_debug();
+                return false;
+            });
             refresh_sessions();
         }
 
@@ -320,21 +342,92 @@ namespace ApkManager.Windows {
             properties_tab_box.append(properties_scrolled);
 
             detail_stack = new Adw.ViewStack();
-            detail_stack.add_titled(files_scrolled, "files", "Files");
-            detail_stack.add_titled(properties_tab_box, "properties", "Properties");
+            detail_stack.add_titled_with_icon(files_scrolled, "files", "Files", "folder-symbolic");
+            detail_stack.add_titled_with_icon(properties_tab_box, "properties", "Properties", "document-properties-symbolic");
             detail_stack.set_vexpand(true);
             detail_stack.visible_child_name = "files";
 
             detail_switcher = new Adw.ViewSwitcher();
             detail_switcher.stack = detail_stack;
-            detail_switcher.margin_start = 12;
-            detail_switcher.margin_end = 12;
-            detail_switcher.margin_top = 6;
-            detail_switcher.margin_bottom = 4;
+            detail_switcher.policy = Adw.ViewSwitcherPolicy.WIDE;
             detail_switcher.halign = Gtk.Align.START;
+            detail_switcher.valign = Gtk.Align.CENTER;
 
-            content_box.append(detail_switcher);
+            run_apk_button = new Gtk.Button();
+            var run_content = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 6);
+            run_content.append(new Gtk.Image.from_icon_name("media-playback-start-symbolic"));
+            run_content.append(new Gtk.Label("Run"));
+            run_apk_button.child = run_content;
+            run_apk_button.valign = Gtk.Align.CENTER;
+            run_apk_button.tooltip_text = "Run this APK with the runtime selected in Preferences";
+            run_apk_button.clicked.connect(on_run_apk_clicked);
+
+            debug_apk_button = new Gtk.Button();
+            var debug_content = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 6);
+            debug_content.append(new Gtk.Image.from_icon_name("dialog-warning-symbolic"));
+            debug_content.append(new Gtk.Label("Debug"));
+            debug_apk_button.child = debug_content;
+            debug_apk_button.valign = Gtk.Align.CENTER;
+            debug_apk_button.tooltip_text = "Run this APK in Android Translation Layer and show its errors below";
+            debug_apk_button.clicked.connect(on_debug_apk_clicked);
+
+            var detail_bar = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 8);
+            detail_bar.margin_start = 12;
+            detail_bar.margin_end = 12;
+            detail_bar.margin_top = 6;
+            detail_bar.margin_bottom = 4;
+            detail_bar.append(detail_switcher);
+            detail_bar.append(run_apk_button);
+            detail_bar.append(debug_apk_button);
+
+            debug_section = new Gtk.Box(Gtk.Orientation.VERTICAL, 6);
+            debug_section.margin_start = 12;
+            debug_section.margin_end = 12;
+            debug_section.margin_top = 6;
+            debug_section.margin_bottom = 12;
+            debug_section.visible = false;
+
+            var debug_header = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 8);
+            var debug_title = new Gtk.Label("Debug");
+            debug_title.add_css_class("heading");
+            debug_title.hexpand = true;
+            debug_title.xalign = 0;
+            save_debug_button = new Gtk.Button.with_label("Save JSON");
+            save_debug_button.sensitive = false;
+            save_debug_button.clicked.connect(() => {
+                save_debug_json.begin();
+            });
+            debug_header.append(debug_title);
+            debug_header.append(save_debug_button);
+
+            debug_placeholder = new Gtk.Label("Waiting for errors from Android Translation Layer.");
+            debug_placeholder.xalign = 0;
+            debug_placeholder.wrap = true;
+            debug_placeholder.add_css_class("dim-label");
+
+            debug_view = new Gtk.TextView();
+            debug_view.editable = false;
+            debug_view.cursor_visible = false;
+            debug_view.monospace = true;
+            debug_view.wrap_mode = Gtk.WrapMode.WORD_CHAR;
+            debug_view.left_margin = 8;
+            debug_view.right_margin = 8;
+            debug_view.top_margin = 8;
+            debug_view.bottom_margin = 8;
+            debug_scrolled = new Gtk.ScrolledWindow();
+            debug_scrolled.child = debug_view;
+            debug_scrolled.min_content_height = 160;
+            debug_scrolled.vexpand = false;
+            debug_scrolled.visible = false;
+
+            debug_section.append(new Gtk.Separator(Gtk.Orientation.HORIZONTAL));
+            debug_section.append(debug_header);
+            debug_section.append(debug_placeholder);
+            debug_section.append(debug_scrolled);
+
+            content_box.append(detail_bar);
             content_box.append(detail_stack);
+            content_box.append(debug_section);
 
             empty_page = new Adw.StatusPage();
             empty_page.icon_name = "application-x-android-package";
@@ -952,6 +1045,240 @@ namespace ApkManager.Windows {
             } catch (Error e) {
                 status_label.set_text("Failed to read archive: %s".printf(e.message));
             }
+        }
+
+        private void on_run_apk_clicked() {
+            run_selected_runtime.begin();
+        }
+
+        private void on_debug_apk_clicked() {
+            start_atl_debug.begin();
+        }
+
+        private void stop_atl_debug() {
+            if (debug_cancellable != null) {
+                debug_cancellable.cancel();
+                debug_cancellable = null;
+            }
+            if (debug_process != null) {
+                debug_process.force_exit();
+                debug_process = null;
+            }
+        }
+
+        private async void start_atl_debug() {
+            if (closed || active_session == null) {
+                return;
+            }
+            var apk_path = active_session.apk_path;
+            stop_atl_debug();
+            debug_streams.clear();
+            debug_texts.clear();
+            debug_view.buffer.text = "";
+            debug_placeholder.label = "Waiting for errors from Android Translation Layer.";
+            debug_placeholder.visible = true;
+            debug_scrolled.visible = false;
+            save_debug_button.sensitive = false;
+            debug_section.visible = true;
+            debug_apk_path = apk_path;
+            debug_started_at = new DateTime.now_utc().format("%Y-%m-%dT%H:%M:%SZ");
+            debug_cancellable = new Cancellable();
+            try {
+                string[] command;
+                bool egl_forced;
+                debug_process = RuntimeRunner.start_atl_debug(
+                    apk_path,
+                    out command,
+                    out egl_forced,
+                    on_atl_debug_line,
+                    debug_cancellable
+                );
+                debug_command = command;
+                debug_egl = egl_forced;
+                status_label.set_text("Debugging with Android Translation Layer");
+            } catch (RuntimeRunError e) {
+                debug_process = null;
+                if (closed) {
+                    return;
+                }
+                if (e.code == RuntimeRunError.NOT_INSTALLED) {
+                    yield offer_runtime_install(RuntimeEngine.ANDROID_TRANSLATION_LAYER, "Android Translation Layer");
+                } else {
+                    show_run_error("Android Translation Layer", e.message);
+                }
+            } catch (Error e) {
+                debug_process = null;
+                if (!closed) {
+                    show_run_error("Android Translation Layer", e.message);
+                }
+            }
+        }
+
+        private void on_atl_debug_line(string stream, string text) {
+            if (closed) {
+                return;
+            }
+            debug_streams.add(stream);
+            debug_texts.add(text);
+            save_debug_button.sensitive = true;
+            if (!RuntimeRunner.atl_debug_error(text)) {
+                return;
+            }
+            debug_placeholder.visible = false;
+            debug_scrolled.visible = true;
+            var buffer = debug_view.buffer;
+            Gtk.TextIter end;
+            buffer.get_end_iter(out end);
+            buffer.insert(ref end, text + "\n", -1);
+        }
+
+        private async void save_debug_json() {
+            if (debug_texts.size == 0) {
+                return;
+            }
+            var dialog = new Gtk.FileDialog();
+            dialog.title = "Save debug JSON";
+            dialog.initial_name = "atl-debug.json";
+            var downloads = File.new_for_path(Path.build_filename(Environment.get_home_dir(), "Downloads"));
+            if (downloads.query_exists()) {
+                dialog.initial_folder = downloads;
+            }
+            try {
+                var file = yield dialog.save(this, null);
+                var json = build_debug_json();
+                uint8[] contents = new uint8[json.length];
+                Memory.copy(contents, json.data, json.length);
+                string? etag = null;
+                yield file.replace_contents_async(
+                    contents,
+                    null,
+                    false,
+                    FileCreateFlags.REPLACE_DESTINATION,
+                    null,
+                    out etag
+                );
+                if (!closed) {
+                    status_label.set_text("Saved debug JSON");
+                }
+            } catch (Error e) {
+                if (!closed && !(e is IOError.CANCELLED)) {
+                    show_run_error("Android Translation Layer", e.message);
+                }
+            }
+        }
+
+        private string build_debug_json() {
+            var root = new Json.Builder();
+            root.begin_object();
+            root.set_member_name("apk").add_string_value(debug_apk_path);
+            root.set_member_name("runtime").add_string_value("android-translation-layer");
+            root.set_member_name("startedAt").add_string_value(debug_started_at);
+            root.set_member_name("command");
+            root.begin_array();
+            foreach (var arg in debug_command) {
+                root.add_string_value(arg);
+            }
+            root.end_array();
+            root.set_member_name("environment");
+            root.begin_object();
+            root.set_member_name("ANDROID_LOG_TAGS").add_string_value("*:v");
+            if (debug_egl) {
+                root.set_member_name("GDK_DEBUG").add_string_value("gl-egl");
+            }
+            root.end_object();
+            append_debug_lines(root, "lines", false);
+            append_debug_lines(root, "errors", true);
+            root.end_object();
+            var generator = new Json.Generator();
+            generator.pretty = true;
+            generator.set_root(root.get_root());
+            return generator.to_data(null);
+        }
+
+        private void append_debug_lines(Json.Builder root, string member, bool errors_only) {
+            root.set_member_name(member);
+            root.begin_array();
+            for (int i = 0; i < debug_texts.size; i++) {
+                if (errors_only && !RuntimeRunner.atl_debug_error(debug_texts[i])) {
+                    continue;
+                }
+                root.begin_object();
+                root.set_member_name("stream").add_string_value(debug_streams[i]);
+                root.set_member_name("text").add_string_value(debug_texts[i]);
+                root.end_object();
+            }
+            root.end_array();
+        }
+
+        private async void run_selected_runtime() {
+            if (run_in_progress || closed || active_session == null) {
+                return;
+            }
+            var apk_path = active_session.apk_path;
+            run_in_progress = true;
+            run_apk_button.sensitive = false;
+            var engine = AppSettings.get_default().get_runtime_engine();
+            var label = AppSettings.runtime_engine_label(engine);
+            try {
+                if (!PreferencesWindow.runtime_engine_installed(engine)) {
+                    yield offer_runtime_install(engine, label);
+                    return;
+                }
+                status_label.set_text("Starting %s".printf(label));
+                yield RuntimeRunner.run(engine, apk_path, (message) => {
+                    if (!closed) {
+                        show_run_error(label, message);
+                    }
+                });
+                if (!closed) {
+                    status_label.set_text("Running with %s".printf(label));
+                }
+            } catch (RuntimeRunError e) {
+                if (closed) {
+                    return;
+                }
+                if (e.code == RuntimeRunError.NOT_INSTALLED) {
+                    yield offer_runtime_install(engine, label);
+                } else {
+                    show_run_error(label, e.message);
+                }
+            } catch (Error e) {
+                if (!closed) {
+                    show_run_error(label, e.message);
+                }
+            } finally {
+                run_in_progress = false;
+                if (!closed) {
+                    run_apk_button.sensitive = true;
+                }
+            }
+        }
+
+        private async void offer_runtime_install(RuntimeEngine engine, string label) {
+            var dialog = new Adw.AlertDialog(
+                "%s is not installed".printf(label),
+                "Run uses the runtime selected in Preferences."
+            );
+            dialog.add_response("close", "Close");
+            dialog.add_response("guide", "How to install");
+            dialog.set_response_appearance("guide", Adw.ResponseAppearance.SUGGESTED);
+            dialog.default_response = "guide";
+            dialog.close_response = "close";
+            var response = yield dialog.choose(this, null);
+            if (!closed && response == "guide") {
+                new RuntimeInstallDialog(engine).present(this);
+            }
+        }
+
+        private void show_run_error(string label, string message) {
+            var body = message.strip();
+            if (body == "") {
+                body = "The runtime exited with an error.";
+            }
+            status_label.set_text("Could not run with %s".printf(label));
+            var dialog = new Adw.AlertDialog("Could not run with %s".printf(label), body);
+            dialog.add_response("close", "Close");
+            dialog.present(this);
         }
 
         private void start_decode(DecodeMode mode) {
