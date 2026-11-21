@@ -95,7 +95,7 @@ namespace ApkManager.Windows {
             var install_group = new Adw.PreferencesGroup();
             install_group.title = "Installation";
             for (int i = 0; i < guide.distros.length; i++) {
-                install_group.add(build_distro_row(guide.distros[i], i == 0));
+                install_group.add(build_distro_row(guide, guide.distros[i], i == 0));
             }
             box.append(install_group);
 
@@ -126,7 +126,18 @@ namespace ApkManager.Windows {
             return scrolled;
         }
 
-        private Gtk.Widget build_distro_row(DistroSteps steps, bool expanded) {
+        private bool install_in_progress = false;
+
+        private const string ATL_APPIMAGE_NAME =
+            "Android_Translation_Layer-3e686d14-anylinux-x86_64.AppImage";
+        private const string ATL_APPIMAGE_URL =
+            "https://github.com/pkgforge-dev/android_translation_layer-AppImage/releases/download/3e686d14%402026-09-22_1790090775/Android_Translation_Layer-3e686d14-anylinux-x86_64.AppImage";
+        private const string APP_MANAGER_APPIMAGE_NAME =
+            "AppManager-3.8.0-anylinux-x86_64.AppImage";
+        private const string APP_MANAGER_APPIMAGE_URL =
+            "https://github.com/kem-a/AppManager/releases/download/v3.8.0/AppManager-3.8.0-anylinux-x86_64.AppImage";
+
+        private Gtk.Widget build_distro_row(RuntimeGuide guide, DistroSteps steps, bool expanded) {
             var row = new Adw.ExpanderRow();
             row.title = steps.name;
             row.subtitle = steps.note;
@@ -154,7 +165,6 @@ namespace ApkManager.Windows {
 
             var copy_button = new Gtk.Button.from_icon_name("edit-copy-symbolic");
             copy_button.tooltip_text = "Copy commands";
-            copy_button.valign = Gtk.Align.START;
             copy_button.add_css_class("flat");
             var text = steps.commands;
             var distro = steps.name;
@@ -163,15 +173,182 @@ namespace ApkManager.Windows {
                 toast_overlay.add_toast(new Adw.Toast("%s commands copied".printf(distro)));
             });
 
+            var install_button = new Gtk.Button.from_icon_name("system-software-install-symbolic");
+            install_button.halign = Gtk.Align.CENTER;
+            install_button.margin_top = 6;
+            install_button.add_css_class("flat");
+            var engine = guide.engine;
+            var distro_name = steps.name;
+            var command_text = steps.commands;
+            if (engine == RuntimeEngine.ANDROID_TRANSLATION_LAYER) {
+                install_button.tooltip_text =
+                    "Install %s dependencies, download Android Translation Layer, and install it with AppManager"
+                    .printf(distro_name);
+            } else {
+                install_button.tooltip_text = "Run these %s install commands in a terminal".printf(distro_name);
+            }
+            install_button.clicked.connect(() => {
+                if (install_in_progress) {
+                    return;
+                }
+                install_in_progress = true;
+                install_button.sensitive = false;
+                run_install.begin(engine, distro_name, command_text, (obj, res) => {
+                    install_in_progress = false;
+                    install_button.sensitive = true;
+                    try {
+                        run_install.end(res);
+                    } catch (Error e) {
+                        toast_overlay.add_toast(new Adw.Toast(e.message));
+                    }
+                });
+            });
+
+            var actions = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+            actions.valign = Gtk.Align.START;
+            actions.append(copy_button);
+            actions.append(install_button);
+
             var block = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 6);
             block.margin_top = 10;
             block.margin_bottom = 10;
             block.margin_start = 12;
             block.margin_end = 6;
             block.append(commands);
-            block.append(copy_button);
+            block.append(actions);
             row.add_row(block);
             return row;
+        }
+
+        // Android Translation Layer: terminal for that row's package line, then
+        // download the AppImage into ~/Downloads and install it with AppManager.
+        // Other runtimes: open a terminal running the commands shown on the row.
+        private async void run_install(RuntimeEngine engine, string distro, string commands) throws Error {
+            if (engine == RuntimeEngine.ANDROID_TRANSLATION_LAYER) {
+                yield install_android_translation_layer(distro, commands);
+                return;
+            }
+            toast("Opening a terminal for the %s install commands".printf(distro));
+            yield open_terminal_script(commands);
+        }
+
+        private async void install_android_translation_layer(string distro, string commands) throws Error {
+            var dependency = commands.split("\n", 2)[0].strip();
+            toast("Opening a terminal to install %s dependencies".printf(distro));
+            yield open_terminal_script(dependency);
+            if (Environment.find_program_in_path("curl") == null) {
+                throw new IOError.FAILED("curl is not available. Install it in the terminal, then try again.");
+            }
+
+            var downloads = Path.build_filename(Environment.get_home_dir(), "Downloads");
+            DirUtils.create_with_parents(downloads, 0755);
+            var appimage = Path.build_filename(downloads, ATL_APPIMAGE_NAME);
+            toast("Downloading Android Translation Layer to ~/Downloads");
+            yield download_file(ATL_APPIMAGE_URL, appimage);
+            FileUtils.chmod(appimage, 0755);
+
+            toast("Installing Android Translation Layer with AppManager");
+            var app_manager = yield ensure_app_manager();
+            var message = last_status_line(yield run_captured({ app_manager, "install", appimage }));
+            toast(message != "" ? message : "Android Translation Layer installed");
+        }
+
+        private async string ensure_app_manager() throws Error {
+            var installed = Path.build_filename(Environment.get_home_dir(), "Applications", "AppManager");
+            if (FileUtils.test(installed, FileTest.IS_EXECUTABLE)) {
+                return installed;
+            }
+            var on_path = Environment.find_program_in_path("app-manager");
+            if (on_path != null) {
+                return on_path;
+            }
+
+            var downloads = Path.build_filename(Environment.get_home_dir(), "Downloads");
+            DirUtils.create_with_parents(downloads, 0755);
+            var bootstrap = Path.build_filename(downloads, APP_MANAGER_APPIMAGE_NAME);
+            toast("Downloading AppManager 3.8.0");
+            yield download_file(APP_MANAGER_APPIMAGE_URL, bootstrap);
+            FileUtils.chmod(bootstrap, 0755);
+            toast("Installing AppManager");
+            yield run_captured({ bootstrap, "install", bootstrap });
+            if (!FileUtils.test(installed, FileTest.IS_EXECUTABLE)) {
+                throw new IOError.FAILED("AppManager did not appear at ~/Applications/AppManager");
+            }
+            return installed;
+        }
+
+        private async void download_file(string url, string dest) throws Error {
+            var message = yield run_captured({
+                "curl", "-fL", "--retry", "3", "--retry-delay", "2", "-o", dest, url
+            });
+            if (message != "") {
+                debug("curl: %s", message);
+            }
+        }
+
+        private async void open_terminal_script(string script) throws Error {
+            if (Environment.find_program_in_path("gnome-terminal") == null) {
+                throw new IOError.NOT_FOUND("GNOME Terminal is not installed, so these commands cannot be run from here.");
+            }
+            // The status file is how the app learns dnf/apt's result. gnome-terminal
+            // --wait returns when the window closes, not the command's exit code.
+            var status_path = Path.build_filename(Environment.get_tmp_dir(), "apk-manager-runtime-install.status");
+            FileUtils.remove(status_path);
+            var held = script +
+                "\nstatus=$?\necho \"$status\" > " + status_path +
+                "\necho\nif [ \"$status\" -eq 0 ]; then echo Done.; else echo \"The command failed ($status).\"; fi\n" +
+                "echo \"Press Enter to close.\"\nread\n";
+            var proc = new Subprocess.newv(
+                { "gnome-terminal", "--wait", "--", "bash", "-c", held },
+                SubprocessFlags.NONE
+            );
+            yield proc.wait_async();
+            string status_text;
+            try {
+                FileUtils.get_contents(status_path, out status_text);
+            } catch (FileError e) {
+                throw new IOError.FAILED("The terminal closed before the command finished.");
+            }
+            if (status_text.strip() != "0") {
+                throw new IOError.FAILED("The command failed (%s).".printf(status_text.strip()));
+            }
+        }
+
+        private async string run_captured(string[] argv) throws Error {
+            var proc = new Subprocess.newv(
+                argv,
+                SubprocessFlags.STDOUT_PIPE | SubprocessFlags.STDERR_PIPE
+            );
+            string? stdout_text = null;
+            string? stderr_text = null;
+            yield proc.communicate_utf8_async(null, null, out stdout_text, out stderr_text);
+            if (!proc.get_successful()) {
+                var detail = (stderr_text ?? stdout_text ?? "command failed").strip();
+                if (detail.length > 180) {
+                    detail = detail.substring(0, 180);
+                }
+                throw new IOError.FAILED(detail != "" ? detail : "command failed");
+            }
+            return (stdout_text ?? "").strip();
+        }
+
+        private static string last_status_line(string text) {
+            string last = "";
+            foreach (var line in text.split("\n")) {
+                var piece = line.strip();
+                var cr = piece.last_index_of_char('\r');
+                if (cr >= 0) {
+                    piece = piece.substring(cr + 1).strip();
+                }
+                if (piece != "") {
+                    last = piece;
+                }
+            }
+            return last;
+        }
+
+        private void toast(string message) {
+            toast_overlay.add_toast(new Adw.Toast(message));
         }
 
         private static string guide_page_name(RuntimeEngine engine) {

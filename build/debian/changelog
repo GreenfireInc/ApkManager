@@ -1,3 +1,14 @@
+apk-manager (0.2.8-1) unstable; urgency=medium
+
+  * Update to ApkManager 0.2.8.
+  * Runtime install buttons open a terminal for that row's dependencies.
+  * Android Translation Layer install downloads the AppImage and installs it
+    with AppManager.
+  * Preferences prefixes each runtime with a green circle when installed and
+    a red circle when not.
+
+ -- Corey Stedman <cordesir@gmail.com>  Sat, 21 Nov 2026 10:47:00 -0500
+
 apk-manager (0.2.7-1) unstable; urgency=medium
 
   * Update to ApkManager 0.2.7.

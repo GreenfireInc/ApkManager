@@ -1,5 +1,5 @@
 project('apk-manager', ['vala', 'c'],
-  version: '0.2.7',
+  version: '0.2.8',
   meson_version: '>=0.64.0'
 )
 
