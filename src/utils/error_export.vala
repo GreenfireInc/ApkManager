@@ -21,12 +21,7 @@ namespace ApkManager.Utils {
             root.set_member_name("exportedAt").add_string_value(new DateTime.now_local().format_iso8601());
             yield append_report_info(root);
 
-            root.set_member_name("application");
-            root.begin_object();
-            root.set_member_name("name").add_string_value(ApkDisplayName.resolve(apk_path) ?? Path.get_basename(apk_path));
-            root.set_member_name("package").add_string_value(ApkDisplayName.package_name(apk_path) ?? "");
-            root.set_member_name("apk").add_string_value(apk_path);
-            root.end_object();
+            append_application(root, apk_path);
 
             yield append_runtime(root, engine);
 
@@ -36,11 +31,44 @@ namespace ApkManager.Utils {
             root.set_member_name("message").add_string_value(message);
             root.end_object();
 
+            var log = RuntimeRunner.runtime_log(engine, apk_path);
+            if (log != null) {
+                root.set_member_name("runtimeLog");
+                root.begin_object();
+                root.set_member_name("path").add_string_value(log.path);
+                append_strings(root, "lines", log.lines);
+                root.set_member_name("crashPath").add_string_value(log.crash_path);
+                append_strings(root, "crashLines", log.crash_lines);
+                root.end_object();
+            }
+
             root.end_object();
             var generator = new Json.Generator();
             generator.pretty = true;
             generator.set_root(root.get_root());
             return generator.to_data(null);
+        }
+
+        private static void append_strings(Json.Builder root, string member, string[] values) {
+            root.set_member_name(member);
+            root.begin_array();
+            foreach (var value in values) {
+                root.add_string_value(value);
+            }
+            root.end_array();
+        }
+
+        public static void append_application(Json.Builder root, string apk_path) {
+            string version_name, version_code;
+            ApkDisplayName.version(apk_path, out version_name, out version_code);
+            root.set_member_name("application");
+            root.begin_object();
+            root.set_member_name("name").add_string_value(ApkDisplayName.resolve(apk_path) ?? Path.get_basename(apk_path));
+            root.set_member_name("package").add_string_value(ApkDisplayName.package_name(apk_path) ?? "");
+            root.set_member_name("versionName").add_string_value(version_name);
+            root.set_member_name("versionCode").add_string_value(version_code);
+            root.set_member_name("apk").add_string_value(apk_path);
+            root.end_object();
         }
 
         public static async void append_runtime(Json.Builder root, RuntimeEngine engine) {

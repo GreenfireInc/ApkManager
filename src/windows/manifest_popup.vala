@@ -46,6 +46,7 @@ namespace ApkManager.Windows {
                 meta.apk_file_name != "" ? meta.apk_file_name : Path.get_basename(apk_path)
             ));
             identity.add(row("Size", file_size(apk_path)));
+            identity.add(app_data_row(apk_path, meta.display_name(apk_path)));
             page.add(identity);
 
             var sdk = new Adw.PreferencesGroup();
@@ -98,6 +99,76 @@ namespace ApkManager.Windows {
                 FileUtilsHelper.show_in_file_manager(apk_path);
             });
             return item;
+        }
+
+        private static Adw.ActionRow app_data_row(string apk_path, string app_name) {
+            var dir = RuntimeRunner.atl_app_data_dir(apk_path);
+            var item = new Adw.ActionRow();
+            item.title = "App data";
+            item.subtitle_selectable = true;
+
+            var open_button = new Gtk.Button.from_icon_name("folder-open-symbolic");
+            open_button.tooltip_text = "Open in the file manager";
+            open_button.valign = Gtk.Align.CENTER;
+            open_button.add_css_class("flat");
+            open_button.clicked.connect(() => {
+                try {
+                    AppInfo.launch_default_for_uri(File.new_for_path(dir).get_uri(), null);
+                } catch (Error e) {
+                    warning("Could not open %s: %s", dir, e.message);
+                }
+            });
+
+            var reset_button = new Gtk.Button.from_icon_name("user-trash-symbolic");
+            reset_button.tooltip_text = "Reset: delete this app's data";
+            reset_button.valign = Gtk.Align.CENTER;
+            reset_button.add_css_class("flat");
+
+            item.add_suffix(open_button);
+            item.add_suffix(reset_button);
+
+            update_app_data_row(item, open_button, reset_button, dir);
+
+            reset_button.clicked.connect(() => {
+                var dialog = new Adw.AlertDialog(
+                    "Reset %s?".printf(app_name),
+                    "This deletes %s, including the app's settings, databases and files. The next run starts fresh. Close the app first if it is running.".printf(dir)
+                );
+                dialog.add_response("cancel", "Cancel");
+                dialog.add_response("reset", "Delete App Data");
+                dialog.set_response_appearance("reset", Adw.ResponseAppearance.DESTRUCTIVE);
+                dialog.default_response = "cancel";
+                dialog.close_response = "cancel";
+                dialog.response.connect((response) => {
+                    if (response != "reset") {
+                        return;
+                    }
+                    try {
+                        FileUtilsHelper.delete_tree(dir);
+                    } catch (Error e) {
+                        var failed = new Adw.AlertDialog("Could not delete the app data", e.message);
+                        failed.add_response("close", "Close");
+                        failed.present(item);
+                    }
+                    update_app_data_row(item, open_button, reset_button, dir);
+                });
+                dialog.present(item);
+            });
+            return item;
+        }
+
+        private static void update_app_data_row(
+            Adw.ActionRow item,
+            Gtk.Button open_button,
+            Gtk.Button reset_button,
+            string dir
+        ) {
+            var exists = FileUtils.test(dir, FileTest.IS_DIR);
+            item.subtitle = exists
+                ? dir
+                : "%s (created when the app first runs in Android Translation Layer)".printf(dir);
+            open_button.sensitive = exists;
+            reset_button.sensitive = exists;
         }
 
         private static string file_size(string apk_path) {

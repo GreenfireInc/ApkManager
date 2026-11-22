@@ -25,6 +25,23 @@ namespace ApkManager.Utils {
             }
         }
 
+        // Deletes for good, unlike remove_tree_if_exists. Symlinks are removed, not followed.
+        public static void delete_tree(string path) throws Error {
+            var file = File.new_for_path(path);
+            var type = file.query_file_type(FileQueryInfoFlags.NOFOLLOW_SYMLINKS);
+            if (type == FileType.DIRECTORY) {
+                var children = file.enumerate_children(FileAttribute.STANDARD_NAME, FileQueryInfoFlags.NOFOLLOW_SYMLINKS);
+                FileInfo? info;
+                while ((info = children.next_file()) != null) {
+                    delete_tree(Path.build_filename(path, info.get_name()));
+                }
+                children.close();
+            }
+            if (type != FileType.UNKNOWN) {
+                file.delete();
+            }
+        }
+
         public static bool show_in_file_manager(string path) {
             if (!GLib.FileUtils.test(path, GLib.FileTest.EXISTS)) {
                 warning("Cannot reveal missing file: %s", path);
