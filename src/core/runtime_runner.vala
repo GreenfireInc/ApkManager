@@ -14,6 +14,10 @@ namespace ApkManager.Core {
     public class RuntimeRunner : Object {
         private const int STARTUP_WAIT_MS = 2500;
         private const int WAYDROID_SESSION_POLLS = 15;
+        // Same socket the steam-lepton launcher from the install dialog uses.
+        private const string LEPTON_WESTON_SOCKET = "wayland-lepton";
+        private const int WESTON_START_POLLS = 50;
+        private const int STEAM_START_POLLS = 120;
 
         public static async void run(
             RuntimeEngine engine,
@@ -147,6 +151,10 @@ namespace ApkManager.Core {
             if (tool == null) {
                 throw new RuntimeRunError.NOT_INSTALLED("Lepton is not installed.");
             }
+            // Lepton draws on the WAYLAND_DISPLAY it inherits, and inherits ours,
+            // not Steam's. Weston comes first so a Steam we start shares it too.
+            var wayland_display = yield ensure_wayland_display();
+            yield ensure_steam(wayland_display);
             var app_id = steam_app_id(ApkDisplayName.package_name(apk_path) ?? Path.get_basename(apk_path));
             var compat = Path.build_filename(tool.steam_root, "steamapps", "compatdata", app_id);
             if (DirUtils.create_with_parents(compat, 0755) != 0) {
@@ -159,9 +167,83 @@ namespace ApkManager.Core {
                     launcher.setenv("STEAM_COMPAT_DATA_PATH", compat, true);
                     launcher.setenv("STEAM_COMPAT_CLIENT_INSTALL_PATH", tool.steam_root, true);
                     launcher.setenv("STEAM_COMPAT_INSTALL_PATH", Path.get_dirname(apk_path), true);
+                    launcher.setenv("WAYLAND_DISPLAY", wayland_display, true);
                 },
                 (owned) late_failure
             );
+        }
+
+        // In a Wayland session, the session's display. On X11, a nested Weston
+        // on LEPTON_WESTON_SOCKET, started if it isn't running yet.
+        private static async string ensure_wayland_display() throws Error {
+            var runtime_dir = Environment.get_user_runtime_dir();
+            var session = Environment.get_variable("WAYLAND_DISPLAY");
+            if (session != null && session != ""
+                && FileUtils.test(Path.build_filename(runtime_dir, session), FileTest.EXISTS)) {
+                return session;
+            }
+            var socket = Path.build_filename(runtime_dir, LEPTON_WESTON_SOCKET);
+            if (FileUtils.test(socket, FileTest.EXISTS)) {
+                return LEPTON_WESTON_SOCKET;
+            }
+            var weston = Environment.find_program_in_path("weston");
+            if (weston == null) {
+                throw new RuntimeRunError.FAILED(
+                    "Lepton draws on Wayland, and this desktop is X11. Install Weston (re-run the Lepton install, or: sudo apt install weston), then try again."
+                );
+            }
+            spawn_detached({
+                weston, "--backend=x11", "--socket=" + LEPTON_WESTON_SOCKET, "--width=1280", "--height=800"
+            });
+            for (int i = 0; i < WESTON_START_POLLS; i++) {
+                yield delay_ms(100);
+                if (FileUtils.test(socket, FileTest.EXISTS)) {
+                    return LEPTON_WESTON_SOCKET;
+                }
+            }
+            throw new RuntimeRunError.FAILED("Weston did not start, so Lepton has no Wayland display to draw on.");
+        }
+
+        // Lepton bind-mounts ~/.steam/steam.pipe, and podman fails if it is missing.
+        // The pipe can outlive Steam, so steam.pid is what says Steam is running.
+        private static async void ensure_steam(string wayland_display) throws Error {
+            if (steam_running()) {
+                return;
+            }
+            var steam = first_executable({
+                Environment.find_program_in_path("steam"), "/usr/games/steam", "/usr/bin/steam"
+            });
+            if (steam == null) {
+                throw new RuntimeRunError.FAILED("Lepton needs the Steam client, and Steam is not installed.");
+            }
+            // Steam passes this to Lepton when an APK is started from its library.
+            spawn_detached({ steam }, (launcher) => {
+                launcher.setenv("WAYLAND_DISPLAY", wayland_display, true);
+            });
+            for (int i = 0; i < STEAM_START_POLLS; i++) {
+                yield delay_ms(1000);
+                if (steam_running()) {
+                    return;
+                }
+            }
+            throw new RuntimeRunError.FAILED(
+                "Steam is still starting. Finish any update and sign in to Steam, then press Run again."
+            );
+        }
+
+        private static bool steam_running() {
+            var dot_steam = Path.build_filename(Environment.get_home_dir(), ".steam");
+            if (!FileUtils.test(Path.build_filename(dot_steam, "steam.pipe"), FileTest.EXISTS)) {
+                return false;
+            }
+            string pid;
+            try {
+                FileUtils.get_contents(Path.build_filename(dot_steam, "steam.pid"), out pid);
+            } catch (FileError e) {
+                return false;
+            }
+            pid = pid.strip();
+            return pid != "" && FileUtils.test(Path.build_filename("/proc", pid), FileTest.IS_DIR);
         }
 
         private static async void run_waydroid(string apk_path) throws Error {
@@ -289,10 +371,108 @@ namespace ApkManager.Core {
             return result;
         }
 
-        private static void spawn_detached(string[] argv) throws Error {
+        // Empty when the runtime is not installed or does not report a version.
+        public static async string runtime_version(RuntimeEngine engine) {
+            switch (engine) {
+            case RuntimeEngine.ANDROID_TRANSLATION_LAYER:
+                var atl = atl_program();
+                if (atl == null) {
+                    return "";
+                }
+                var packaged = yield package_version(atl);
+                return packaged != "" ? packaged : appimage_version(atl);
+            case RuntimeEngine.LEPTON:
+                var tool = find_lepton();
+                if (tool == null) {
+                    return "";
+                }
+                try {
+                    string text;
+                    FileUtils.get_contents(Path.build_filename(Path.get_dirname(tool.program), "version.txt"), out text);
+                    return text.strip();
+                } catch (FileError e) {
+                    return "";
+                }
+            case RuntimeEngine.WAYDROID:
+                var waydroid = waydroid_program();
+                if (waydroid == null) {
+                    return "";
+                }
+                try {
+                    var result = yield run_command({ waydroid, "-V" });
+                    if (result.ok && result.text != "") {
+                        return result.text.split("\n")[0].strip();
+                    }
+                } catch (Error e) {
+                }
+                return yield package_version(waydroid);
+            default:
+                return "";
+            }
+        }
+
+        // The dpkg or rpm version of the package that owns the file.
+        private static async string package_version(string program) {
+            var path = Posix.realpath(program) ?? program;
+            try {
+                if (Environment.find_program_in_path("dpkg-query") != null) {
+                    var owner = yield run_command({ "dpkg-query", "-S", path });
+                    if (owner.ok && owner.text.contains(":")) {
+                        var package = owner.text.split("\n")[0].split(":")[0].strip();
+                        var version = yield run_command({ "dpkg-query", "-W", "-f=${Version}", package });
+                        if (version.ok && version.text != "") {
+                            return version.text;
+                        }
+                    }
+                }
+                if (Environment.find_program_in_path("rpm") != null) {
+                    var version = yield run_command({ "rpm", "-qf", "--qf", "%{VERSION}-%{RELEASE}", path });
+                    if (version.ok && version.text != "" && !version.text.contains(" ")) {
+                        return version.text;
+                    }
+                }
+            } catch (Error e) {
+            }
+            return "";
+        }
+
+        // AppManager and appimaged record the AppImage's version in the desktop entry they write.
+        private static string appimage_version(string program) {
+            var path = Posix.realpath(program) ?? program;
+            var dir_path = Path.build_filename(Environment.get_user_data_dir(), "applications");
+            GLib.Dir dir;
+            try {
+                dir = Dir.open(dir_path);
+            } catch (FileError e) {
+                return "";
+            }
+            unowned string? name = null;
+            while ((name = dir.read_name()) != null) {
+                if (!name.has_suffix(".desktop")) {
+                    continue;
+                }
+                var entry = new KeyFile();
+                try {
+                    entry.load_from_file(Path.build_filename(dir_path, name), KeyFileFlags.NONE);
+                    var exec = entry.get_string("Desktop Entry", "Exec");
+                    if (!exec.contains(path) || !entry.has_key("Desktop Entry", "X-AppImage-Version")) {
+                        continue;
+                    }
+                    return entry.get_string("Desktop Entry", "X-AppImage-Version").strip();
+                } catch (Error e) {
+                    continue;
+                }
+            }
+            return "";
+        }
+
+        private static void spawn_detached(string[] argv, owned LaunchSetup? setup = null) throws Error {
             try {
                 var launcher = new SubprocessLauncher(SubprocessFlags.STDOUT_SILENCE | SubprocessFlags.STDERR_SILENCE);
                 launcher.set_child_setup(detach_child);
+                if (setup != null) {
+                    setup(launcher);
+                }
                 launcher.spawnv(argv);
             } catch (Error e) {
                 throw new RuntimeRunError.FAILED(e.message);

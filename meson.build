@@ -42,6 +42,7 @@ core_sources = files(
   'src/core/apk_store_search.vala',
   'src/core/host_distro.vala',
   'src/core/runtime_runner.vala',
+  'src/utils/error_export.vala',
   'src/utils/file_utils.vala',
   'src/utils/http_client.vala',
   'src/utils/qr_code.vala',

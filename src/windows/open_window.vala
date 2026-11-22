@@ -529,7 +529,7 @@ namespace ApkManager.Windows {
                 toast_overlay.add_toast(new Adw.Toast("Starting %s".printf(label)));
                 yield RuntimeRunner.run(engine, apk_path, (message) => {
                     if (!closed) {
-                        show_run_error(label, message);
+                        show_run_error(engine, message);
                     }
                 });
             } catch (RuntimeRunError e) {
@@ -539,11 +539,11 @@ namespace ApkManager.Windows {
                 if (e.code == RuntimeRunError.NOT_INSTALLED) {
                     yield offer_runtime_install(engine, label);
                 } else {
-                    show_run_error(label, e.message);
+                    show_run_error(engine, e.message);
                 }
             } catch (Error e) {
                 if (!closed) {
-                    show_run_error(label, e.message);
+                    show_run_error(engine, e.message);
                 }
             } finally {
                 run_in_progress = false;
@@ -569,14 +569,41 @@ namespace ApkManager.Windows {
             }
         }
 
-        private void show_run_error(string label, string message) {
+        private void show_run_error(RuntimeEngine engine, string message) {
             var body = message.strip();
             if (body == "") {
                 body = "The runtime exited with an error.";
             }
-            var dialog = new Adw.AlertDialog("Could not run with %s".printf(label), body);
+            var title = "Could not run with %s".printf(AppSettings.runtime_engine_label(engine));
+            var dialog = new Adw.AlertDialog(title, body);
+            dialog.add_response("export", "Error Export");
             dialog.add_response("close", "Close");
+            dialog.default_response = "close";
+            dialog.close_response = "close";
+            dialog.response.connect((response) => {
+                if (response == "export") {
+                    export_run_error.begin(engine, title, body);
+                }
+            });
             dialog.present(this);
+        }
+
+        private async void export_run_error(RuntimeEngine engine, string title, string message) {
+            try {
+                yield ErrorExport.save(
+                    this,
+                    "Export error",
+                    ErrorExport.filename(apk_path, engine, "error"),
+                    yield ErrorExport.error_json(apk_path, engine, title, message)
+                );
+                if (!closed) {
+                    toast_overlay.add_toast(new Adw.Toast("Exported error JSON"));
+                }
+            } catch (Error e) {
+                if (!closed && !(e is IOError.CANCELLED)) {
+                    toast_overlay.add_toast(new Adw.Toast("Could not export the error: %s".printf(e.message)));
+                }
+            }
         }
 
         private void on_open_install_folder() {

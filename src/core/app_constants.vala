@@ -1,5 +1,7 @@
 namespace ApkManager.Core {
     public const string APPLICATION_ID = "com.github.ApkManager";
+    public const string APPLICATION_NAME = "ApkManager";
+    public const string REPOSITORY_URL = "https://github.com/GreenfireInc/ApkManager";
     public const string DATA_DIRNAME = "apk-manager";
     public const string SESSIONS_FILENAME = "sessions.json";
     public const string STORE_INSTALLS_FILENAME = "store_installs.json";
