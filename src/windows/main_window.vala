@@ -54,12 +54,10 @@ namespace ApkManager.Windows {
         private bool closed = false;
         private Gee.ArrayList<string> debug_streams = new Gee.ArrayList<string>();
         private Gee.ArrayList<string> debug_texts = new Gee.ArrayList<string>();
-        private string[] debug_command = {};
         private string debug_apk_path = "";
         private string debug_started_at = "";
-        private bool debug_egl = false;
-        private Subprocess? debug_process = null;
-        private Cancellable? debug_cancellable = null;
+        private RuntimeDebugSession? debug_session = null;
+        private Gtk.Label debug_title;
         private Adw.NavigationSplitView split_view;
         private Adw.ViewStack content_stack;
         private Gtk.SearchEntry session_search;
@@ -78,7 +76,7 @@ namespace ApkManager.Windows {
             build_ui();
             close_request.connect(() => {
                 closed = true;
-                stop_atl_debug();
+                stop_debug();
                 return false;
             });
             refresh_sessions();
@@ -369,7 +367,7 @@ namespace ApkManager.Windows {
             debug_content.append(new Gtk.Label("Debug"));
             debug_apk_button.child = debug_content;
             debug_apk_button.valign = Gtk.Align.CENTER;
-            debug_apk_button.tooltip_text = "Run this APK in Android Translation Layer and show its errors in the Debug tab";
+            debug_apk_button.tooltip_text = "Run this APK with Lepton when it is selected in Preferences, otherwise Android Translation Layer, and show its errors in the Debug tab";
             debug_apk_button.clicked.connect(on_debug_apk_clicked);
 
             var detail_bar = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 8);
@@ -388,7 +386,7 @@ namespace ApkManager.Windows {
             debug_header.margin_start = 12;
             debug_header.margin_end = 12;
             debug_header.margin_bottom = 8;
-            var debug_title = new Gtk.Label("Android Translation Layer errors");
+            debug_title = new Gtk.Label("Android Translation Layer errors");
             debug_title.add_css_class("heading");
             debug_title.hexpand = true;
             debug_title.xalign = 0;
@@ -1054,30 +1052,46 @@ namespace ApkManager.Windows {
         }
 
         private void on_debug_apk_clicked() {
-            start_atl_debug.begin();
+            start_debug.begin();
         }
 
-        private void stop_atl_debug() {
-            if (debug_cancellable != null) {
-                debug_cancellable.cancel();
-                debug_cancellable = null;
-            }
-            if (debug_process != null) {
-                debug_process.force_exit();
-                debug_process = null;
+        private void stop_debug() {
+            if (debug_session != null) {
+                debug_session.stop();
             }
         }
 
-        private async void start_atl_debug() {
+        // Lepton has its own debug run; every other runtime debugs with Android Translation Layer.
+        private async void start_debug() {
             if (closed || active_session == null) {
                 return;
             }
             var apk_path = active_session.apk_path;
-            stop_atl_debug();
+            var engine = AppSettings.get_default().get_runtime_engine() == RuntimeEngine.LEPTON
+                ? RuntimeEngine.LEPTON
+                : RuntimeEngine.ANDROID_TRANSLATION_LAYER;
+            var label = AppSettings.runtime_engine_label(engine);
+            stop_debug();
+            var session = new RuntimeDebugSession();
+            session.engine = engine;
+            session.line.connect((stream, text) => {
+                if (session == debug_session) {
+                    on_debug_line(stream, text);
+                }
+            });
+            session.exited.connect((summary) => {
+                if (session == debug_session && !closed) {
+                    status_label.set_text(summary);
+                }
+            });
+            debug_session = session;
             debug_streams.clear();
             debug_texts.clear();
             debug_view.buffer.text = "";
-            debug_placeholder.label = "Waiting for errors from Android Translation Layer.";
+            debug_title.label = "%s errors".printf(label);
+            debug_placeholder.label = engine == RuntimeEngine.LEPTON
+                ? "Starting Lepton. Weston and Steam are started first when they are not running, which can take a minute."
+                : "Waiting for errors from %s.".printf(label);
             debug_placeholder.visible = true;
             debug_scrolled.visible = false;
             save_debug_button.sensitive = false;
@@ -1085,46 +1099,35 @@ namespace ApkManager.Windows {
             detail_stack.visible_child_name = "debug";
             debug_apk_path = apk_path;
             debug_started_at = new DateTime.now_utc().format("%Y-%m-%dT%H:%M:%SZ");
-            debug_cancellable = new Cancellable();
+            status_label.set_text("Debugging with %s".printf(label));
             try {
-                string[] command;
-                bool egl_forced;
-                debug_process = RuntimeRunner.start_atl_debug(
-                    apk_path,
-                    out command,
-                    out egl_forced,
-                    on_atl_debug_line,
-                    debug_cancellable
-                );
-                debug_command = command;
-                debug_egl = egl_forced;
-                status_label.set_text("Debugging with Android Translation Layer");
-            } catch (RuntimeRunError e) {
-                debug_process = null;
-                if (closed) {
-                    return;
-                }
-                if (e.code == RuntimeRunError.NOT_INSTALLED) {
-                    yield offer_runtime_install(RuntimeEngine.ANDROID_TRANSLATION_LAYER, "Android Translation Layer");
+                if (engine == RuntimeEngine.LEPTON) {
+                    yield RuntimeRunner.start_lepton_debug(session, apk_path);
                 } else {
-                    show_run_error(RuntimeEngine.ANDROID_TRANSLATION_LAYER, apk_path, e.message);
+                    RuntimeRunner.start_atl_debug(session, apk_path);
                 }
             } catch (Error e) {
-                debug_process = null;
-                if (!closed) {
-                    show_run_error(RuntimeEngine.ANDROID_TRANSLATION_LAYER, apk_path, e.message);
+                if (closed || session != debug_session) {
+                    return;
+                }
+                debug_placeholder.label = e.message;
+                if (e is RuntimeRunError.NOT_INSTALLED) {
+                    yield offer_runtime_install(engine, label);
+                } else {
+                    show_run_error(engine, apk_path, e.message);
                 }
             }
         }
 
-        private void on_atl_debug_line(string stream, string text) {
+        private void on_debug_line(string stream, string text) {
             if (closed) {
                 return;
             }
+            var continued = debug_texts.size > 0 && RuntimeRunner.debug_error_continues(debug_texts[debug_texts.size - 1]);
             debug_streams.add(stream);
             debug_texts.add(text);
             save_debug_button.sensitive = true;
-            if (!RuntimeRunner.atl_debug_error(text)) {
+            if (!continued && !RuntimeRunner.debug_error(text)) {
                 return;
             }
             debug_placeholder.visible = false;
@@ -1136,10 +1139,10 @@ namespace ApkManager.Windows {
         }
 
         private async void save_debug_json() {
-            if (debug_texts.size == 0) {
+            if (debug_texts.size == 0 || debug_session == null) {
                 return;
             }
-            var engine = RuntimeEngine.ANDROID_TRANSLATION_LAYER;
+            var engine = debug_session.engine;
             try {
                 yield ErrorExport.save(
                     this,
@@ -1158,25 +1161,31 @@ namespace ApkManager.Windows {
         }
 
         private async string build_debug_json() {
+            var session = debug_session;
             var root = new Json.Builder();
             root.begin_object();
             yield ErrorExport.append_report_info(root);
-            root.set_member_name("apk").add_string_value(debug_apk_path);
-            yield ErrorExport.append_runtime(root, RuntimeEngine.ANDROID_TRANSLATION_LAYER);
+            ErrorExport.append_application(root, debug_apk_path);
+            yield ErrorExport.append_runtime(root, session.engine);
             root.set_member_name("startedAt").add_string_value(debug_started_at);
             root.set_member_name("command");
             root.begin_array();
-            foreach (var arg in debug_command) {
+            foreach (var arg in session.command) {
                 root.add_string_value(arg);
             }
             root.end_array();
             root.set_member_name("environment");
             root.begin_object();
-            root.set_member_name("ANDROID_LOG_TAGS").add_string_value("*:v");
-            if (debug_egl) {
-                root.set_member_name("GDK_DEBUG").add_string_value("gl-egl");
+            foreach (var pair in session.environment) {
+                var eq = pair.index_of_char('=');
+                if (eq > 0) {
+                    root.set_member_name(pair.substring(0, eq)).add_string_value(pair.substring(eq + 1));
+                }
             }
             root.end_object();
+            if (session.log_path != "") {
+                root.set_member_name("runtimeLog").add_string_value(session.log_path);
+            }
             append_debug_lines(root, "lines", false);
             append_debug_lines(root, "errors", true);
             root.end_object();
@@ -1190,7 +1199,8 @@ namespace ApkManager.Windows {
             root.set_member_name(member);
             root.begin_array();
             for (int i = 0; i < debug_texts.size; i++) {
-                if (errors_only && !RuntimeRunner.atl_debug_error(debug_texts[i])) {
+                var continued = i > 0 && RuntimeRunner.debug_error_continues(debug_texts[i - 1]);
+                if (errors_only && !continued && !RuntimeRunner.debug_error(debug_texts[i])) {
                     continue;
                 }
                 root.begin_object();

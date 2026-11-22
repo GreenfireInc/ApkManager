@@ -51,6 +51,42 @@ namespace ApkManager.Core {
             }
         }
 
+        // Empty strings when the manifest does not set them.
+        public static void version(string apk_path, out string name, out string code) {
+            name = "";
+            code = "";
+            if (!FileUtils.test(apk_path, FileTest.IS_REGULAR)) {
+                return;
+            }
+            try {
+                Bytes? manifest = ApkArchive.read_entry(apk_path, "AndroidManifest.xml");
+                if (manifest == null) {
+                    return;
+                }
+                var root = ApkBinaryXml.parse(manifest.get_data());
+                if (root == null || root.name != "manifest") {
+                    return;
+                }
+                foreach (var attr in root.attributes) {
+                    string value;
+                    if (attr.value_string != null) {
+                        value = attr.value_string;
+                    } else if (attr.reference_id != null) {
+                        value = ApkIcon.resolve_label_id(apk_path, attr.reference_id) ?? "";
+                    } else {
+                        value = attr.value_raw.to_string();
+                    }
+                    if (attr.name == "versionName") {
+                        name = value;
+                    } else if (attr.name == "versionCode") {
+                        code = value;
+                    }
+                }
+            } catch (Error e) {
+                warning("Failed to read manifest for version: %s", e.message);
+            }
+        }
+
         public static string? application_icon_ref(string apk_path) {
             if (!FileUtils.test(apk_path, FileTest.IS_REGULAR)) {
                 return null;

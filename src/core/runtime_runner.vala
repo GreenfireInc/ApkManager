@@ -5,7 +5,48 @@ namespace ApkManager.Core {
     }
 
     public delegate void RuntimeLateFailure(string message);
-    public delegate void RuntimeDebugLine(string stream, string text);
+
+    // One Debug run. Connect to line and exited before passing it to
+    // RuntimeRunner.start_atl_debug or start_lepton_debug.
+    public class RuntimeDebugSession : Object {
+        public signal void line(string stream, string text);
+        public signal void exited(string summary);
+
+        public RuntimeEngine engine { get; set; default = RuntimeEngine.ANDROID_TRANSLATION_LAYER; }
+        public string[] command = {};
+        // KEY=VALUE pairs set on top of ApkManager's own environment.
+        public string[] environment = {};
+        public string log_path = "";
+        public Cancellable cancellable = new Cancellable();
+
+        internal Subprocess? main = null;
+        internal Subprocess? logcat = null;
+        internal string lepton_context = "";
+        internal int64 started_at = 0;
+
+        public void stop() {
+            cancellable.cancel();
+            if (logcat != null) {
+                logcat.force_exit();
+            }
+            if (main != null) {
+                // Lepton tears its container down (and dumps logcat) on SIGTERM.
+                if (engine == RuntimeEngine.LEPTON) {
+                    main.send_signal(Posix.Signal.TERM);
+                } else {
+                    main.force_exit();
+                }
+            }
+        }
+    }
+
+    // Lepton's launcher log for the last run, read after a failure.
+    public class RuntimeLog : Object {
+        public string path = "";
+        public string[] lines = {};
+        public string crash_path = "";
+        public string[] crash_lines = {};
+    }
 
     // Starts the APK with the runtime chosen in Preferences. Waydroid's launch
     // command returns once Android has the activity. Android Translation Layer
@@ -18,6 +59,12 @@ namespace ApkManager.Core {
         private const string LEPTON_WESTON_SOCKET = "wayland-lepton";
         private const int WESTON_START_POLLS = 50;
         private const int STEAM_START_POLLS = 120;
+        private const int LEPTON_SUMMARY_LINES = 8;
+        private const string LEPTON_BOOTED = "Boot complete!";
+
+        private static HashTable<string, int64?>? lepton_launches = null;
+        private static Regex? ansi_escape = null;
+        private static Regex? logcat_priority = null;
 
         public static async void run(
             RuntimeEngine engine,
@@ -56,40 +103,131 @@ namespace ApkManager.Core {
         // Verbose Android logs plus ART's JNI trace, from
         // docs/research/20261121.research.apkmanager.android-translation-layer.debug-output.grok-4.7.md.
         // The process keeps running after startup, so lines are delivered as they are printed.
-        public static Subprocess start_atl_debug(
-            string apk_path,
-            out string[] command,
-            out bool egl_forced,
-            RuntimeDebugLine on_line,
-            Cancellable cancellable
-        ) throws Error {
+        public static void start_atl_debug(RuntimeDebugSession session, string apk_path) throws Error {
             var program = atl_program();
             if (program == null) {
                 throw new RuntimeRunError.NOT_INSTALLED("Android Translation Layer is not installed.");
             }
-            command = { program, apk_path, "-X", "-verbose:jni" };
-            egl_forced = Environment.get_variable("XDG_SESSION_TYPE") == "x11";
+            session.engine = RuntimeEngine.ANDROID_TRANSLATION_LAYER;
+            session.command = { program, apk_path, "-X", "-verbose:jni" };
+            string[] environment = { "ANDROID_LOG_TAGS=*:v" };
+            if (Environment.get_variable("XDG_SESSION_TYPE") == "x11") {
+                environment += "GDK_DEBUG=gl-egl";
+            }
+            session.environment = environment;
+            spawn_debug(session);
+        }
+
+        // From docs/research/20261121.research.apkmanager.lepton.debug-output.claude-opus-5.5.md:
+        // the launcher's output first, then the container's logcat once Android
+        // has booted, then Lepton's logcat dumps after it exits.
+        public static async void start_lepton_debug(RuntimeDebugSession session, string apk_path) throws Error {
+            var launch = yield prepare_lepton(apk_path);
+            if (session.cancellable.is_cancelled()) {
+                return;
+            }
+            session.engine = RuntimeEngine.LEPTON;
+            session.command = launch.command;
+            string[] environment = launch.environment;
+            environment += "LEPTON_DUMP_LOGCAT=1";
+            session.environment = environment;
+            session.lepton_context = launch.context;
+            session.log_path = lepton_log_path(launch.context);
+            spawn_debug(session);
+        }
+
+        private static void spawn_debug(RuntimeDebugSession session) throws Error {
             var launcher = new SubprocessLauncher(SubprocessFlags.STDOUT_PIPE | SubprocessFlags.STDERR_PIPE);
             launcher.set_child_setup(detach_child);
-            launcher.setenv("ANDROID_LOG_TAGS", "*:v", true);
-            if (egl_forced) {
-                launcher.setenv("GDK_DEBUG", "gl-egl", true);
-            }
-            Subprocess proc;
+            set_environment(launcher, session.environment);
             try {
-                proc = launcher.spawnv(command);
+                session.main = launcher.spawnv(session.command);
             } catch (Error e) {
                 throw new RuntimeRunError.FAILED(e.message);
             }
-            var stdout_pipe = proc.get_stdout_pipe();
-            var stderr_pipe = proc.get_stderr_pipe();
-            if (stdout_pipe != null) {
-                pump_debug_lines.begin(new DataInputStream(stdout_pipe), "stdout", on_line, cancellable);
+            session.started_at = get_real_time();
+            if (session.lepton_context != "") {
+                note_lepton_launch(session.lepton_context);
             }
-            if (stderr_pipe != null) {
-                pump_debug_lines.begin(new DataInputStream(stderr_pipe), "stderr", on_line, cancellable);
+            pump_debug_lines.begin(session, session.main, "stdout", "stderr");
+            watch_debug_exit.begin(session);
+        }
+
+        private static void start_lepton_logcat(RuntimeDebugSession session) {
+            if (session.logcat != null || session.cancellable.is_cancelled()) {
+                return;
             }
-            return proc;
+            var podman = Environment.find_program_in_path("podman");
+            if (podman == null) {
+                return;
+            }
+            // Not `lepton logcat`: that asks podman for a terminal and waits on Lepton's lock.
+            string[] argv = { podman, "exec", "lepton-" + session.lepton_context, "/system/bin/logcat", "-v", "threadtime" };
+            try {
+                session.logcat = new Subprocess.newv(argv, SubprocessFlags.STDOUT_PIPE | SubprocessFlags.STDERR_PIPE);
+            } catch (Error e) {
+                session.line("apkmanager", "Could not attach to Lepton's logcat: %s".printf(e.message));
+                return;
+            }
+            session.line("apkmanager", "Attached to Android's logcat: %s".printf(string.joinv(" ", argv)));
+            pump_debug_lines.begin(session, session.logcat, "logcat", "logcat");
+        }
+
+        private static async void watch_debug_exit(RuntimeDebugSession session) {
+            var proc = session.main;
+            try {
+                yield proc.wait_async(null);
+            } catch (Error e) {
+            }
+            if (session.logcat != null) {
+                session.logcat.force_exit();
+            }
+            var label = AppSettings.runtime_engine_label(session.engine);
+            string summary;
+            if (proc.get_if_exited()) {
+                summary = "%s exited with status %d".printf(label, proc.get_exit_status());
+            } else {
+                summary = "%s was stopped".printf(label);
+            }
+            if (session.engine == RuntimeEngine.LEPTON) {
+                var buffers = session.logcat == null
+                    ? new string[] { "crash", "main", "system" }
+                    : new string[] { "crash" };
+                foreach (var buffer in buffers) {
+                    var path = lepton_dump_path(session.lepton_context, buffer);
+                    foreach (var text in fresh_lines(path, session.started_at)) {
+                        session.line("logcat-" + buffer, text);
+                    }
+                }
+            }
+            session.line("apkmanager", summary);
+            session.exited(summary);
+        }
+
+        // Android's threadtime lines count by priority, anything else by keyword.
+        public static bool debug_error(string text) {
+            if (logcat_priority == null) {
+                try {
+                    logcat_priority = new Regex("^\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d\\.\\d+\\s+\\d+\\s+\\d+\\s+([VDIWEF])\\s");
+                } catch (RegexError e) {
+                }
+            }
+            if (logcat_priority != null) {
+                MatchInfo match;
+                if (logcat_priority.match(text, 0, out match)) {
+                    var priority = match.fetch(1);
+                    return priority == "E" || priority == "F";
+                }
+            }
+            if (text.contains("libVkLayer_fossilize") || text.contains("Continuing without fossilize")) {
+                return false;
+            }
+            return atl_debug_error(text);
+        }
+
+        // "Error: pasta failed with exit code 1:" carries its reason on the next line.
+        public static bool debug_error_continues(string text) {
+            return text.has_suffix(":") && debug_error(text);
         }
 
         public static bool atl_debug_error(string text) {
@@ -111,11 +249,23 @@ namespace ApkManager.Core {
         }
 
         private static async void pump_debug_lines(
-            DataInputStream stream,
-            string which,
-            RuntimeDebugLine on_line,
-            Cancellable cancellable
+            RuntimeDebugSession session,
+            Subprocess proc,
+            string stdout_name,
+            string stderr_name
         ) {
+            var stdout_pipe = proc.get_stdout_pipe();
+            var stderr_pipe = proc.get_stderr_pipe();
+            if (stderr_pipe != null) {
+                pump_stream.begin(session, new DataInputStream(stderr_pipe), stderr_name);
+            }
+            if (stdout_pipe != null) {
+                yield pump_stream(session, new DataInputStream(stdout_pipe), stdout_name);
+            }
+        }
+
+        private static async void pump_stream(RuntimeDebugSession session, DataInputStream stream, string which) {
+            var cancellable = session.cancellable;
             try {
                 while (!cancellable.is_cancelled()) {
                     size_t length;
@@ -123,24 +273,54 @@ namespace ApkManager.Core {
                     if (line == null) {
                         return;
                     }
-                    foreach (var piece in line.split("\r")) {
+                    foreach (var piece in strip_ansi(line).split("\r")) {
                         var text = piece.strip();
-                        if (text != "") {
-                            on_line(which, text);
+                        if (text == "") {
+                            continue;
+                        }
+                        session.line(which, text);
+                        if (session.lepton_context != "" && which == "stdout" && text.contains(LEPTON_BOOTED)) {
+                            start_lepton_logcat(session);
                         }
                     }
                 }
             } catch (Error e) {
                 if (!(e is IOError.CANCELLED)) {
-                    on_line(which, e.message);
+                    session.line(which, e.message);
                 }
             }
         }
 
-        private static async void run_lepton(
-            string apk_path,
-            owned RuntimeLateFailure? late_failure
-        ) throws Error {
+        private static string strip_ansi(string text) {
+            if (!text.contains("\x1b")) {
+                return text;
+            }
+            try {
+                if (ansi_escape == null) {
+                    ansi_escape = new Regex("\\x1b\\[[0-9;]*[A-Za-z]");
+                }
+                return ansi_escape.replace(text, -1, 0, "");
+            } catch (RegexError e) {
+                return text;
+            }
+        }
+
+        private static void set_environment(SubprocessLauncher launcher, string[] environment) {
+            foreach (var pair in environment) {
+                var eq = pair.index_of_char('=');
+                if (eq > 0) {
+                    launcher.setenv(pair.substring(0, eq), pair.substring(eq + 1), true);
+                }
+            }
+        }
+
+        private class LeptonLaunch {
+            public string context;
+            public string[] command;
+            public string[] environment;
+        }
+
+        private static async LeptonLaunch prepare_lepton(string apk_path) throws Error {
             var home = Environment.get_home_dir();
             if (Path.get_dirname(apk_path) == home) {
                 throw new RuntimeRunError.FAILED(
@@ -155,22 +335,182 @@ namespace ApkManager.Core {
             // not Steam's. Weston comes first so a Steam we start shares it too.
             var wayland_display = yield ensure_wayland_display();
             yield ensure_steam(wayland_display);
-            var app_id = steam_app_id(ApkDisplayName.package_name(apk_path) ?? Path.get_basename(apk_path));
+            var app_id = lepton_app_id(apk_path);
             var compat = Path.build_filename(tool.steam_root, "steamapps", "compatdata", app_id);
             if (DirUtils.create_with_parents(compat, 0755) != 0) {
                 throw new RuntimeRunError.FAILED("Could not create %s".printf(compat));
             }
+            var launch = new LeptonLaunch();
+            // Lepton names the run's container and log after SteamAppId.
+            launch.context = "steamlaunch-" + app_id;
+            launch.command = { tool.program, "waitforexitandrun", "--", apk_path };
+            launch.environment = {
+                "SteamAppId=" + app_id,
+                "STEAM_COMPAT_DATA_PATH=" + compat,
+                "STEAM_COMPAT_CLIENT_INSTALL_PATH=" + tool.steam_root,
+                "STEAM_COMPAT_INSTALL_PATH=" + Path.get_dirname(apk_path),
+                "WAYLAND_DISPLAY=" + wayland_display
+            };
+            return launch;
+        }
+
+        private static async void run_lepton(
+            string apk_path,
+            owned RuntimeLateFailure? late_failure
+        ) throws Error {
+            var launch = yield prepare_lepton(apk_path);
+            var context = launch.context;
+            var environment = launch.environment;
+            note_lepton_launch(context);
+            // Lepton tees its output into its log file once it starts, so the
+            // reason for a failure is read back from there.
             yield launch_and_watch(
-                { tool.program, "waitforexitandrun", "--", apk_path },
+                launch.command,
                 (launcher) => {
-                    launcher.setenv("SteamAppId", app_id, true);
-                    launcher.setenv("STEAM_COMPAT_DATA_PATH", compat, true);
-                    launcher.setenv("STEAM_COMPAT_CLIENT_INSTALL_PATH", tool.steam_root, true);
-                    launcher.setenv("STEAM_COMPAT_INSTALL_PATH", Path.get_dirname(apk_path), true);
-                    launcher.setenv("WAYLAND_DISPLAY", wayland_display, true);
+                    set_environment(launcher, environment);
                 },
-                (owned) late_failure
+                (owned) late_failure,
+                (captured) => {
+                    return lepton_failure(context, captured);
+                }
             );
+        }
+
+        private static string lepton_app_id(string apk_path) {
+            return steam_app_id(ApkDisplayName.package_name(apk_path) ?? Path.get_basename(apk_path));
+        }
+
+        private static void note_lepton_launch(string context) {
+            if (lepton_launches == null) {
+                lepton_launches = new HashTable<string, int64?>(str_hash, str_equal);
+            }
+            lepton_launches.insert(context, get_real_time());
+        }
+
+        // Without SteamVR, the x86_64 port logs to ~/.local/share/lepton/logs.
+        private static string lepton_log_dir() {
+            return Path.build_filename(Environment.get_user_data_dir(), "lepton", "logs");
+        }
+
+        private static string lepton_log_path(string context) {
+            return Path.build_filename(lepton_log_dir(), "lepton-%s.log".printf(context));
+        }
+
+        private static string lepton_dump_path(string context, string buffer) {
+            return Path.build_filename(lepton_log_dir(), "lepton-logcats", context, "logcat-%s.log".printf(buffer));
+        }
+
+        // The file's lines, if it was written after since (microseconds, real time).
+        private static string[] fresh_lines(string path, int64 since) {
+            try {
+                var info = File.new_for_path(path).query_info(FileAttribute.TIME_MODIFIED, FileQueryInfoFlags.NONE);
+                var modified = info.get_modification_date_time();
+                if (modified == null || modified.to_unix() * 1000000 + modified.get_microsecond() < since - 1000000) {
+                    return {};
+                }
+                string text;
+                FileUtils.get_contents(path, out text);
+                string[] lines = {};
+                foreach (var raw in strip_ansi(text).split("\n")) {
+                    var line = raw.strip();
+                    if (line != "") {
+                        lines += line;
+                    }
+                }
+                return lines;
+            } catch (Error e) {
+                return {};
+            }
+        }
+
+        // Lepton appends every run to the same file; this run starts at its last header.
+        private static string[] lepton_last_run(string[] lines) {
+            int start = 0;
+            for (int i = lines.length - 1; i >= 0; i--) {
+                if (lines[i].has_prefix("Lepton ") && lines[i].contains(" starting up at ")) {
+                    start = i;
+                    break;
+                }
+            }
+            return lines[start:lines.length];
+        }
+
+        // For Lepton runs started by ApkManager in this session; null otherwise.
+        public static RuntimeLog? runtime_log(RuntimeEngine engine, string apk_path) {
+            if (engine != RuntimeEngine.LEPTON || lepton_launches == null) {
+                return null;
+            }
+            var context = "steamlaunch-" + lepton_app_id(apk_path);
+            var launched = lepton_launches.lookup(context);
+            if (launched == null) {
+                return null;
+            }
+            var log = new RuntimeLog();
+            log.path = lepton_log_path(context);
+            log.lines = lepton_last_run(fresh_lines(log.path, launched));
+            log.crash_path = lepton_dump_path(context, "crash");
+            log.crash_lines = fresh_lines(log.crash_path, launched);
+            if (log.lines.length == 0 && log.crash_lines.length == 0) {
+                return null;
+            }
+            return log;
+        }
+
+        private static bool lepton_noise(string line) {
+            return line.contains("is not a running context")
+                || line.has_prefix("steamlaunch-")
+                || line.contains("libVkLayer_fossilize")
+                || line.contains("Continuing without fossilize");
+        }
+
+        private static string lepton_failure(string context, string captured) {
+            var launched = lepton_launches != null ? lepton_launches.lookup(context) : null;
+            var path = lepton_log_path(context);
+            var lines = launched != null ? lepton_last_run(fresh_lines(path, launched)) : new string[0];
+            var picked = new GenericArray<string>();
+            for (int i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                if (lepton_noise(line)) {
+                    continue;
+                }
+                var folded = line.down();
+                var wanted = folded.contains("error") || folded.contains("failed")
+                    || folded.contains("not found") || folded.contains("cannot") || folded.contains("denied");
+                var continues = i > 0 && debug_error_continues(lines[i - 1]);
+                if ((wanted || continues) && !picked.find_with_equal_func(line, str_equal)) {
+                    picked.add(line);
+                }
+            }
+            string[] summary = {};
+            var first = int.max(0, (int) picked.length - LEPTON_SUMMARY_LINES);
+            for (int i = first; i < picked.length; i++) {
+                summary += picked[i];
+            }
+            if (launched != null) {
+                string[] crash = {};
+                foreach (var line in fresh_lines(lepton_dump_path(context, "crash"), launched)) {
+                    if (debug_error(line)) {
+                        crash += line;
+                    }
+                }
+                if (crash.length > 0) {
+                    summary += "Android crash log:";
+                    foreach (var line in crash[int.max(0, crash.length - 4):crash.length]) {
+                        summary += line;
+                    }
+                }
+            }
+            var text = string.joinv("\n", summary);
+            if (text == "") {
+                text = brief(captured);
+            }
+            if (text == "" && lines.length > 0) {
+                text = string.joinv("\n", lines[int.max(0, lines.length - 5):lines.length]);
+            }
+            if (lines.length > 0) {
+                text += "\n\nFull log: %s".printf(path);
+            }
+            return text;
         }
 
         // In a Wayland session, the session's display. On X11, a nested Weston
@@ -295,11 +635,13 @@ namespace ApkManager.Core {
         }
 
         private delegate void LaunchSetup(SubprocessLauncher launcher);
+        private delegate string FailureDetail(string captured);
 
         private static async void launch_and_watch(
             string[] argv,
             owned LaunchSetup? setup,
-            owned RuntimeLateFailure? late_failure
+            owned RuntimeLateFailure? late_failure,
+            owned FailureDetail? detail = null
         ) throws Error {
             var launcher = new SubprocessLauncher(SubprocessFlags.STDOUT_SILENCE | SubprocessFlags.STDERR_PIPE);
             launcher.set_child_setup(detach_child);
@@ -324,7 +666,8 @@ namespace ApkManager.Core {
                     stderr_text = e.message;
                 }
                 if (!proc.get_successful()) {
-                    failure = brief((stderr_text ?? "") + "\n" + (stdout_text ?? ""));
+                    var captured = (stderr_text ?? "") + "\n" + (stdout_text ?? "");
+                    failure = detail != null ? detail(captured) : brief(captured);
                 }
                 if (!settled) {
                     settled = true;
@@ -369,6 +712,13 @@ namespace ApkManager.Core {
             result.ok = proc.get_successful();
             result.text = ((stdout_text ?? "") + "\n" + (stderr_text ?? "")).strip();
             return result;
+        }
+
+        // Android Translation Layer keeps each APK's app data in a folder named after the APK file.
+        public static string atl_app_data_dir(string apk_path) {
+            return Path.build_filename(
+                Environment.get_user_data_dir(), "android_translation_layer", Path.get_basename(apk_path) + "_"
+            );
         }
 
         // Empty when the runtime is not installed or does not report a version.
