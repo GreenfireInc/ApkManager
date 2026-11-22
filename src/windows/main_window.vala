@@ -45,6 +45,7 @@ namespace ApkManager.Windows {
         private Gtk.Button debug_apk_button;
         private Gtk.Button save_debug_button;
         private Gtk.Box debug_section;
+        private Adw.ViewStackPage debug_page;
         private Gtk.Label debug_placeholder;
         private Gtk.ScrolledWindow debug_scrolled;
         private Gtk.TextView debug_view;
@@ -368,7 +369,7 @@ namespace ApkManager.Windows {
             debug_content.append(new Gtk.Label("Debug"));
             debug_apk_button.child = debug_content;
             debug_apk_button.valign = Gtk.Align.CENTER;
-            debug_apk_button.tooltip_text = "Run this APK in Android Translation Layer and show its errors below";
+            debug_apk_button.tooltip_text = "Run this APK in Android Translation Layer and show its errors in the Debug tab";
             debug_apk_button.clicked.connect(on_debug_apk_clicked);
 
             var detail_bar = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 8);
@@ -380,15 +381,14 @@ namespace ApkManager.Windows {
             detail_bar.append(run_apk_button);
             detail_bar.append(debug_apk_button);
 
-            debug_section = new Gtk.Box(Gtk.Orientation.VERTICAL, 6);
-            debug_section.margin_start = 12;
-            debug_section.margin_end = 12;
-            debug_section.margin_top = 6;
-            debug_section.margin_bottom = 12;
-            debug_section.visible = false;
+            debug_section = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 
             var debug_header = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 8);
-            var debug_title = new Gtk.Label("Debug");
+            debug_header.margin_top = 12;
+            debug_header.margin_start = 12;
+            debug_header.margin_end = 12;
+            debug_header.margin_bottom = 8;
+            var debug_title = new Gtk.Label("Android Translation Layer errors");
             debug_title.add_css_class("heading");
             debug_title.hexpand = true;
             debug_title.xalign = 0;
@@ -401,8 +401,10 @@ namespace ApkManager.Windows {
             debug_header.append(save_debug_button);
 
             debug_placeholder = new Gtk.Label("Waiting for errors from Android Translation Layer.");
-            debug_placeholder.xalign = 0;
             debug_placeholder.wrap = true;
+            debug_placeholder.justify = Gtk.Justification.CENTER;
+            debug_placeholder.vexpand = true;
+            debug_placeholder.valign = Gtk.Align.CENTER;
             debug_placeholder.add_css_class("dim-label");
 
             debug_view = new Gtk.TextView();
@@ -416,18 +418,18 @@ namespace ApkManager.Windows {
             debug_view.bottom_margin = 8;
             debug_scrolled = new Gtk.ScrolledWindow();
             debug_scrolled.child = debug_view;
-            debug_scrolled.min_content_height = 160;
-            debug_scrolled.vexpand = false;
+            debug_scrolled.vexpand = true;
+            debug_scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC);
             debug_scrolled.visible = false;
 
-            debug_section.append(new Gtk.Separator(Gtk.Orientation.HORIZONTAL));
             debug_section.append(debug_header);
             debug_section.append(debug_placeholder);
             debug_section.append(debug_scrolled);
+            debug_page = detail_stack.add_titled_with_icon(debug_section, "debug", "Debug", "dialog-warning-symbolic");
+            debug_page.visible = false;
 
             content_box.append(detail_bar);
             content_box.append(detail_stack);
-            content_box.append(debug_section);
 
             empty_page = new Adw.StatusPage();
             empty_page.icon_name = "application-x-android-package";
@@ -1079,7 +1081,8 @@ namespace ApkManager.Windows {
             debug_placeholder.visible = true;
             debug_scrolled.visible = false;
             save_debug_button.sensitive = false;
-            debug_section.visible = true;
+            debug_page.visible = true;
+            detail_stack.visible_child_name = "debug";
             debug_apk_path = apk_path;
             debug_started_at = new DateTime.now_utc().format("%Y-%m-%dT%H:%M:%SZ");
             debug_cancellable = new Cancellable();
@@ -1104,12 +1107,12 @@ namespace ApkManager.Windows {
                 if (e.code == RuntimeRunError.NOT_INSTALLED) {
                     yield offer_runtime_install(RuntimeEngine.ANDROID_TRANSLATION_LAYER, "Android Translation Layer");
                 } else {
-                    show_run_error("Android Translation Layer", e.message);
+                    show_run_error(RuntimeEngine.ANDROID_TRANSLATION_LAYER, apk_path, e.message);
                 }
             } catch (Error e) {
                 debug_process = null;
                 if (!closed) {
-                    show_run_error("Android Translation Layer", e.message);
+                    show_run_error(RuntimeEngine.ANDROID_TRANSLATION_LAYER, apk_path, e.message);
                 }
             }
         }
@@ -1136,42 +1139,30 @@ namespace ApkManager.Windows {
             if (debug_texts.size == 0) {
                 return;
             }
-            var dialog = new Gtk.FileDialog();
-            dialog.title = "Save debug JSON";
-            dialog.initial_name = "atl-debug.json";
-            var downloads = File.new_for_path(Path.build_filename(Environment.get_home_dir(), "Downloads"));
-            if (downloads.query_exists()) {
-                dialog.initial_folder = downloads;
-            }
+            var engine = RuntimeEngine.ANDROID_TRANSLATION_LAYER;
             try {
-                var file = yield dialog.save(this, null);
-                var json = build_debug_json();
-                uint8[] contents = new uint8[json.length];
-                Memory.copy(contents, json.data, json.length);
-                string? etag = null;
-                yield file.replace_contents_async(
-                    contents,
-                    null,
-                    false,
-                    FileCreateFlags.REPLACE_DESTINATION,
-                    null,
-                    out etag
+                yield ErrorExport.save(
+                    this,
+                    "Save debug JSON",
+                    ErrorExport.filename(debug_apk_path, engine, "debug"),
+                    yield build_debug_json()
                 );
                 if (!closed) {
                     status_label.set_text("Saved debug JSON");
                 }
             } catch (Error e) {
                 if (!closed && !(e is IOError.CANCELLED)) {
-                    show_run_error("Android Translation Layer", e.message);
+                    show_run_error(engine, debug_apk_path, e.message);
                 }
             }
         }
 
-        private string build_debug_json() {
+        private async string build_debug_json() {
             var root = new Json.Builder();
             root.begin_object();
+            yield ErrorExport.append_report_info(root);
             root.set_member_name("apk").add_string_value(debug_apk_path);
-            root.set_member_name("runtime").add_string_value("android-translation-layer");
+            yield ErrorExport.append_runtime(root, RuntimeEngine.ANDROID_TRANSLATION_LAYER);
             root.set_member_name("startedAt").add_string_value(debug_started_at);
             root.set_member_name("command");
             root.begin_array();
@@ -1227,7 +1218,7 @@ namespace ApkManager.Windows {
                 status_label.set_text("Starting %s".printf(label));
                 yield RuntimeRunner.run(engine, apk_path, (message) => {
                     if (!closed) {
-                        show_run_error(label, message);
+                        show_run_error(engine, apk_path, message);
                     }
                 });
                 if (!closed) {
@@ -1240,11 +1231,11 @@ namespace ApkManager.Windows {
                 if (e.code == RuntimeRunError.NOT_INSTALLED) {
                     yield offer_runtime_install(engine, label);
                 } else {
-                    show_run_error(label, e.message);
+                    show_run_error(engine, apk_path, e.message);
                 }
             } catch (Error e) {
                 if (!closed) {
-                    show_run_error(label, e.message);
+                    show_run_error(engine, apk_path, e.message);
                 }
             } finally {
                 run_in_progress = false;
@@ -1270,15 +1261,42 @@ namespace ApkManager.Windows {
             }
         }
 
-        private void show_run_error(string label, string message) {
+        private void show_run_error(RuntimeEngine engine, string apk_path, string message) {
             var body = message.strip();
             if (body == "") {
                 body = "The runtime exited with an error.";
             }
-            status_label.set_text("Could not run with %s".printf(label));
-            var dialog = new Adw.AlertDialog("Could not run with %s".printf(label), body);
+            var title = "Could not run with %s".printf(AppSettings.runtime_engine_label(engine));
+            status_label.set_text(title);
+            var dialog = new Adw.AlertDialog(title, body);
+            dialog.add_response("export", "Error Export");
             dialog.add_response("close", "Close");
+            dialog.default_response = "close";
+            dialog.close_response = "close";
+            dialog.response.connect((response) => {
+                if (response == "export") {
+                    export_run_error.begin(engine, apk_path, title, body);
+                }
+            });
             dialog.present(this);
+        }
+
+        private async void export_run_error(RuntimeEngine engine, string apk_path, string title, string message) {
+            try {
+                yield ErrorExport.save(
+                    this,
+                    "Export error",
+                    ErrorExport.filename(apk_path, engine, "error"),
+                    yield ErrorExport.error_json(apk_path, engine, title, message)
+                );
+                if (!closed) {
+                    status_label.set_text("Exported error JSON");
+                }
+            } catch (Error e) {
+                if (!closed && !(e is IOError.CANCELLED)) {
+                    status_label.set_text("Could not export the error: %s".printf(e.message));
+                }
+            }
         }
 
         private void start_decode(DecodeMode mode) {
