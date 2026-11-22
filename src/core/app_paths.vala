@@ -238,6 +238,30 @@ namespace ApkManager.Core {
             return installed;
         }
 
+        // The ATL.edge build recipe (packaging/atl-edge in the source tree).
+        public static string? atl_edge_dir() {
+            var installed = Path.build_filename(get_install_prefix(), "share", "apk-manager", "atl-edge");
+            if (FileUtils.test(Path.build_filename(installed, "build.sh"), FileTest.EXISTS)) {
+                return installed;
+            }
+            var relative = Path.build_filename("packaging", "atl-edge", "build.sh");
+            string[] starts = { Environment.get_current_dir(), executable_dir() };
+            foreach (var start in starts) {
+                var found = find_ancestor_file(start, relative);
+                if (found != null) {
+                    return Path.get_dirname(found);
+                }
+            }
+            return null;
+        }
+
+        // Where ApkManager records the installed ATL.edge build, for packaging/atl-edge/check-update.sh.
+        public static string atl_edge_manifest {
+            owned get {
+                return Path.build_filename(data_dir, "atl-edge-build.json");
+            }
+        }
+
         public static string decoded_dir_for_key(string cache_key) {
             return Path.build_filename(decoded_root, cache_key);
         }

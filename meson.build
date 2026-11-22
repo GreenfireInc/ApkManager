@@ -85,5 +85,10 @@ apk_resources = gnome.compile_resources(
   c_name: 'apk_manager'
 )
 
+# ATL.edge build recipe, run from the runtime install dialog.
+install_subdir('packaging/atl-edge',
+  install_dir: get_option('datadir') / 'apk-manager'
+)
+
 subdir('data')
 subdir('src')

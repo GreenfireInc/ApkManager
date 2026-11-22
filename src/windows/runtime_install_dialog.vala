@@ -10,6 +10,8 @@ namespace ApkManager.Windows {
             public string icon_name;
             public string note;
             public string commands;
+            // ATL.edge: built from the latest upstream source instead of installing a release.
+            public bool edge;
         }
 
         private struct RuntimeGuide {
@@ -132,6 +134,8 @@ namespace ApkManager.Windows {
             "Android_Translation_Layer-3e686d14-anylinux-x86_64.AppImage";
         private const string ATL_APPIMAGE_URL =
             "https://github.com/pkgforge-dev/android_translation_layer-AppImage/releases/download/3e686d14%402026-09-22_1790090775/Android_Translation_Layer-3e686d14-anylinux-x86_64.AppImage";
+        // A full ART and ATL build tree plus the Arch container image, with headroom.
+        private const uint64 ATL_EDGE_FREE_BYTES = 25ULL * 1024 * 1024 * 1024;
         private const string APP_MANAGER_APPIMAGE_NAME =
             "AppManager-3.8.0-anylinux-x86_64.AppImage";
         private const string APP_MANAGER_APPIMAGE_URL =
@@ -284,7 +288,11 @@ namespace ApkManager.Windows {
             var engine = guide.engine;
             var distro_name = steps.name;
             var command_text = steps.commands;
-            if (engine == RuntimeEngine.ANDROID_TRANSLATION_LAYER) {
+            var edge = steps.edge;
+            if (edge) {
+                install_button.tooltip_text =
+                    "Build Android Translation Layer from the latest upstream source in a Podman container, then install it with AppManager";
+            } else if (engine == RuntimeEngine.ANDROID_TRANSLATION_LAYER) {
                 install_button.tooltip_text =
                     "Install %s dependencies, download Android Translation Layer, and install it with AppManager"
                     .printf(distro_name);
@@ -297,7 +305,7 @@ namespace ApkManager.Windows {
                 }
                 install_in_progress = true;
                 install_button.sensitive = false;
-                run_install.begin(engine, distro_name, command_text, (obj, res) => {
+                run_install.begin(engine, distro_name, command_text, edge, (obj, res) => {
                     install_in_progress = false;
                     install_button.sensitive = true;
                     try {
@@ -327,7 +335,11 @@ namespace ApkManager.Windows {
         // Android Translation Layer: terminal for that row's package line, then
         // download the AppImage into ~/Downloads and install it with AppManager.
         // Other runtimes: open a terminal running the commands shown on the row.
-        private async void run_install(RuntimeEngine engine, string distro, string commands) throws Error {
+        private async void run_install(RuntimeEngine engine, string distro, string commands, bool edge) throws Error {
+            if (edge) {
+                yield install_atl_edge();
+                return;
+            }
             if (engine == RuntimeEngine.ANDROID_TRANSLATION_LAYER) {
                 yield install_android_translation_layer(distro, commands);
                 return;
@@ -358,6 +370,48 @@ namespace ApkManager.Windows {
             var app_manager = yield ensure_app_manager();
             var message = last_status_line(yield run_captured({ app_manager, "install", appimage }));
             toast(message != "" ? message : "Android Translation Layer installed");
+        }
+
+        // docs/strategies/20261121.strategy.apkmanager.android-translation-layer.build-appimage-from-source.claude-opus-5.5.md,
+        // option B: packaging/atl-edge/build.sh in a terminal, then the AppImage it
+        // leaves in ~/Downloads goes to AppManager, replacing the current ATL.
+        private async void install_atl_edge() throws Error {
+            var recipe = AppPaths.atl_edge_dir();
+            if (recipe == null) {
+                throw new IOError.NOT_FOUND("The ATL.edge build recipe is missing from this ApkManager installation.");
+            }
+            if (Environment.find_program_in_path("podman") == null) {
+                throw new IOError.NOT_FOUND(
+                    "ATL.edge builds in Podman, which is not installed. Debian, Ubuntu, Linux Mint: sudo apt install podman. Fedora: sudo dnf install podman."
+                );
+            }
+            yield require_free_space(ATL_EDGE_FREE_BYTES);
+            toast("Building ATL.edge in a terminal. The first build can take an hour or more");
+            yield open_terminal_script("sh " + Shell.quote(Path.build_filename(recipe, "build.sh")));
+
+            var cache = Path.build_filename(Environment.get_user_cache_dir(), DATA_DIRNAME, "atl-edge");
+            string appimage;
+            try {
+                FileUtils.get_contents(Path.build_filename(cache, "last-build"), out appimage);
+            } catch (FileError e) {
+                throw new IOError.FAILED("The ATL.edge build did not report an AppImage.");
+            }
+            appimage = appimage.strip();
+            if (!FileUtils.test(appimage, FileTest.IS_REGULAR)) {
+                throw new IOError.FAILED("The ATL.edge AppImage is missing: %s".printf(appimage));
+            }
+
+            toast("Installing ATL.edge with AppManager");
+            var app_manager = yield ensure_app_manager();
+            var message = last_status_line(yield run_captured({ app_manager, "install", appimage }));
+            try {
+                File.new_for_path(Path.build_filename(cache, "atl-build.json")).copy(
+                    File.new_for_path(AppPaths.atl_edge_manifest), FileCopyFlags.OVERWRITE
+                );
+            } catch (Error e) {
+                warning("Could not record the ATL.edge build: %s", e.message);
+            }
+            toast(message != "" ? message : "ATL.edge installed");
         }
 
         private async string ensure_app_manager() throws Error {
@@ -472,6 +526,20 @@ namespace ApkManager.Windows {
             toast_overlay.add_toast(new Adw.Toast(message));
         }
 
+        private static string atl_edge_commands() {
+            var recipe = AppPaths.atl_edge_dir() ?? "/usr/share/apk-manager/atl-edge";
+            return "# ATL.edge: Android Translation Layer built from the newest upstream commit.\n" +
+                "# Edge builds get new features and app fixes weeks before the community AppImage,\n" +
+                "# and can occasionally break. Re-run to update; check with check-update.sh.\n" +
+                "# Builds in a rootless Podman container (Arch Linux), needs about 25 GB free,\n" +
+                "# and the first build can take an hour or more.\n" +
+                "sh " + Shell.quote(Path.build_filename(recipe, "build.sh")) + "\n\n" +
+                "# Then ApkManager installs the AppImage from ~/Downloads with AppManager,\n" +
+                "# replacing the current Android Translation Layer.\n" +
+                "# Is there a newer edge build?\n" +
+                "sh " + Shell.quote(Path.build_filename(recipe, "check-update.sh"));
+        }
+
         private static string guide_page_name(RuntimeEngine engine) {
             switch (engine) {
             case RuntimeEngine.ANDROID_TRANSLATION_LAYER:
@@ -520,7 +588,7 @@ namespace ApkManager.Windows {
                     page_name = guide_page_name(RuntimeEngine.ANDROID_TRANSLATION_LAYER),
                     title = "Android Translation Layer",
                     summary = "Runs an APK directly as a Linux program, the way Wine runs Windows programs. No Android system or container. Experimental: many apps still crash.",
-                    requirements = "A GTK 4 desktop (on X11, launch with GDK_DEBUG=gl-egl), Mesa graphics with EGL, and FUSE 2 for the AppImage. Not packaged by Debian, Ubuntu, or Fedora: use the community AppImage below, or build from source.",
+                    requirements = "A GTK 4 desktop (on X11, launch with GDK_DEBUG=gl-egl), Mesa graphics with EGL, and FUSE 2 for the AppImage. Not packaged by Debian, Ubuntu, or Fedora: use the community AppImage below, or ATL.edge, which builds the newest upstream source on this computer.",
                     distros = {
                         DistroSteps() {
                             name = "Debian",
@@ -539,6 +607,13 @@ namespace ApkManager.Windows {
                             icon_name = "apk-manager-distro-fedora",
                             note = "AppImage",
                             commands = "sudo dnf install curl fuse-libs\ncurl -LO \"https://github.com/pkgforge-dev/android_translation_layer-AppImage/releases/download/3e686d14%402026-09-22_1790090775/Android_Translation_Layer-3e686d14-anylinux-x86_64.AppImage\"\nchmod +x Android_Translation_Layer-*-x86_64.AppImage\n./Android_Translation_Layer-*-x86_64.AppImage /path/to/app.apk"
+                        },
+                        DistroSteps() {
+                            name = "ATL.edge",
+                            icon_name = "software-update-available-symbolic",
+                            note = "Edge builds: the latest upstream source, with the newest features and fixes first. Any distro with Podman",
+                            commands = atl_edge_commands(),
+                            edge = true
                         }
                     },
                     link_urls = {
