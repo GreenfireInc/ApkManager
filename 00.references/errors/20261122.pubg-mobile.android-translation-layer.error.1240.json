@@ -1,0 +1,53 @@
+{
+  "exportedAt" : "2026-11-22T12:40:28.260515-05",
+  "apkManager" : {
+    "name" : "ApkManager",
+    "version" : "0.2.9",
+    "repository" : "https://github.com/GreenfireInc/ApkManager"
+  },
+  "system" : {
+    "linux" : {
+      "distribution" : "Linux Mint 22",
+      "id" : "linuxmint",
+      "versionId" : "22",
+      "basedOn" : "",
+      "kernelRelease" : "6.8.0-48-generic",
+      "kernelVersion" : "#48-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep 27 14:04:52 UTC 2024",
+      "architecture" : "x86_64"
+    },
+    "displayServer" : {
+      "sessionType" : "x11",
+      "display" : ":0",
+      "waylandDisplay" : "",
+      "xServerVendor" : "The X.Org Foundation",
+      "xServerVersion" : "1.21.1.11"
+    },
+    "desktopEnvironment" : {
+      "name" : "X-Cinnamon",
+      "session" : "cinnamon",
+      "version" : "Cinnamon 6.2.9"
+    },
+    "java" : {
+      "path" : "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
+      "version" : "21.0.12.1",
+      "runtime" : "OpenJDK Runtime Environment (build 21.0.12.1+1-1-24.04.4-Ubuntu)"
+    }
+  },
+  "application" : {
+    "name" : "PUBG MOBILE",
+    "package" : "com.tencent.ig",
+    "versionName" : "4.6.0",
+    "versionCode" : "21518",
+    "apk" : "~/Applications/android/com.tencent.ig.from.disk.universal.apk"
+  },
+  "runtime" : {
+    "id" : "android-translation-layer",
+    "name" : "Android Translation Layer",
+    "version" : "94d69d8c-edge",
+    "buildDate" : "2026-11-22T11:46:13-05"
+  },
+  "error" : {
+    "title" : "Could not run with Android Translation Layer",
+    "message" : "Dismissed by user"
+  }
+}

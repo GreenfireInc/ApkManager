@@ -1,0 +1,3035 @@
+{
+  "apkManager" : {
+    "name" : "ApkManager",
+    "version" : "0.2.9",
+    "repository" : "https://github.com/GreenfireInc/ApkManager"
+  },
+  "system" : {
+    "linux" : {
+      "distribution" : "Linux Mint 22",
+      "id" : "linuxmint",
+      "versionId" : "22",
+      "basedOn" : "",
+      "kernelRelease" : "6.8.0-48-generic",
+      "kernelVersion" : "#48-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep 27 14:04:52 UTC 2024",
+      "architecture" : "x86_64"
+    },
+    "displayServer" : {
+      "sessionType" : "x11",
+      "display" : ":0",
+      "waylandDisplay" : "",
+      "xServerVendor" : "The X.Org Foundation",
+      "xServerVersion" : "1.21.1.11"
+    },
+    "desktopEnvironment" : {
+      "name" : "X-Cinnamon",
+      "session" : "cinnamon",
+      "version" : "Cinnamon 6.2.9"
+    },
+    "java" : {
+      "path" : "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
+      "version" : "21.0.12.1",
+      "runtime" : "OpenJDK Runtime Environment (build 21.0.12.1+1-1-24.04.4-Ubuntu)"
+    }
+  },
+  "application" : {
+    "name" : "Calculator",
+    "package" : "com.neumorphic.calculator",
+    "versionName" : "1.1.0",
+    "versionCode" : "2",
+    "apk" : "~/Applications/android/com.neumorphic.calculator.from.F-Droid.universal.apk"
+  },
+  "runtime" : {
+    "id" : "android-translation-layer",
+    "name" : "Android Translation Layer",
+    "version" : "94d69d8c-edge",
+    "buildDate" : "2026-11-22T11:46:13-05"
+  },
+  "startedAt" : "2026-11-22T17:32:45Z",
+  "command" : [
+    "~/.local/bin/android-translation-layer",
+    "~/Applications/android/com.neumorphic.calculator.from.F-Droid.universal.apk",
+    "-X",
+    "-verbose:jni"
+  ],
+  "environment" : {
+    "ANDROID_LOG_TAGS" : "*:v",
+    "GDK_DEBUG" : "gl-egl"
+  },
+  "lines" : [
+    {
+      "stream" : "stderr",
+      "text" : "Unrecognized value \"gl-egl\". Try GDK_DEBUG=help"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "W/android-translation-layer(90152): DexFile /tmp/.mount_Androremp11480394280607069825/lib/java/dex/art/core-oj-hostdex.jar is in boot class path but is not in a known location"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90152): [     0 '/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/natives/libtranslation_layer_main.so' has not been loaded yet.  Locating...]"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:90152): Gtk-WARNING **: 12:32:46.785: Theme parser error: default-stylesheet.css:21:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:90152): Gtk-WARNING **: 12:32:46.785: Theme parser error: default-stylesheet.css:25:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:90152): Gtk-WARNING **: 12:32:46.785: Theme parser error: default-stylesheet.css:29:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_translation](90152): bionic_dlsym(0x79e121f12b70, Java_android_os_MessageQueue_nativeInit) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:90152): Gtk-WARNING **: 12:32:47.062: Use GtkSettings:gtk-interface-color-scheme instead"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "I/android-translation-layer(90152): Compiling dex file: dex2oat --dex-file=/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/ghax.jar --oat-file=~/.cache/AppImage-Cache/art//x86_64/tmp@.mount_Androremp11480394280607069825@lib@art@..@java@dex@android_translation_layer@ghax.jar@classes.dex --instruction-set=x86_64 --instruction-set-features=-ssse3,-sse4.1,-sse4.2,-avx,-avx2,-popcnt --host --boot-image=/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/art/oat/boot.art"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(trace-startup, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(start-paused, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(disable-service-auth-codes, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(endless-trace-buffer, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(use-test-fonts, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(enable-dart-profiling, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(enable-software-rendering, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(skia-deterministic-rendering, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(trace-skia, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(trace-systrace, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(dump-skp-on-shader-compilation, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(cache-sksl, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(purge-persistent-cache, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(verbose-logging, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(io.flutter.automatically-register-plugins, true) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90152): libflutter.so hooked symbol pthread_key_create to 0x79e11f499f60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90152): libflutter.so hooked symbol pthread_once to 0x79e11f49d800"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90152): libflutter.so hooked symbol pthread_getspecific to 0x79e11f499d60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90152): libflutter.so hooked symbol pthread_setspecific to 0x79e11f49f6b0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90152): libflutter.so hooked symbol pthread_key_delete to 0x79e11f499fc0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90152): libflutter.so hooked symbol pthread_join to 0x79e11f499e00"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90152): libflutter.so hooked symbol pthread_self to 0x79e11f49eeb0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90152): libflutter.so hooked symbol pthread_setname_np to 0x79e11f49f320"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90152): libflutter.so hooked symbol pthread_sigmask to 0x79e11f49f7d0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at p.d.e(Unknown Source:369)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at io.flutter.embedding.engine.a.<init>(Unknown Source:184)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at io.flutter.embedding.engine.a.<init>(Unknown Source:12)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at io.flutter.embedding.android.e.F(Unknown Source:106)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at io.flutter.embedding.android.e.o(Unknown Source:7)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at io.flutter.embedding.android.d.onCreate(Unknown Source:13)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.util.concurrent.ExecutionException: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.FutureTask.report(FutureTask.java:123)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.FutureTask.get(FutureTask.java:193)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at p.d.e(Unknown Source:28)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "... 5 more"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at e0.a.a(Unknown Source:6)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at p.d$a.b(Unknown Source:45)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at p.d$a.call(Unknown Source:0)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.FutureTask.run(FutureTask.java:266)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1162)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:636)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Thread.run(Thread.java:768)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "A/android-translation-layer(90152): java_vm_ext.cc:563] JNI DETECTED ERROR IN APPLICATION: JNI GetMethodID called with pending exception java.lang.RuntimeException: java.util.concurrent.ExecutionException: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Dumping all threads without mutator lock held"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "All threads:"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "DALVIK THREADS (13):"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Light.ttf<, but there is no >/RobotoCondensed-Light.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Light.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Light.ttf<, but there is no >/RobotoCondensed-Light.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Light.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-LightItalic.ttf<, but there is no >/RobotoCondensed-LightItalic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-LightItalic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-LightItalic.ttf<, but there is no >/RobotoCondensed-LightItalic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-LightItalic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Regular.ttf<, but there is no >/RobotoCondensed-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Regular.ttf<, but there is no >/RobotoCondensed-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Italic.ttf<, but there is no >/RobotoCondensed-Italic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Italic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Italic.ttf<, but there is no >/RobotoCondensed-Italic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Italic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Bold.ttf<, but there is no >/RobotoCondensed-Bold.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Bold.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Bold.ttf<, but there is no >/RobotoCondensed-Bold.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Bold.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-BoldItalic.ttf<, but there is no >/RobotoCondensed-BoldItalic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-BoldItalic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-BoldItalic.ttf<, but there is no >/RobotoCondensed-BoldItalic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-BoldItalic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Light.ttf<, but there is no >/RobotoCondensed-Light.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Light.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Light.ttf<, but there is no >/RobotoCondensed-Light.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Light.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-LightItalic.ttf<, but there is no >/RobotoCondensed-LightItalic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-LightItalic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-LightItalic.ttf<, but there is no >/RobotoCondensed-LightItalic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-LightItalic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DroidSansMono.ttf<, but there is no >/DroidSansMono.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DroidSansMono.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DroidSansMono.ttf<, but there is no >/DroidSansMono.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DroidSansMono.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/CutiveMono.ttf<, but there is no >/CutiveMono.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/CutiveMono.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/CutiveMono.ttf<, but there is no >/CutiveMono.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/CutiveMono.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/ComingSoon.ttf<, but there is no >/ComingSoon.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/ComingSoon.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/ComingSoon.ttf<, but there is no >/ComingSoon.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/ComingSoon.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DancingScript-Regular.ttf<, but there is no >/DancingScript-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DancingScript-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DancingScript-Regular.ttf<, but there is no >/DancingScript-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DancingScript-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DancingScript-Bold.ttf<, but there is no >/DancingScript-Bold.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DancingScript-Bold.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DancingScript-Bold.ttf<, but there is no >/DancingScript-Bold.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DancingScript-Bold.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/CarroisGothicSC-Regular.ttf<, but there is no >/CarroisGothicSC-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/CarroisGothicSC-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/CarroisGothicSC-Regular.ttf<, but there is no >/CarroisGothicSC-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/CarroisGothicSC-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansSyriacEstrangela-Regular.ttf<, but there is no >/NotoSansSyriacEstrangela-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansSyriacEstrangela-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansSyriacEstrangela-Regular.ttf<, but there is no >/NotoSansSyriacEstrangela-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansSyriacEstrangela-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansTibetan-Regular.ttf<, but there is no >/NotoSansTibetan-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansTibetan-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansTibetan-Regular.ttf<, but there is no >/NotoSansTibetan-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansTibetan-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansSymbols-Regular-Subsetted.ttf<, but there is no >/NotoSansSymbols-Regular-Subsetted.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansSymbols-Regular-Subsetted.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansSymbols-Regular-Subsetted.ttf<, but there is no >/NotoSansSymbols-Regular-Subsetted.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansSymbols-Regular-Subsetted.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansSC-Regular.otf<, but there is no >/NotoSansSC-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansSC-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansSC-Regular.otf<, but there is no >/NotoSansSC-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansSC-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansTC-Regular.otf<, but there is no >/NotoSansTC-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansTC-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansTC-Regular.otf<, but there is no >/NotoSansTC-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansTC-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansJP-Regular.otf<, but there is no >/NotoSansJP-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansJP-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansJP-Regular.otf<, but there is no >/NotoSansJP-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansJP-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansKR-Regular.otf<, but there is no >/NotoSansKR-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansKR-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansKR-Regular.otf<, but there is no >/NotoSansKR-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansKR-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NanumGothic.ttf<, but there is no >/NanumGothic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NanumGothic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NanumGothic.ttf<, but there is no >/NanumGothic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NanumGothic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DroidSansFallback.ttf<, but there is no >/DroidSansFallback.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DroidSansFallback.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DroidSansFallback.ttf<, but there is no >/DroidSansFallback.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DroidSansFallback.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/MTLmr3m.ttf<, but there is no >/MTLmr3m.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/MTLmr3m.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/MTLmr3m.ttf<, but there is no >/MTLmr3m.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/MTLmr3m.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "\"main\" prio=5 tid=1 Runnable"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| group=\"\" sCount=0 dsCount=0 flags=0 obj=0x12c2b3a0 self=0x2b0d8e0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| sysTid=90152 nice=0 cgrp=default sched=0/0 handle=0x79e108f78600"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| state=R schedstat=( 599898465 161404253 3383 ) utm=44 stm=15 core=3 HZ=100"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| stack=0x79e121201000-0x79e121203000 stackSize=8184KB"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| held mutexes= \"abort lock\" \"mutator lock\"(shared held)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #00 pc 00000000003e737b  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art15DumpNativeStackERSoiP12BacktraceMapPKcPNS_9ArtMethodEPvb+91)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::GetCheckJniInvokeInterface()"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #01 pc 00000000004ff536  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZNK3art6Thread9DumpStackERSobP12BacktraceMapb+326)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_dalvik_system_VMDebug(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #02 pc 0000000000520e86  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art14DumpCheckpoint3RunEPNS_6ThreadE+1238)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #03 pc 0000000000516cfc  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art10ThreadList13RunCheckpointEPNS_7ClosureES2_+428)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_StringFactory(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #04 pc 000000000051f229  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art10ThreadList4DumpERSob+441)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_ref_Reference(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #05 pc 00000000004c0123  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art7Runtime5AbortEPKc+1715)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::mirror::Class::FindClassMethod(std::basic_string_view<char, std::char_traits<char> >, std::basic_string_view<char, std::char_traits<char> >, art::PointerSize)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #06 pc 0000000000005445  /tmp/.mount_Androremp11480394280607069825/lib/art/libbase.so (offset 6000) (_ZN7android4base10LogMessageD2Ev+1237)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #07 pc 0000000000311f70  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art9JavaVMExt8JniAbortEPKcS2_+2096)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::IndirectReferenceTable::Add(art::IRTSegmentState, art::ObjPtr<art::mirror::Object>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #08 pc 0000000000312190  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art9JavaVMExt9JniAbortVEPKcS2_P13__va_list_tag+80)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::IndirectReferenceTable::Add(art::IRTSegmentState, art::ObjPtr<art::mirror::Object>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #09 pc 00000000002d84f1  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #10 pc 00000000002e00d6  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #11 pc 00000000002e0e96  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #12 pc 00000000002f1a8b  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #13 pc 000000000001a511  /tmp/.mount_Androremp11480394280607069825/lib/java/dex/android_translation_layer/natives/libtranslation_layer_main.so (offset 29000) (activity_start+481)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #14 pc 0000000000003b9f  /tmp/.mount_Androremp11480394280607069825/shared/bin/android-translation-layer (offset 4000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #15 pc 0000000000005bfc  /tmp/.mount_Androremp11480394280607069825/lib/libgobject-2.0.so.0.9000.1 (offset c000) (g_closure_invoke+460)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #16 pc 0000000000025cfb  /tmp/.mount_Androremp11480394280607069825/lib/libgobject-2.0.so.0.9000.1 (offset c000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #17 pc 0000000000027ed4  /tmp/.mount_Androremp11480394280607069825/lib/libgobject-2.0.so.0.9000.1 (offset c000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #18 pc 0000000000028179  /tmp/.mount_Androremp11480394280607069825/lib/libgobject-2.0.so.0.9000.1 (offset c000) (g_signal_emit_valist+57)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   g_object_getv"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #19 pc 0000000000028234  /tmp/.mount_Androremp11480394280607069825/lib/libgobject-2.0.so.0.9000.1 (offset c000) (g_signal_emit+148)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   g_object_getv"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #20 pc 00000000000b10a1  /tmp/.mount_Androremp11480394280607069825/lib/libgio-2.0.so.0.9000.1 (offset 32000) (g_application_open+609)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   g_subprocess_get_term_sig"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #21 pc 00000000000b3148  /tmp/.mount_Androremp11480394280607069825/lib/libgio-2.0.so.0.9000.1 (offset 32000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #22 pc 00000000000b33b9  /tmp/.mount_Androremp11480394280607069825/lib/libgio-2.0.so.0.9000.1 (offset 32000) (g_application_run+297)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   g_subprocess_communicate_utf8_finish"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #23 pc 0000000000000b19  /tmp/.mount_Androremp11480394280607069825/shared/bin/android-translation-layer (offset 4000) (main+281)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #24 pc 0000000000003781  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #25 pc 00000000000038b9  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (__libc_start_main+137)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #26 pc 0000000000000c55  /tmp/.mount_Androremp11480394280607069825/shared/bin/android-translation-layer (offset 4000) (_start+37)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(no managed stack frames)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "\"Jit thread pool worker thread 0\" prio=5 tid=2 Native"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| group=\"\" sCount=1 dsCount=0 flags=1 obj=0x12c2b430 self=0x79e0c4000ea0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| sysTid=90174 nice=0 cgrp=default sched=0/0 handle=0x79e0fd7ff6c0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| state=S schedstat=( 107720 0 1 ) utm=0 stm=0 core=4 HZ=100"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| stack=0x79e0fd700000-0x79e0fd702000 stackSize=1028KB"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| held mutexes="
+    },
+    {
+      "stream" : "stderr",
+      "text" : "kernel: (couldn't read /proc/self/task/90174/stack)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #00 pc 00000000000fa86b  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (syscall+27)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   pwrite"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #01 pc 00000000000783ba  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art17ConditionVariable16WaitHoldingLocksEPNS_6ThreadE+106)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #02 pc 0000000000521adc  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art10ThreadPool7GetTaskEPNS_6ThreadE+60)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #03 pc 0000000000521c9e  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art16ThreadPoolWorker3RunEv+110)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #04 pc 0000000000521d9d  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art16ThreadPoolWorker8CallbackEPv+125)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #05 pc 0000000000074042  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #06 pc 00000000000fcb2c  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(no managed stack frames)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "\"Runtime worker thread 0\" prio=5 tid=3 Native (still starting up)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| group=\"\" sCount=1 dsCount=0 flags=1 obj=0 self=0x79e0c8000b80"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| sysTid=90178 nice=0 cgrp=default sched=0/0 handle=0x79e10461c6c0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| state=S schedstat=( 78170 4300 2 ) utm=0 stm=0 core=5 HZ=100"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| stack=0x79e10460d000-0x79e10460f000 stackSize=68KB"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| held mutexes="
+    },
+    {
+      "stream" : "stderr",
+      "text" : "kernel: (couldn't read /proc/self/task/90178/stack)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #00 pc 00000000000fa86b  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (syscall+27)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   pwrite"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #01 pc 00000000000783ba  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art17ConditionVariable16WaitHoldingLocksEPNS_6ThreadE+106)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #02 pc 0000000000521adc  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art10ThreadPool7GetTaskEPNS_6ThreadE+60)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #03 pc 0000000000521c9e  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art16ThreadPoolWorker3RunEv+110)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #04 pc 0000000000521d9d  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art16ThreadPoolWorker8CallbackEPv+125)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #05 pc 0000000000074042  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #06 pc 00000000000fcb2c  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(no managed stack frames)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "\"Runtime worker thread 1\" prio=5 tid=4 Native (still starting up)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| group=\"\" sCount=1 dsCount=0 flags=1 obj=0 self=0x79e0d0000b80"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| sysTid=90179 nice=0 cgrp=default sched=0/0 handle=0x79e0ffebe6c0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| state=S schedstat=( 64630 0 4 ) utm=0 stm=0 core=0 HZ=100"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| stack=0x79e0ffeaf000-0x79e0ffeb1000 stackSize=68KB"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| held mutexes="
+    },
+    {
+      "stream" : "stderr",
+      "text" : "kernel: (couldn't read /proc/self/task/90179/stack)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #00 pc 00000000000fa86b  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (syscall+27)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   pwrite"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #01 pc 00000000000783ba  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art17ConditionVariable16WaitHoldingLocksEPNS_6ThreadE+106)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #02 pc 0000000000521adc  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art10ThreadPool7GetTaskEPNS_6ThreadE+60)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #03 pc 0000000000521c9e  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art16ThreadPoolWorker3RunEv+110)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #04 pc 0000000000521d9d  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art16ThreadPoolWorker8CallbackEPv+125)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #05 pc 0000000000074042  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #06 pc 00000000000fcb2c  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(no managed stack frames)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "\"Runtime worker thread 2\" prio=5 tid=5 Native (still starting up)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| group=\"\" sCount=1 dsCount=0 flags=1 obj=0 self=0x79e0d4000b80"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| sysTid=90180 nice=0 cgrp=default sched=0/0 handle=0x79e0fe04f6c0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| state=S schedstat=( 45530 0 2 ) utm=0 stm=0 core=11 HZ=100"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| stack=0x79e0fe040000-0x79e0fe042000 stackSize=68KB"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| held mutexes="
+    },
+    {
+      "stream" : "stderr",
+      "text" : "kernel: (couldn't read /proc/self/task/90180/stack)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #00 pc 00000000000fa86b  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (syscall+27)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   pwrite"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #01 pc 00000000000783ba  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art17ConditionVariable16WaitHoldingLocksEPNS_6ThreadE+106)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #02 pc 0000000000521adc  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art10ThreadPool7GetTaskEPNS_6ThreadE+60)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #03 pc 0000000000521c9e  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art16ThreadPoolWorker3RunEv+110)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #04 pc 0000000000521d9d  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art16ThreadPoolWorker8CallbackEPv+125)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #05 pc 0000000000074042  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #06 pc 00000000000fcb2c  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(no managed stack frames)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "\"Runtime worker thread 3\" prio=5 tid=6 Native (still starting up)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| group=\"\" sCount=1 dsCount=0 flags=1 obj=0 self=0x79e0dc000b80"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| sysTid=90181 nice=0 cgrp=default sched=0/0 handle=0x79e0fe03e6c0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| state=S schedstat=( 54260 0 2 ) utm=0 stm=0 core=4 HZ=100"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| stack=0x79e0fe02f000-0x79e0fe031000 stackSize=68KB"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| held mutexes="
+    },
+    {
+      "stream" : "stderr",
+      "text" : "kernel: (couldn't read /proc/self/task/90181/stack)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #00 pc 00000000000fa86b  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (syscall+27)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   pwrite"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #01 pc 00000000000783ba  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art17ConditionVariable16WaitHoldingLocksEPNS_6ThreadE+106)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #02 pc 0000000000521adc  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art10ThreadPool7GetTaskEPNS_6ThreadE+60)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #03 pc 0000000000521c9e  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art16ThreadPoolWorker3RunEv+110)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #04 pc 0000000000521d9d  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art16ThreadPoolWorker8CallbackEPv+125)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_java_lang_reflect_Executable(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #05 pc 0000000000074042  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #06 pc 00000000000fcb2c  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(no managed stack frames)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "\"Signal Catcher\" prio=5 tid=7 WaitingInMainSignalCatcherLoop"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| group=\"\" sCount=1 dsCount=0 flags=1 obj=0x12c2b670 self=0x79e0e0000b80"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| sysTid=90182 nice=0 cgrp=default sched=0/0 handle=0x79e0e58006c0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| state=S schedstat=( 84630 0 1 ) utm=0 stm=0 core=5 HZ=100"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| stack=0x79e0e5003000-0x79e0e5005000 stackSize=8188KB"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| held mutexes="
+    },
+    {
+      "stream" : "stderr",
+      "text" : "kernel: (couldn't read /proc/self/task/90182/stack)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #00 pc 000000000007c8f2  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #01 pc 000000000001b469  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (sigtimedwait+89)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #02 pc 000000000001aaa0  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (sigwait+80)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #03 pc 00000000004dec63  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art13SignalCatcher13WaitForSignalEPNS_6ThreadERNS_9SignalSetE+227)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::mirror::FieldVarHandle::Access(art::mirror::VarHandle::AccessMode, art::ShadowFrame*, art::InstructionOperands const*, art::JValue*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #04 pc 00000000004dfaf2  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art13SignalCatcher3RunEPv+274)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::mirror::ArrayElementVarHandle::Access(art::mirror::VarHandle::AccessMode, art::ShadowFrame*, art::InstructionOperands const*, art::JValue*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #05 pc 0000000000074042  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #06 pc 00000000000fcb2c  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(no managed stack frames)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "\"ReferenceQueueDaemon\" prio=5 tid=8 Waiting"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| group=\"\" sCount=1 dsCount=0 flags=1 obj=0x12c2b700 self=0x2b5b220"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| sysTid=90183 nice=0 cgrp=default sched=0/0 handle=0x79e0fcdff6c0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| state=S schedstat=( 146770 3150732 4 ) utm=0 stm=0 core=4 HZ=100"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| stack=0x79e0fccfe000-0x79e0fcd00000 stackSize=1036KB"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| held mutexes="
+    },
+    {
+      "stream" : "stderr",
+      "text" : "kernel: (couldn't read /proc/self/task/90183/stack)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #00 pc 00000000000fa86b  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (syscall+27)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   pwrite"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #01 pc 00000000000783ba  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art17ConditionVariable16WaitHoldingLocksEPNS_6ThreadE+106)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #02 pc 00000000003ddff8  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art7Monitor4WaitEPNS_6ThreadElibNS_11ThreadStateE+952)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   std::_Rb_tree_iterator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, art::ProfileCompilationInfo*> > std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, art::ProfileCompilationInfo*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, art::ProfileCompilationInfo*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, art::ProfileCompilationInfo*> > >::_M_emplace_hint_unique<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, art::ProfileCompilationInfo*>(std::_Rb_tree_const_iterator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, art::ProfileCompilationInfo*> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, art::ProfileCompilationInfo*&&)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #03 pc 00000000003e099d  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art7Monitor4WaitEPNS_6ThreadENS_6ObjPtrINS_6mirror6ObjectEEElibNS_11ThreadStateE+445)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   std::_Rb_tree_node<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > >* std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > > >::_Reuse_or_alloc_node::operator()<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > const&>(std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > const&)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #04 pc 0000000000000a5c  ~/.cache/AppImage-Cache/art/x86_64/tmp@.mount_Androremp11480394280607069825@lib@art@..@java@dex@art@oat@boot.oat (offset 26d000) (art_jni_trampoline+188)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Object.wait(Native method)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "- waiting on <0x0b470c79> (a java.lang.Class<java.lang.ref.ReferenceQueue>)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Object.wait(Object.java:422)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Object.wait(Object.java:529)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Daemons$ReferenceQueueDaemon.runInternal(Daemons.java:180)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "- locked <0x0b470c79> (a java.lang.Class<java.lang.ref.ReferenceQueue>)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Daemons$Daemon.run(Daemons.java:105)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Thread.run(Thread.java:768)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "\"FinalizerDaemon\" prio=5 tid=9 Waiting"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| group=\"\" sCount=1 dsCount=0 flags=1 obj=0x12c2b790 self=0x2b2de90"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| sysTid=90184 nice=0 cgrp=default sched=0/0 handle=0x79e0fc3ff6c0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| state=S schedstat=( 167170 0 5 ) utm=0 stm=0 core=5 HZ=100"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| stack=0x79e0fc2fe000-0x79e0fc300000 stackSize=1036KB"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| held mutexes="
+    },
+    {
+      "stream" : "stderr",
+      "text" : "kernel: (couldn't read /proc/self/task/90184/stack)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #00 pc 00000000000fa86b  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (syscall+27)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   pwrite"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #01 pc 00000000000783ba  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art17ConditionVariable16WaitHoldingLocksEPNS_6ThreadE+106)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #02 pc 00000000003ddff8  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art7Monitor4WaitEPNS_6ThreadElibNS_11ThreadStateE+952)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   std::_Rb_tree_iterator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, art::ProfileCompilationInfo*> > std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, art::ProfileCompilationInfo*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, art::ProfileCompilationInfo*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, art::ProfileCompilationInfo*> > >::_M_emplace_hint_unique<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, art::ProfileCompilationInfo*>(std::_Rb_tree_const_iterator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, art::ProfileCompilationInfo*> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, art::ProfileCompilationInfo*&&)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #03 pc 00000000003e099d  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art7Monitor4WaitEPNS_6ThreadENS_6ObjPtrINS_6mirror6ObjectEEElibNS_11ThreadStateE+445)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   std::_Rb_tree_node<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > >* std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > > >::_Reuse_or_alloc_node::operator()<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > const&>(std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > const&)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #04 pc 0000000000000a5c  ~/.cache/AppImage-Cache/art/x86_64/tmp@.mount_Androremp11480394280607069825@lib@art@..@java@dex@art@oat@boot.oat (offset 26d000) (art_jni_trampoline+188)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Object.wait(Native method)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "- waiting on <0x01a35dbe> (a java.lang.Object)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Object.wait(Object.java:422)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:188)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "- locked <0x01a35dbe> (a java.lang.Object)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:209)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Daemons$FinalizerDaemon.runInternal(Daemons.java:234)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Daemons$Daemon.run(Daemons.java:105)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Thread.run(Thread.java:768)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "\"FinalizerWatchdogDaemon\" prio=5 tid=10 Sleeping"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| group=\"\" sCount=1 dsCount=0 flags=1 obj=0x12c2b820 self=0x2b650b0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| sysTid=90185 nice=0 cgrp=default sched=0/0 handle=0x79e0fc2fa6c0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| state=S schedstat=( 67930 0 2 ) utm=0 stm=0 core=10 HZ=100"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| stack=0x79e0fc1f9000-0x79e0fc1fb000 stackSize=1036KB"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| held mutexes="
+    },
+    {
+      "stream" : "stderr",
+      "text" : "kernel: (couldn't read /proc/self/task/90185/stack)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #00 pc 00000000000fa86d  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (syscall+29)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   pwrite"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #01 pc 00000000000788a8  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art17ConditionVariable9TimedWaitEPNS_6ThreadEli+136)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #02 pc 00000000003dddd0  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art7Monitor4WaitEPNS_6ThreadElibNS_11ThreadStateE+400)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   std::_Rb_tree_iterator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, art::ProfileCompilationInfo*> > std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, art::ProfileCompilationInfo*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, art::ProfileCompilationInfo*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, art::ProfileCompilationInfo*> > >::_M_emplace_hint_unique<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, art::ProfileCompilationInfo*>(std::_Rb_tree_const_iterator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, art::ProfileCompilationInfo*> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, art::ProfileCompilationInfo*&&)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #03 pc 00000000003e099d  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art7Monitor4WaitEPNS_6ThreadENS_6ObjPtrINS_6mirror6ObjectEEElibNS_11ThreadStateE+445)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   std::_Rb_tree_node<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > >* std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > > >::_Reuse_or_alloc_node::operator()<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > const&>(std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::set<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > const&)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #04 pc 0000000000026234  ~/.cache/AppImage-Cache/art/x86_64/tmp@.mount_Androremp11480394280607069825@lib@art@..@java@dex@art@oat@boot.oat (offset 26d000) (art_jni_trampoline+212)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Thread.sleep(Native method)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "- sleeping on <0x0812fe1f> (a java.lang.Object)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Thread.sleep(Thread.java:377)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "- locked <0x0812fe1f> (a java.lang.Object)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Thread.sleep(Thread.java:318)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Daemons$FinalizerWatchdogDaemon.sleepFor(Daemons.java:344)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Daemons$FinalizerWatchdogDaemon.waitForFinalization(Daemons.java:366)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Daemons$FinalizerWatchdogDaemon.runInternal(Daemons.java:283)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Daemons$Daemon.run(Daemons.java:105)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Thread.run(Thread.java:768)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "\"HeapTaskDaemon\" prio=5 tid=11 Native"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| group=\"\" sCount=1 dsCount=0 flags=1 obj=0x12c2b8b0 self=0x2b58d40"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| sysTid=90186 nice=0 cgrp=default sched=0/0 handle=0x79e0fc1f56c0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| state=S schedstat=( 5673103 3095651 15 ) utm=0 stm=0 core=10 HZ=100"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| stack=0x79e0fc0f4000-0x79e0fc0f6000 stackSize=1036KB"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| held mutexes="
+    },
+    {
+      "stream" : "stderr",
+      "text" : "kernel: (couldn't read /proc/self/task/90186/stack)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #00 pc 00000000000fa86b  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (syscall+27)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   pwrite"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #01 pc 00000000000783ba  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art17ConditionVariable16WaitHoldingLocksEPNS_6ThreadE+106)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #02 pc 00000000001b4c9f  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art2gc4Heap27TrimIndirectReferenceTablesEPNS_6ThreadE+1087)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::ClassLinker::CreateArrayClass(art::Thread*, char const*, unsigned long, art::Handle<art::mirror::ClassLoader>)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #03 pc 00000000001b51d6  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art2gc4Heap4TrimEPNS_6ThreadE+214)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::ClassLinker::CreateArrayClass(art::Thread*, char const*, unsigned long, art::Handle<art::mirror::ClassLoader>)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #04 pc 00000000001bd9a0  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art2gc4Heap12HeapTrimTask3RunEPNS_6ThreadE+32)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::ClassLinker::CreateProxyClass(art::ScopedObjectAccessAlreadyRunnable&, _jstring*, _jobjectArray*, _jobject*, _jobjectArray*, _jobjectArray*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #05 pc 00000000001f0e2f  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art2gc13TaskProcessor11RunAllTasksEPNS_6ThreadE+79)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::Dbg::GetThreadGroupName(unsigned long, art::JDWP::ExpandBuf*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #06 pc 0000000000330e9e  ~/.cache/AppImage-Cache/art/x86_64/tmp@.mount_Androremp11480394280607069825@lib@art@..@java@dex@art@oat@boot-core-libart-hostdex.oat (offset 118000) (art_jni_trampoline+158)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   android.icu.text.PluralRules$Constraint android.icu.text.PluralRules.parseConstraint(java.lang.String)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    $JAVA_SRC_ROOT/android/icu/text/PluralRules.java:1252"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at dalvik.system.VMRuntime.runHeapTasks(Native method)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Daemons$HeapTaskDaemon.runInternal(Daemons.java:463)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Daemons$Daemon.run(Daemons.java:105)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Thread.run(Thread.java:768)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "\"flutter-worker-0\" prio=5 tid=12 TimedWaiting"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| group=\"\" sCount=1 dsCount=0 flags=1 obj=0x12c0a310 self=0x3126670"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| sysTid=90200 nice=0 cgrp=default sched=0/0 handle=0x79e0e7bff6c0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| state=S schedstat=( 456575004 13663985 126 ) utm=13 stm=31 core=5 HZ=100"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| stack=0x79e0e7afe000-0x79e0e7b00000 stackSize=1036KB"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| held mutexes="
+    },
+    {
+      "stream" : "stderr",
+      "text" : "kernel: (couldn't read /proc/self/task/90200/stack)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #00 pc 00000000000fa86d  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (syscall+29)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   pwrite"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #01 pc 00000000004f79c1  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art6Thread4ParkEbl+737)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_dalvik_system_DexFile(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #02 pc 000000000042b17c  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #03 pc 00000000006e60cc  ~/.cache/AppImage-Cache/art/x86_64/tmp@.mount_Androremp11480394280607069825@lib@art@..@java@dex@art@oat@boot.oat (offset 26d000) (art_jni_trampoline+188)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   java.util.List java.util.ResourceBundle$Control$CandidateListCache.createObject(sun.util.locale.BaseLocale)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    $JAVA_SRC_ROOT/java/util/ResourceBundle.java:2438"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at sun.misc.Unsafe.park(Native method)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "- waiting on an unknown object"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:230)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.SynchronousQueue$TransferStack.awaitFulfill(SynchronousQueue.java:461)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.SynchronousQueue$TransferStack.transfer(SynchronousQueue.java:362)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.SynchronousQueue.poll(SynchronousQueue.java:937)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1086)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1147)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:636)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Thread.run(Thread.java:768)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "\"flutter-worker-1\" prio=5 tid=13 Native"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| group=\"\" sCount=1 dsCount=0 flags=1 obj=0x12c2bf70 self=0x79e0e8018160"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| sysTid=90201 nice=0 cgrp=default sched=0/0 handle=0x79e0e75ff6c0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| state=S schedstat=( 26213820 13478218 129 ) utm=2 stm=0 core=3 HZ=100"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| stack=0x79e0e74fe000-0x79e0e7500000 stackSize=1036KB"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| held mutexes="
+    },
+    {
+      "stream" : "stderr",
+      "text" : "kernel: (couldn't read /proc/self/task/90201/stack)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #00 pc 00000000000fa86b  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (syscall+27)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   pwrite"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #01 pc 00000000000783ba  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art17ConditionVariable16WaitHoldingLocksEPNS_6ThreadE+106)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #02 pc 00000000005e0501  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #03 pc 00000000005e0675  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art19GenericJniMethodEndEPNS_6ThreadEj6jvaluemPNS_9ArtMethodEPNS_11HandleScopeE+69)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::InitializeIntrinsics()"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #04 pc 000000000004ab88  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #05 pc 000000000003fcf7  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #06 pc 00000000000725a5  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art9ArtMethod6InvokeEPNS_6ThreadEPjjPNS_6JValueEPKc+517)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #07 pc 0000000000248842  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art11interpreter6DoCallILb0ELb1EEEbPNS_9ArtMethodEPNS_6ThreadERNS_11ShadowFrameEPKNS_11InstructionEtPNS_6JValueE+1986)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::gc::accounting::ModUnionTableReferenceCache::VisitObjects(void (*)(art::mirror::Object*, void*), void*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #08 pc 00000000000321fc  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art11interpreter20ExecuteSwitchImplCppILb1ELb0EEEvPNS0_17SwitchImplContextE+36924)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #09 pc 000000000004cad6  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #10 pc 0000000000219af4  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #11 pc 000000000021a360  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art11interpreter33ArtInterpreterToInterpreterBridgeEPNS_6ThreadERKNS_20CodeItemDataAccessorEPNS_11ShadowFrameEPNS_6JValueE+160)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::annotations::GetSourceDebugExtension(art::Handle<art::mirror::Class>)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #12 pc 0000000000232aa4  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art11interpreter6DoCallILb0ELb0EEEbPNS_9ArtMethodEPNS_6ThreadERNS_11ShadowFrameEPKNS_11InstructionEtPNS_6JValueE+676)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::FaultManager::~FaultManager()"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #13 pc 0000000000052bff  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (MterpInvokeVirtual+639)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #14 pc 00000000005fb21a  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #15 pc 0000000000055b6c  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (MterpInvokeDirect+1676)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #16 pc 00000000005fb31a  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #17 pc 0000000000056472  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (MterpInvokeStatic+1298)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #18 pc 00000000005fb39a  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #19 pc 00000000002197c0  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #20 pc 00000000005e2eba  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (artQuickToInterpreterBridge+1114)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::RuntimeArgumentMapKey<std::vector<std::unique_ptr<art::DexFile const, std::default_delete<art::DexFile const> >, std::allocator<std::unique_ptr<art::DexFile const, std::default_delete<art::DexFile const> > > >*>::~RuntimeArgumentMapKey()"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #21 pc 000000000004acfd  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #22 pc 000000000056e3d4  ~/.cache/AppImage-Cache/art/x86_64/tmp@.mount_Androremp11480394280607069825@lib@art@..@java@dex@art@oat@boot.oat (offset 26d000) (void java.util.concurrent.ThreadPoolExecutor.runWorker(java.util.concurrent.ThreadPoolExecutor$Worker)+1092)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   java.time.chrono.Chronology java.time.chrono.AbstractChronology.ofLocale(java.util.Locale)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    $JAVA_SRC_ROOT/java/time/chrono/AbstractChronology.java:255"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at io.flutter.embedding.engine.FlutterJNI.nativePrefetchDefaultFontManager(Native method)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at io.flutter.embedding.engine.FlutterJNI.prefetchDefaultFontManager(:-1)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at p.d$a.c(:-1)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at p.d$a.a(:-1)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at p.c.run(:-1)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1162)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:636)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Thread.run(Thread.java:768)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Aborting thread:"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "\"main\" prio=5 tid=1 Native"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| group=\"\" sCount=0 dsCount=0 flags=0 obj=0x12c2b3a0 self=0x2b0d8e0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| sysTid=90152 nice=0 cgrp=default sched=0/0 handle=0x79e108f78600"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| state=R schedstat=( 1028374305 304905447 4014 ) utm=48 stm=54 core=8 HZ=100"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| stack=0x79e121201000-0x79e121203000 stackSize=8184KB"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "| held mutexes= \"abort lock\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #00 pc 00000000003e737b  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art15DumpNativeStackERSoiP12BacktraceMapPKcPNS_9ArtMethodEPvb+91)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::GetCheckJniInvokeInterface()"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #01 pc 00000000004ff536  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZNK3art6Thread9DumpStackERSobP12BacktraceMapb+326)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::register_dalvik_system_VMDebug(_JNIEnv*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #02 pc 00000000004b55ef  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #03 pc 00000000004c0147  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art7Runtime5AbortEPKc+1751)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::mirror::Class::FindClassMethod(std::basic_string_view<char, std::char_traits<char> >, std::basic_string_view<char, std::char_traits<char> >, art::PointerSize)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #04 pc 0000000000005445  /tmp/.mount_Androremp11480394280607069825/lib/art/libbase.so (offset 6000) (_ZN7android4base10LogMessageD2Ev+1237)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #05 pc 0000000000311f70  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art9JavaVMExt8JniAbortEPKcS2_+2096)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::IndirectReferenceTable::Add(art::IRTSegmentState, art::ObjPtr<art::mirror::Object>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #06 pc 0000000000312190  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art9JavaVMExt9JniAbortVEPKcS2_P13__va_list_tag+80)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   art::IndirectReferenceTable::Add(art::IRTSegmentState, art::ObjPtr<art::mirror::Object>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #07 pc 00000000002d84f1  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #08 pc 00000000002e00d6  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #09 pc 00000000002e0e96  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #10 pc 00000000002f1a8b  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #11 pc 000000000001a511  /tmp/.mount_Androremp11480394280607069825/lib/java/dex/android_translation_layer/natives/libtranslation_layer_main.so (offset 29000) (activity_start+481)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #12 pc 0000000000003b9f  /tmp/.mount_Androremp11480394280607069825/shared/bin/android-translation-layer (offset 4000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #13 pc 0000000000005bfc  /tmp/.mount_Androremp11480394280607069825/lib/libgobject-2.0.so.0.9000.1 (offset c000) (g_closure_invoke+460)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #14 pc 0000000000025cfb  /tmp/.mount_Androremp11480394280607069825/lib/libgobject-2.0.so.0.9000.1 (offset c000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #15 pc 0000000000027ed4  /tmp/.mount_Androremp11480394280607069825/lib/libgobject-2.0.so.0.9000.1 (offset c000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #16 pc 0000000000028179  /tmp/.mount_Androremp11480394280607069825/lib/libgobject-2.0.so.0.9000.1 (offset c000) (g_signal_emit_valist+57)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   g_object_getv"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #17 pc 0000000000028234  /tmp/.mount_Androremp11480394280607069825/lib/libgobject-2.0.so.0.9000.1 (offset c000) (g_signal_emit+148)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   g_object_getv"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #18 pc 00000000000b10a1  /tmp/.mount_Androremp11480394280607069825/lib/libgio-2.0.so.0.9000.1 (offset 32000) (g_application_open+609)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   g_subprocess_get_term_sig"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #19 pc 00000000000b3148  /tmp/.mount_Androremp11480394280607069825/lib/libgio-2.0.so.0.9000.1 (offset 32000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #20 pc 00000000000b33b9  /tmp/.mount_Androremp11480394280607069825/lib/libgio-2.0.so.0.9000.1 (offset 32000) (g_application_run+297)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   g_subprocess_communicate_utf8_finish"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #21 pc 0000000000000b19  /tmp/.mount_Androremp11480394280607069825/shared/bin/android-translation-layer (offset 4000) (main+281)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #22 pc 0000000000003781  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #23 pc 00000000000038b9  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (__libc_start_main+137)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native: #24 pc 0000000000000c55  /tmp/.mount_Androremp11480394280607069825/shared/bin/android-translation-layer (offset 4000) (_start+37)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:   ??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "native:    ??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(no managed stack frames)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Pending exception java.lang.RuntimeException: java.util.concurrent.ExecutionException: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(Throwable with no stack trace)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.util.concurrent.ExecutionException: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(Throwable with no stack trace)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(Throwable with no stack trace)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "A/android-translation-layer(90152): runtime.cc:650] JNI DETECTED ERROR IN APPLICATION: JNI GetMethodID called with pending exception java.lang.RuntimeException: java.util.concurrent.ExecutionException: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Fatal signal 6 (SIGABRT), code -6 (SI_TKILL)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "OS: Linux 6.8.0-48-generic (x86_64)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Cmdline: <unset>"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Thread: 90152 \"main\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Registers:"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "rax: 0x0000000000000000    rbx: 0x0000000000016028    rcx: 0x000079e11f49a11c    rdx: 0x0000000000000006"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "rdi: 0x0000000000016028    rsi: 0x0000000000016028    rbp: 0x000079e1219fc570    rsp: 0x000079e1219fc540"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "r8 : 0x000000000260e130    r9 : 0x00000000000001b0    r10: 0x00000000000001b1    r11: 0x0000000000000246"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "r12: 0x0000000000000002    r13: 0x000000000312ac40    r14: 0x0000000000000006    r15: 0x000079e1176cf360"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "rip: 0x000079e11f49a11c    eflags: 0x00000246 [ PF ZF IF ]"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "cs: 0x00000033     gs: 0x00000000     fs: 0x00000000"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Backtrace:"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#00 pc 000000000007611c  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#01 pc 000000000001a5d0  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (gsignal+32)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#02 pc 0000000000001685  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (abort+38)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#03 pc 000000000000f4ed  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#04 pc 0000000000005445  /tmp/.mount_Androremp11480394280607069825/lib/art/libbase.so (offset 6000) (_ZN7android4base10LogMessageD2Ev+1237)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#05 pc 0000000000311f70  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art9JavaVMExt8JniAbortEPKcS2_+2096)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "art::IndirectReferenceTable::Add(art::IRTSegmentState, art::ObjPtr<art::mirror::Object>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#06 pc 0000000000312190  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (_ZN3art9JavaVMExt9JniAbortVEPKcS2_P13__va_list_tag+80)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "art::IndirectReferenceTable::Add(art::IRTSegmentState, art::ObjPtr<art::mirror::Object>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#07 pc 00000000002d84f1  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#08 pc 00000000002e00d6  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#09 pc 00000000002e0e96  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#10 pc 00000000002f1a8b  /tmp/.mount_Androremp11480394280607069825/lib/art/libart.so (offset 106000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#11 pc 000000000001a511  /tmp/.mount_Androremp11480394280607069825/lib/java/dex/android_translation_layer/natives/libtranslation_layer_main.so (offset 29000) (activity_start+481)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#12 pc 0000000000003b9f  /tmp/.mount_Androremp11480394280607069825/shared/bin/android-translation-layer (offset 4000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#13 pc 0000000000005bfc  /tmp/.mount_Androremp11480394280607069825/lib/libgobject-2.0.so.0.9000.1 (offset c000) (g_closure_invoke+460)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#14 pc 0000000000025cfb  /tmp/.mount_Androremp11480394280607069825/lib/libgobject-2.0.so.0.9000.1 (offset c000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#15 pc 0000000000027ed4  /tmp/.mount_Androremp11480394280607069825/lib/libgobject-2.0.so.0.9000.1 (offset c000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#16 pc 0000000000028179  /tmp/.mount_Androremp11480394280607069825/lib/libgobject-2.0.so.0.9000.1 (offset c000) (g_signal_emit_valist+57)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "g_object_getv"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#17 pc 0000000000028234  /tmp/.mount_Androremp11480394280607069825/lib/libgobject-2.0.so.0.9000.1 (offset c000) (g_signal_emit+148)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "g_object_getv"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#18 pc 00000000000b10a1  /tmp/.mount_Androremp11480394280607069825/lib/libgio-2.0.so.0.9000.1 (offset 32000) (g_application_open+609)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "g_subprocess_get_term_sig"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#19 pc 00000000000b3148  /tmp/.mount_Androremp11480394280607069825/lib/libgio-2.0.so.0.9000.1 (offset 32000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#20 pc 00000000000b33b9  /tmp/.mount_Androremp11480394280607069825/lib/libgio-2.0.so.0.9000.1 (offset 32000) (g_application_run+297)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "g_subprocess_communicate_utf8_finish"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:?"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#21 pc 0000000000000b19  /tmp/.mount_Androremp11480394280607069825/shared/bin/android-translation-layer (offset 4000) (main+281)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#22 pc 0000000000003781  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#23 pc 00000000000038b9  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (__libc_start_main+137)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#24 pc 0000000000000c55  /tmp/.mount_Androremp11480394280607069825/shared/bin/android-translation-layer (offset 4000) (_start+37)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Fault message: JNI DETECTED ERROR IN APPLICATION: JNI GetMethodID called with pending exception java.lang.RuntimeException: java.util.concurrent.ExecutionException: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(Throwable with no stack trace)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.util.concurrent.ExecutionException: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(Throwable with no stack trace)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(Throwable with no stack trace)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "in call to GetMethodID"
+    },
+    {
+      "stream" : "apkmanager",
+      "text" : "Android Translation Layer exited with status 0"
+    }
+  ],
+  "errors" : [
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:90152): Gtk-WARNING **: 12:32:46.785: Theme parser error: default-stylesheet.css:21:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:90152): Gtk-WARNING **: 12:32:46.785: Theme parser error: default-stylesheet.css:25:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:90152): Gtk-WARNING **: 12:32:46.785: Theme parser error: default-stylesheet.css:29:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.util.concurrent.ExecutionException: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "A/android-translation-layer(90152): java_vm_ext.cc:563] JNI DETECTED ERROR IN APPLICATION: JNI GetMethodID called with pending exception java.lang.RuntimeException: java.util.concurrent.ExecutionException: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Pending exception java.lang.RuntimeException: java.util.concurrent.ExecutionException: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.util.concurrent.ExecutionException: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "A/android-translation-layer(90152): runtime.cc:650] JNI DETECTED ERROR IN APPLICATION: JNI GetMethodID called with pending exception java.lang.RuntimeException: java.util.concurrent.ExecutionException: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Fatal signal 6 (SIGABRT), code -6 (SI_TKILL)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Fault message: JNI DETECTED ERROR IN APPLICATION: JNI GetMethodID called with pending exception java.lang.RuntimeException: java.util.concurrent.ExecutionException: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.util.concurrent.ExecutionException: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.NoSuchMethodError: No virtual method getCodeCacheDir()Ljava/io/File; in class Landroid/content/Context; or its super classes (declaration of 'android.content.Context' appears in /tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/api-impl.jar)"
+    }
+  ]
+}

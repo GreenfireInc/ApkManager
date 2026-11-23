@@ -1,0 +1,407 @@
+{
+  "apkManager" : {
+    "name" : "ApkManager",
+    "version" : "0.2.9",
+    "repository" : "https://github.com/GreenfireInc/ApkManager"
+  },
+  "system" : {
+    "linux" : {
+      "distribution" : "Linux Mint 22",
+      "id" : "linuxmint",
+      "versionId" : "22",
+      "basedOn" : "",
+      "kernelRelease" : "6.8.0-48-generic",
+      "kernelVersion" : "#48-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep 27 14:04:52 UTC 2024",
+      "architecture" : "x86_64"
+    },
+    "displayServer" : {
+      "sessionType" : "x11",
+      "display" : ":0",
+      "waylandDisplay" : "",
+      "xServerVendor" : "The X.Org Foundation",
+      "xServerVersion" : "1.21.1.11"
+    },
+    "desktopEnvironment" : {
+      "name" : "X-Cinnamon",
+      "session" : "cinnamon",
+      "version" : "Cinnamon 6.2.9"
+    },
+    "java" : {
+      "path" : "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
+      "version" : "21.0.12.1",
+      "runtime" : "OpenJDK Runtime Environment (build 21.0.12.1+1-1-24.04.4-Ubuntu)"
+    }
+  },
+  "application" : {
+    "name" : "RustDesk",
+    "package" : "com.carriez.flutter_hbb",
+    "versionName" : "1.4.9",
+    "versionCode" : "104090003",
+    "apk" : "~/Applications/android/com.carriez.flutter_hbb.from.F-Droid.x86_64.apk"
+  },
+  "runtime" : {
+    "id" : "android-translation-layer",
+    "name" : "Android Translation Layer",
+    "version" : "94d69d8c-edge",
+    "buildDate" : "2026-11-22T11:46:13-05"
+  },
+  "startedAt" : "2026-11-22T17:40:42Z",
+  "command" : [
+    "~/.local/bin/android-translation-layer",
+    "~/Applications/android/com.carriez.flutter_hbb.from.F-Droid.x86_64.apk",
+    "-X",
+    "-verbose:jni"
+  ],
+  "environment" : {
+    "ANDROID_LOG_TAGS" : "*:v",
+    "GDK_DEBUG" : "gl-egl"
+  },
+  "lines" : [
+    {
+      "stream" : "stderr",
+      "text" : "Unrecognized value \"gl-egl\". Try GDK_DEBUG=help"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "W/android-translation-layer(92828): DexFile /tmp/.mount_Androremp11480394280607069825/lib/java/dex/art/core-oj-hostdex.jar is in boot class path but is not in a known location"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): [     0 '/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/natives/libtranslation_layer_main.so' has not been loaded yet.  Locating...]"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:92828): Gtk-WARNING **: 12:40:44.178: Theme parser error: default-stylesheet.css:21:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:92828): Gtk-WARNING **: 12:40:44.178: Theme parser error: default-stylesheet.css:25:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:92828): Gtk-WARNING **: 12:40:44.178: Theme parser error: default-stylesheet.css:29:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_translation](92828): bionic_dlsym(0x735fb0f79b70, Java_android_os_MessageQueue_nativeInit) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:92828): Gtk-WARNING **: 12:40:44.994: Use GtkSettings:gtk-interface-color-scheme instead"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "I/android-translation-layer(92828): Compiling dex file: dex2oat --dex-file=/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/ghax.jar --oat-file=~/.cache/AppImage-Cache/art//x86_64/tmp@.mount_Androremp11480394280607069825@lib@art@..@java@dex@android_translation_layer@ghax.jar@classes.dex --instruction-set=x86_64 --instruction-set-features=-ssse3,-sse4.1,-sse4.2,-avx,-avx2,-popcnt --host --boot-image=/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/art/oat/boot.art"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libc++_shared.so hooked symbol pthread_setspecific to 0x735fae49f6b0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libc++_shared.so hooked symbol pthread_key_create to 0x735fae499f60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libc++_shared.so hooked symbol pthread_self to 0x735fae49eeb0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libc++_shared.so hooked symbol pthread_getspecific to 0x735fae499d60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libc++_shared.so hooked symbol pthread_join to 0x735fae499e00"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libc++_shared.so hooked symbol pthread_detach to 0x735fae4993d0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libc++_shared.so hooked symbol pthread_key_delete to 0x735fae499fc0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libc++_shared.so hooked symbol pthread_once to 0x735fae49d800"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): librustdesk.so hooked symbol pthread_getspecific to 0x735fae499d60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): librustdesk.so hooked symbol pthread_setspecific to 0x735fae49f6b0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): librustdesk.so hooked symbol pthread_join to 0x735fae499e00"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): librustdesk.so hooked symbol pthread_self to 0x735fae49eeb0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): librustdesk.so hooked symbol pthread_setname_np to 0x735fae49f320"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): librustdesk.so hooked symbol pthread_once to 0x735fae49d800"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): librustdesk.so hooked symbol pthread_key_create to 0x735fae499f60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): librustdesk.so hooked symbol pthread_key_delete to 0x735fae499fc0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): librustdesk.so hooked symbol pthread_equal to 0x735fae499420"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): librustdesk.so hooked symbol pthread_getspecific to 0x735fae499d60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): librustdesk.so hooked symbol pthread_setspecific to 0x735fae49f6b0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): librustdesk.so hooked symbol pthread_join to 0x735fae499e00"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): librustdesk.so hooked symbol pthread_key_create to 0x735fae499f60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): librustdesk.so hooked symbol pthread_key_delete to 0x735fae499fc0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): librustdesk.so hooked symbol pthread_detach to 0x735fae4993d0"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(trace-startup, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(start-paused, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(disable-service-auth-codes, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(endless-trace-buffer, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(use-test-fonts, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(enable-dart-profiling, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(enable-software-rendering, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(skia-deterministic-rendering, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(trace-skia, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(trace-systrace, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(enable-impeller, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(enable-vulkan-validation, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(dump-skp-on-shader-compilation, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(cache-sksl, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(purge-persistent-cache, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(verbose-logging, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(io.flutter.automatically-register-plugins, true) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libflutter.so hooked symbol pthread_self to 0x735fae49eeb0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libflutter.so hooked symbol pthread_getspecific to 0x735fae499d60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libflutter.so hooked symbol pthread_setspecific to 0x735fae49f6b0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libflutter.so hooked symbol pthread_join to 0x735fae499e00"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libflutter.so hooked symbol pthread_key_create to 0x735fae499f60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libflutter.so hooked symbol pthread_setname_np to 0x735fae49f320"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libflutter.so hooked symbol pthread_once to 0x735fae49d800"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libflutter.so hooked symbol pthread_sigmask to 0x735fae49f7d0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](92828): libflutter.so hooked symbol pthread_key_delete to 0x735fae499fc0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "E/flutter (92828): [ERROR:flutter/shell/platform/android/platform_view_android_jni_impl.cc(1211)] Could not locate Image class"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Fatal signal 6 (SIGABRT), code -6 (SI_TKILL)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "OS: Linux 6.8.0-48-generic (x86_64)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Cmdline: <unset>"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Thread: 92886 \"flutter-worker-\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Registers:"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "rax: 0x0000000000000000    rbx: 0x0000000000016ad6    rcx: 0x0000735fae49a11c    rdx: 0x0000000000000006"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "rdi: 0x0000000000016a9c    rsi: 0x0000000000016ad6    rbp: 0x0000735f75dfcb70    rsp: 0x0000735f75dfcb40"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "r8 : 0x0000735f840913b0    r9 : 0x0000000000000070    r10: 0x0000000000000075    r11: 0x0000000000000246"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "r12: 0x0000000003083790    r13: 0x0000735f75dfcfd0    r14: 0x0000000000000006    r15: 0x0000735f75dfcc70"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "rip: 0x0000735fae49a11c    eflags: 0x00000246 [ PF ZF IF ]"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "cs: 0x00000033     gs: 0x00000000     fs: 0x00000000"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Backtrace:"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#00 pc 000000000007611c  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#01 pc 000000000001a5d0  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (gsignal+32)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#02 pc 0000000000001685  /tmp/.mount_Androremp11480394280607069825/lib/libc.so.6 (offset 24000) (abort+38)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "??:0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "#03 pc 00000000000210a6  ~/.local/share/android_translation_layer/com.carriez.flutter_hbb.from.F-Droid.x86_64.apk_/lib/libflutter.so (offset 44b000) (???)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Fault message:"
+    },
+    {
+      "stream" : "apkmanager",
+      "text" : "Android Translation Layer exited with status 0"
+    }
+  ],
+  "errors" : [
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:92828): Gtk-WARNING **: 12:40:44.178: Theme parser error: default-stylesheet.css:21:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:92828): Gtk-WARNING **: 12:40:44.178: Theme parser error: default-stylesheet.css:25:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:92828): Gtk-WARNING **: 12:40:44.178: Theme parser error: default-stylesheet.css:29:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "E/flutter (92828): [ERROR:flutter/shell/platform/android/platform_view_android_jni_impl.cc(1211)] Could not locate Image class"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Fatal signal 6 (SIGABRT), code -6 (SI_TKILL)"
+    }
+  ]
+}

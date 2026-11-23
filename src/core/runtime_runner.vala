@@ -761,6 +761,150 @@ namespace ApkManager.Core {
             }
         }
 
+        // ISO 8601 local time; empty when the runtime is not installed or the date is unknown.
+        public static async string runtime_build_date(RuntimeEngine engine) {
+            DateTime? built = null;
+            switch (engine) {
+            case RuntimeEngine.ANDROID_TRANSLATION_LAYER:
+                var atl = atl_program();
+                if (atl == null) {
+                    break;
+                }
+                built = atl_edge_build_date(yield runtime_version(engine));
+                if (built == null) {
+                    built = yield package_build_date(atl);
+                }
+                if (built == null) {
+                    built = yield appimage_build_date(atl);
+                }
+                break;
+            case RuntimeEngine.LEPTON:
+                var tool = find_lepton();
+                if (tool != null) {
+                    // Lepton release archives keep version.txt's packaging time.
+                    built = modified_time(Path.build_filename(Path.get_dirname(tool.program), "version.txt"));
+                }
+                break;
+            case RuntimeEngine.WAYDROID:
+                var waydroid = waydroid_program();
+                if (waydroid != null) {
+                    built = yield package_build_date(waydroid);
+                }
+                break;
+            default:
+                break;
+            }
+            return built != null ? built.to_local().format_iso8601() : "";
+        }
+
+        // Only trusted while the installed ATL is the build the manifest describes.
+        private static DateTime? atl_edge_build_date(string version) {
+            if (version == "") {
+                return null;
+            }
+            try {
+                var parser = new Json.Parser();
+                parser.load_from_file(AppPaths.atl_edge_manifest);
+                var manifest = parser.get_root().get_object();
+                if (manifest.get_string_member_with_default("version", "") != version) {
+                    return null;
+                }
+                return new DateTime.from_iso8601(manifest.get_string_member_with_default("builtAt", ""), null);
+            } catch (Error e) {
+                return null;
+            }
+        }
+
+        // rpm records the build time; dpkg and pacman keep the packaged files' timestamps.
+        private static async DateTime? package_build_date(string program) {
+            var path = Posix.realpath(program) ?? program;
+            try {
+                if (Environment.find_program_in_path("rpm") != null) {
+                    var stamp = yield run_command({ "rpm", "-qf", "--qf", "%{BUILDTIME}", path });
+                    int64 seconds = 0;
+                    if (stamp.ok && int64.try_parse(stamp.text, out seconds) && seconds > 0) {
+                        return new DateTime.from_unix_utc(seconds);
+                    }
+                }
+                if (Environment.find_program_in_path("dpkg-query") != null) {
+                    var owner = yield run_command({ "dpkg-query", "-S", path });
+                    if (owner.ok && owner.text.contains(":")) {
+                        return modified_time(path);
+                    }
+                }
+                if (Environment.find_program_in_path("pacman") != null) {
+                    var owner = yield run_command({ "pacman", "-Qqo", path });
+                    if (owner.ok) {
+                        return modified_time(path);
+                    }
+                }
+            } catch (Error e) {
+            }
+            return null;
+        }
+
+        private static HashTable<string, DateTime>? appimage_build_dates = null;
+
+        // The image's root keeps the AppDir's time from when the AppImage was packed, which
+        // the AppImage runtime exposes by mounting it. Cached per file and modification time.
+        private static async DateTime? appimage_build_date(string program) {
+            var path = Posix.realpath(program) ?? program;
+            var stamp = modified_time(path);
+            if (stamp == null) {
+                return null;
+            }
+            var key = "%s\n%s".printf(path, stamp.to_unix().to_string());
+            if (appimage_build_dates == null) {
+                appimage_build_dates = new HashTable<string, DateTime>(str_hash, str_equal);
+            }
+            var cached = appimage_build_dates.lookup(key);
+            if (cached != null) {
+                return cached;
+            }
+
+            Subprocess proc;
+            try {
+                proc = new Subprocess.newv({ path, "--appimage-mount" }, SubprocessFlags.STDOUT_PIPE | SubprocessFlags.STDERR_SILENCE);
+            } catch (Error e) {
+                return null;
+            }
+            var cancellable = new Cancellable();
+            var timeout = Timeout.add_seconds(10, () => {
+                cancellable.cancel();
+                return Source.REMOVE;
+            });
+            DateTime? built = null;
+            try {
+                var output = new DataInputStream(proc.get_stdout_pipe());
+                var mount = yield output.read_line_utf8_async(Priority.DEFAULT, cancellable);
+                if (mount != null && mount.strip().has_prefix("/")) {
+                    built = modified_time(mount.strip());
+                }
+            } catch (Error e) {
+            }
+            if (!cancellable.is_cancelled()) {
+                Source.remove(timeout);
+            }
+            proc.send_signal(Posix.Signal.TERM);
+            try {
+                yield proc.wait_async(null);
+            } catch (Error e) {
+            }
+            if (built != null) {
+                appimage_build_dates.insert(key, built);
+            }
+            return built;
+        }
+
+        private static DateTime? modified_time(string path) {
+            try {
+                var info = File.new_for_path(path).query_info(FileAttribute.TIME_MODIFIED, FileQueryInfoFlags.NONE);
+                return info.get_modification_date_time();
+            } catch (Error e) {
+                return null;
+            }
+        }
+
         // The dpkg or rpm version of the package that owns the file.
         private static async string package_version(string program) {
             var path = Posix.realpath(program) ?? program;

@@ -73,11 +73,13 @@ namespace ApkManager.Utils {
 
         public static async void append_runtime(Json.Builder root, RuntimeEngine engine) {
             var version = yield RuntimeRunner.runtime_version(engine);
+            var build_date = yield RuntimeRunner.runtime_build_date(engine);
             root.set_member_name("runtime");
             root.begin_object();
             root.set_member_name("id").add_string_value(AppSettings.runtime_engine_to_string(engine));
             root.set_member_name("name").add_string_value(AppSettings.runtime_engine_label(engine));
             root.set_member_name("version").add_string_value(version);
+            root.set_member_name("buildDate").add_string_value(build_date);
             root.end_object();
         }
 
@@ -86,9 +88,9 @@ namespace ApkManager.Utils {
             var dialog = new Gtk.FileDialog();
             dialog.title = title;
             dialog.initial_name = filename;
-            var downloads = File.new_for_path(Path.build_filename(Environment.get_home_dir(), "Downloads"));
-            if (downloads.query_exists()) {
-                dialog.initial_folder = downloads;
+            var documents = File.new_for_path(Path.build_filename(Environment.get_home_dir(), "Documents"));
+            if (documents.query_exists()) {
+                dialog.initial_folder = documents;
             }
             var file = yield dialog.save(parent, null);
             var text = hide_home(json);

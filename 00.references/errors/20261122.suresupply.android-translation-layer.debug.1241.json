@@ -1,0 +1,163 @@
+{
+  "apkManager" : {
+    "name" : "ApkManager",
+    "version" : "0.2.9",
+    "repository" : "https://github.com/GreenfireInc/ApkManager"
+  },
+  "system" : {
+    "linux" : {
+      "distribution" : "Linux Mint 22",
+      "id" : "linuxmint",
+      "versionId" : "22",
+      "basedOn" : "",
+      "kernelRelease" : "6.8.0-48-generic",
+      "kernelVersion" : "#48-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep 27 14:04:52 UTC 2024",
+      "architecture" : "x86_64"
+    },
+    "displayServer" : {
+      "sessionType" : "x11",
+      "display" : ":0",
+      "waylandDisplay" : "",
+      "xServerVendor" : "The X.Org Foundation",
+      "xServerVersion" : "1.21.1.11"
+    },
+    "desktopEnvironment" : {
+      "name" : "X-Cinnamon",
+      "session" : "cinnamon",
+      "version" : "Cinnamon 6.2.9"
+    },
+    "java" : {
+      "path" : "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
+      "version" : "21.0.12.1",
+      "runtime" : "OpenJDK Runtime Environment (build 21.0.12.1+1-1-24.04.4-Ubuntu)"
+    }
+  },
+  "application" : {
+    "name" : "SureSupply",
+    "package" : "com.hp.esupplies",
+    "versionName" : "6.2.5",
+    "versionCode" : "602050",
+    "apk" : "~/Applications/android/com.hp.esupplies.from.Aptoide.universal.apk"
+  },
+  "runtime" : {
+    "id" : "android-translation-layer",
+    "name" : "Android Translation Layer",
+    "version" : "94d69d8c-edge",
+    "buildDate" : "2026-11-22T11:46:13-05"
+  },
+  "startedAt" : "2026-11-22T17:41:03Z",
+  "command" : [
+    "~/.local/bin/android-translation-layer",
+    "~/Applications/android/com.hp.esupplies.from.Aptoide.universal.apk",
+    "-X",
+    "-verbose:jni"
+  ],
+  "environment" : {
+    "ANDROID_LOG_TAGS" : "*:v",
+    "GDK_DEBUG" : "gl-egl"
+  },
+  "lines" : [
+    {
+      "stream" : "stderr",
+      "text" : "Unrecognized value \"gl-egl\". Try GDK_DEBUG=help"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "W/android-translation-layer(93013): DexFile /tmp/.mount_Androremp11480394280607069825/lib/java/dex/art/core-oj-hostdex.jar is in boot class path but is not in a known location"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](93013): [     0 '/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/natives/libtranslation_layer_main.so' has not been loaded yet.  Locating...]"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:93013): Gtk-WARNING **: 12:41:04.630: Theme parser error: default-stylesheet.css:21:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:93013): Gtk-WARNING **: 12:41:04.630: Theme parser error: default-stylesheet.css:25:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:93013): Gtk-WARNING **: 12:41:04.630: Theme parser error: default-stylesheet.css:29:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_translation](93013): bionic_dlsym(0x7e934f696b70, Java_android_os_MessageQueue_nativeInit) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:93013): Gtk-WARNING **: 12:41:04.646: Use GtkSettings:gtk-interface-color-scheme instead"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "I/android-translation-layer(93013): Compiling dex file: dex2oat --dex-file=/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/ghax.jar --oat-file=~/.cache/AppImage-Cache/art//x86_64/tmp@.mount_Androremp11480394280607069825@lib@art@..@java@dex@android_translation_layer@ghax.jar@classes.dex --instruction-set=x86_64 --instruction-set-features=-ssse3,-sse4.1,-sse4.2,-avx,-avx2,-popcnt --host --boot-image=/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/art/oat/boot.art"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(cdvStartInBackground, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "making an AlertDialog$Builder as we speak, my word!"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "AlertDialog.Builder setMessage called with: 'The connection to the server was unsuccessful. (file:///android_asset/www/index.html)'"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "AlertDialog setMessage called with: 'The connection to the server was unsuccessful. (file:///android_asset/www/index.html)'"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "AlertDialog.Builder setTitle called with: 'Application Error'"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "AlertDialog.Builder setPositiveButton called with text: 'OK'"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "showing the Dialog android.app.AlertDialog@b09e39c"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "- onCreate - Dialog!"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "dismissing the Dialog android.app.AlertDialog@b09e39c"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "dismissing the Dialog android.app.AlertDialog@b09e39c"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "dismissing the Dialog android.app.AlertDialog@b09e39c"
+    },
+    {
+      "stream" : "apkmanager",
+      "text" : "Android Translation Layer exited with status 0"
+    }
+  ],
+  "errors" : [
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:93013): Gtk-WARNING **: 12:41:04.630: Theme parser error: default-stylesheet.css:21:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:93013): Gtk-WARNING **: 12:41:04.630: Theme parser error: default-stylesheet.css:25:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:93013): Gtk-WARNING **: 12:41:04.630: Theme parser error: default-stylesheet.css:29:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stdout",
+      "text" : "AlertDialog.Builder setTitle called with: 'Application Error'"
+    }
+  ]
+}

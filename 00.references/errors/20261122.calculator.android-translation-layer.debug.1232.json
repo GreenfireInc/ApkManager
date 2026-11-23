@@ -1,0 +1,659 @@
+{
+  "apkManager" : {
+    "name" : "ApkManager",
+    "version" : "0.2.9",
+    "repository" : "https://github.com/GreenfireInc/ApkManager"
+  },
+  "system" : {
+    "linux" : {
+      "distribution" : "Linux Mint 22",
+      "id" : "linuxmint",
+      "versionId" : "22",
+      "basedOn" : "",
+      "kernelRelease" : "6.8.0-48-generic",
+      "kernelVersion" : "#48-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep 27 14:04:52 UTC 2024",
+      "architecture" : "x86_64"
+    },
+    "displayServer" : {
+      "sessionType" : "x11",
+      "display" : ":0",
+      "waylandDisplay" : "",
+      "xServerVendor" : "The X.Org Foundation",
+      "xServerVersion" : "1.21.1.11"
+    },
+    "desktopEnvironment" : {
+      "name" : "X-Cinnamon",
+      "session" : "cinnamon",
+      "version" : "Cinnamon 6.2.9"
+    },
+    "java" : {
+      "path" : "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
+      "version" : "21.0.12.1",
+      "runtime" : "OpenJDK Runtime Environment (build 21.0.12.1+1-1-24.04.4-Ubuntu)"
+    }
+  },
+  "application" : {
+    "name" : "Calculator",
+    "package" : "io.dahliaos.calculator",
+    "versionName" : "1.2.1",
+    "versionCode" : "21",
+    "apk" : "~/Applications/android/io.dahliaos.calculator.from.F-Droid.universal.apk"
+  },
+  "runtime" : {
+    "id" : "android-translation-layer",
+    "name" : "Android Translation Layer",
+    "version" : "94d69d8c-edge",
+    "buildDate" : "2026-11-22T11:46:13-05"
+  },
+  "startedAt" : "2026-11-22T17:32:21Z",
+  "command" : [
+    "~/.local/bin/android-translation-layer",
+    "~/Applications/android/io.dahliaos.calculator.from.F-Droid.universal.apk",
+    "-X",
+    "-verbose:jni"
+  ],
+  "environment" : {
+    "ANDROID_LOG_TAGS" : "*:v",
+    "GDK_DEBUG" : "gl-egl"
+  },
+  "lines" : [
+    {
+      "stream" : "stderr",
+      "text" : "Unrecognized value \"gl-egl\". Try GDK_DEBUG=help"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "W/android-translation-layer(89968): DexFile /tmp/.mount_Androremp11480394280607069825/lib/java/dex/art/core-oj-hostdex.jar is in boot class path but is not in a known location"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](89968): [     0 '/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/natives/libtranslation_layer_main.so' has not been loaded yet.  Locating...]"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:89968): Gtk-WARNING **: 12:32:22.982: Theme parser error: default-stylesheet.css:21:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:89968): Gtk-WARNING **: 12:32:22.982: Theme parser error: default-stylesheet.css:25:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:89968): Gtk-WARNING **: 12:32:22.982: Theme parser error: default-stylesheet.css:29:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_translation](89968): bionic_dlsym(0x7efdbeb52b70, Java_android_os_MessageQueue_nativeInit) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:89968): Gtk-WARNING **: 12:32:23.228: Use GtkSettings:gtk-interface-color-scheme instead"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "I/android-translation-layer(89968): Compiling dex file: dex2oat --dex-file=/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/ghax.jar --oat-file=~/.cache/AppImage-Cache/art//x86_64/tmp@.mount_Androremp11480394280607069825@lib@art@..@java@dex@android_translation_layer@ghax.jar@classes.dex --instruction-set=x86_64 --instruction-set-features=-ssse3,-sse4.1,-sse4.2,-avx,-avx2,-popcnt --host --boot-image=/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/art/oat/boot.art"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(trace-startup, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(start-paused, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(disable-service-auth-codes, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(endless-trace-buffer, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(use-test-fonts, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(enable-dart-profiling, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(enable-software-rendering, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(skia-deterministic-rendering, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(trace-skia, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(trace-systrace, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(dump-skp-on-shader-compilation, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(cache-sksl, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(purge-persistent-cache, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(verbose-logging, false) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(io.flutter.automatically-register-plugins, true) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](89968): libflutter.so hooked symbol pthread_key_create to 0x7efdbc099f60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](89968): libflutter.so hooked symbol pthread_once to 0x7efdbc09d800"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](89968): libflutter.so hooked symbol pthread_getspecific to 0x7efdbc099d60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](89968): libflutter.so hooked symbol pthread_setspecific to 0x7efdbc09f6b0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](89968): libflutter.so hooked symbol pthread_key_delete to 0x7efdbc099fc0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](89968): libflutter.so hooked symbol pthread_join to 0x7efdbc099e00"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](89968): libflutter.so hooked symbol pthread_self to 0x7efdbc09eeb0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](89968): libflutter.so hooked symbol pthread_setname_np to 0x7efdbc09f320"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](89968): libflutter.so hooked symbol pthread_sigmask to 0x7efdbc09f7d0"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(io.flutter.embedding.android.EnableSkParagraph, true) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(io.flutter.embedding.android.LeakVM, true) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Fatal signal 6 (SIGABRT), code -6 (SI_TKILL)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "OS: Linux 6.8.0-48-generic (x86_64)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Cmdline: <unset>"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Thread: 89968 \"main\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Registers:"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "rax: 0x0000000000000000    rbx: 0x0000000000015f70    rcx: 0x00007efdbc09a11c    rdx: 0x0000000000000006"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "rdi: 0x0000000000015f70    rsi: 0x0000000000015f70    rbp: 0x00007efdbe5f9db0    rsp: 0x00007efdbe5f9d80"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "r8 : 0x0000000001c4a130    r9 : 0x0000000000000070    r10: 0x0000000000000071    r11: 0x0000000000000246"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "r12: 0x00007efdbe5f9f08    r13: 0x0000000001f6de70    r14: 0x0000000000000006    r15: 0x00007efdbe5fb028"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "rip: 0x00007efdbc09a11c    eflags: 0x00000246 [ PF ZF IF ]"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "cs: 0x00000033     gs: 0x00000000     fs: 0x00000000"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Backtrace:"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Light.ttf<, but there is no >/RobotoCondensed-Light.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Light.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Light.ttf<, but there is no >/RobotoCondensed-Light.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Light.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-LightItalic.ttf<, but there is no >/RobotoCondensed-LightItalic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-LightItalic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-LightItalic.ttf<, but there is no >/RobotoCondensed-LightItalic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-LightItalic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Regular.ttf<, but there is no >/RobotoCondensed-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Regular.ttf<, but there is no >/RobotoCondensed-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Italic.ttf<, but there is no >/RobotoCondensed-Italic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Italic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Italic.ttf<, but there is no >/RobotoCondensed-Italic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Italic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Bold.ttf<, but there is no >/RobotoCondensed-Bold.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Bold.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Bold.ttf<, but there is no >/RobotoCondensed-Bold.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Bold.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-BoldItalic.ttf<, but there is no >/RobotoCondensed-BoldItalic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-BoldItalic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-BoldItalic.ttf<, but there is no >/RobotoCondensed-BoldItalic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-BoldItalic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Light.ttf<, but there is no >/RobotoCondensed-Light.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Light.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-Light.ttf<, but there is no >/RobotoCondensed-Light.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-Light.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-LightItalic.ttf<, but there is no >/RobotoCondensed-LightItalic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-LightItalic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/RobotoCondensed-LightItalic.ttf<, but there is no >/RobotoCondensed-LightItalic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/RobotoCondensed-LightItalic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DroidSansMono.ttf<, but there is no >/DroidSansMono.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DroidSansMono.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DroidSansMono.ttf<, but there is no >/DroidSansMono.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DroidSansMono.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/CutiveMono.ttf<, but there is no >/CutiveMono.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/CutiveMono.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/CutiveMono.ttf<, but there is no >/CutiveMono.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/CutiveMono.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/ComingSoon.ttf<, but there is no >/ComingSoon.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/ComingSoon.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/ComingSoon.ttf<, but there is no >/ComingSoon.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/ComingSoon.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DancingScript-Regular.ttf<, but there is no >/DancingScript-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DancingScript-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DancingScript-Regular.ttf<, but there is no >/DancingScript-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DancingScript-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DancingScript-Bold.ttf<, but there is no >/DancingScript-Bold.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DancingScript-Bold.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DancingScript-Bold.ttf<, but there is no >/DancingScript-Bold.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DancingScript-Bold.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/CarroisGothicSC-Regular.ttf<, but there is no >/CarroisGothicSC-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/CarroisGothicSC-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/CarroisGothicSC-Regular.ttf<, but there is no >/CarroisGothicSC-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/CarroisGothicSC-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansSyriacEstrangela-Regular.ttf<, but there is no >/NotoSansSyriacEstrangela-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansSyriacEstrangela-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansSyriacEstrangela-Regular.ttf<, but there is no >/NotoSansSyriacEstrangela-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansSyriacEstrangela-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansTibetan-Regular.ttf<, but there is no >/NotoSansTibetan-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansTibetan-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansTibetan-Regular.ttf<, but there is no >/NotoSansTibetan-Regular.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansTibetan-Regular.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansSymbols-Regular-Subsetted.ttf<, but there is no >/NotoSansSymbols-Regular-Subsetted.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansSymbols-Regular-Subsetted.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansSymbols-Regular-Subsetted.ttf<, but there is no >/NotoSansSymbols-Regular-Subsetted.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansSymbols-Regular-Subsetted.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansSC-Regular.otf<, but there is no >/NotoSansSC-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansSC-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansSC-Regular.otf<, but there is no >/NotoSansSC-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansSC-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansTC-Regular.otf<, but there is no >/NotoSansTC-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansTC-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansTC-Regular.otf<, but there is no >/NotoSansTC-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansTC-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansJP-Regular.otf<, but there is no >/NotoSansJP-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansJP-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansJP-Regular.otf<, but there is no >/NotoSansJP-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansJP-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansKR-Regular.otf<, but there is no >/NotoSansKR-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansKR-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NotoSansKR-Regular.otf<, but there is no >/NotoSansKR-Regular.otf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NotoSansKR-Regular.otf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NanumGothic.ttf<, but there is no >/NanumGothic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NanumGothic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/NanumGothic.ttf<, but there is no >/NanumGothic.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/NanumGothic.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DroidSansFallback.ttf<, but there is no >/DroidSansFallback.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DroidSansFallback.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/DroidSansFallback.ttf<, but there is no >/DroidSansFallback.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/DroidSansFallback.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/MTLmr3m.ttf<, but there is no >/MTLmr3m.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/MTLmr3m.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access a font at >/system/fonts/MTLmr3m.ttf<, but there is no >/MTLmr3m.ttf< in the fontconfig cache"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "apply_path_overrides: !!! app trying to access >/system/fonts/MTLmr3m.ttf<, which will certainly fail"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "A/art     (89968): art/runtime/runtime_common.cc:458] HandleUnexpectedSignal reenter"
+    },
+    {
+      "stream" : "apkmanager",
+      "text" : "Android Translation Layer exited with status 1"
+    }
+  ],
+  "errors" : [
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:89968): Gtk-WARNING **: 12:32:22.982: Theme parser error: default-stylesheet.css:21:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:89968): Gtk-WARNING **: 12:32:22.982: Theme parser error: default-stylesheet.css:25:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:89968): Gtk-WARNING **: 12:32:22.982: Theme parser error: default-stylesheet.css:29:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Fatal signal 6 (SIGABRT), code -6 (SI_TKILL)"
+    }
+  ]
+}
