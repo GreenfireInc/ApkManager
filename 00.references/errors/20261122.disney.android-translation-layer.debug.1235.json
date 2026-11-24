@@ -1,0 +1,923 @@
+{
+  "apkManager" : {
+    "name" : "ApkManager",
+    "version" : "0.2.9",
+    "repository" : "https://github.com/GreenfireInc/ApkManager"
+  },
+  "system" : {
+    "linux" : {
+      "distribution" : "Linux Mint 22",
+      "id" : "linuxmint",
+      "versionId" : "22",
+      "basedOn" : "",
+      "kernelRelease" : "6.8.0-48-generic",
+      "kernelVersion" : "#48-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep 27 14:04:52 UTC 2024",
+      "architecture" : "x86_64"
+    },
+    "displayServer" : {
+      "sessionType" : "x11",
+      "display" : ":0",
+      "waylandDisplay" : "",
+      "xServerVendor" : "The X.Org Foundation",
+      "xServerVersion" : "1.21.1.11"
+    },
+    "desktopEnvironment" : {
+      "name" : "X-Cinnamon",
+      "session" : "cinnamon",
+      "version" : "Cinnamon 6.2.9"
+    },
+    "java" : {
+      "path" : "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
+      "version" : "21.0.12.1",
+      "runtime" : "OpenJDK Runtime Environment (build 21.0.12.1+1-1-24.04.4-Ubuntu)"
+    }
+  },
+  "application" : {
+    "name" : "Disney+",
+    "package" : "com.disneyplus.mea",
+    "versionName" : "23.05.22.9",
+    "versionCode" : "2748",
+    "apk" : "~/Applications/android/com.disneyplus.mea.from.Aptoide.universal.apk"
+  },
+  "runtime" : {
+    "id" : "android-translation-layer",
+    "name" : "Android Translation Layer",
+    "version" : "94d69d8c-edge",
+    "buildDate" : "2026-11-22T11:46:13-05"
+  },
+  "startedAt" : "2026-11-22T17:34:43Z",
+  "command" : [
+    "~/.local/bin/android-translation-layer",
+    "~/Applications/android/com.disneyplus.mea.from.Aptoide.universal.apk",
+    "-X",
+    "-verbose:jni"
+  ],
+  "environment" : {
+    "ANDROID_LOG_TAGS" : "*:v",
+    "GDK_DEBUG" : "gl-egl"
+  },
+  "lines" : [
+    {
+      "stream" : "stderr",
+      "text" : "Unrecognized value \"gl-egl\". Try GDK_DEBUG=help"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "W/android-translation-layer(90604): DexFile /tmp/.mount_Androremp11480394280607069825/lib/java/dex/art/core-oj-hostdex.jar is in boot class path but is not in a known location"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90604): [     0 '/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/natives/libtranslation_layer_main.so' has not been loaded yet.  Locating...]"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:90604): Gtk-WARNING **: 12:34:44.233: Theme parser error: default-stylesheet.css:21:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:90604): Gtk-WARNING **: 12:34:44.234: Theme parser error: default-stylesheet.css:25:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:90604): Gtk-WARNING **: 12:34:44.234: Theme parser error: default-stylesheet.css:29:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_translation](90604): bionic_dlsym(0x7379e4235b70, Java_android_os_MessageQueue_nativeInit) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:90604): Gtk-WARNING **: 12:34:44.660: Use GtkSettings:gtk-interface-color-scheme instead"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "I/android-translation-layer(90604): Compiling dex file: dex2oat --dex-file=/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/ghax.jar --oat-file=~/.cache/AppImage-Cache/art//x86_64/tmp@.mount_Androremp11480394280607069825@lib@art@..@java@dex@android_translation_layer@ghax.jar@classes.dex --instruction-set=x86_64 --instruction-set-features=-ssse3,-sse4.1,-sse4.2,-avx,-avx2,-popcnt --host --boot-image=/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/art/oat/boot.art"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(dataCollectionDefaultEnabled, true) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "bundle.getBoolean(firebase_performance_logcat_enabled, false) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_translation](90604): bionic_dlsym(0x20fe6f0, Java_com_wolfssl_WolfSSLSession_handshakeDone) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_translation](90604): bionic_dlsym(0x20fe6f0, Java_com_wolfssl_WolfSSLSession_setCipherList) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "PackageManager.checkPermission: >com.google.android.providers.gsf.permission.READ_GSERVICES< not handled"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "PackageManager.checkPermission: >android.permission.INTERNET< not handled"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "PackageManager.checkPermission: >android.permission.INTERNET< not handled"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90604): libc++_shared.so hooked symbol pthread_self to 0x7379e189eeb0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90604): libc++_shared.so hooked symbol pthread_getspecific to 0x7379e1899d60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90604): libc++_shared.so hooked symbol pthread_setspecific to 0x7379e189f6b0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90604): libc++_shared.so hooked symbol pthread_equal to 0x7379e1899420"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90604): libc++_shared.so hooked symbol pthread_join to 0x7379e1899e00"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90604): libc++_shared.so hooked symbol pthread_detach to 0x7379e18993d0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90604): libc++_shared.so hooked symbol pthread_key_create to 0x7379e1899f60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90604): libc++_shared.so hooked symbol pthread_once to 0x7379e189d800"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90604): libc++_shared.so hooked symbol pthread_key_delete to 0x7379e1899fc0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](90604): libEdgeAuth.so hooked symbol pthread_once to 0x7379e189d800"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.content.pm.PackageManager.getPackageInfo(Unknown Source:103)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at p8.a.v(SourceFile:18)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.hotstar.feature.splash.SplashFragment.q0(SourceFile:30)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.a0.f(SourceFile:305)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.a0.k(SourceFile:158)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.FragmentManager.N(SourceFile:58)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.FragmentManager.t(SourceFile:34)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.a0.f(SourceFile:310)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.a0.k(SourceFile:158)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.FragmentManager.N(SourceFile:58)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.FragmentManager.t(SourceFile:34)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.o.onStart(SourceFile:34)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.hotstar.MainActivity.onStart(SourceFile:1)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "android.content.pm.PackageManager$NameNotFoundException: com.tataskymore.open.uat"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.content.pm.PackageManager.getPackageInfo(Unknown Source:103)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at p8.a.v(SourceFile:47)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_translation](90604): \tat com.hotstar.feature.splash.SplashFragment.q0(SourceFile:30)bionic_dlsym(0x7379e4235b70, Java_android_content_res_AssetManager_readAsset) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.a0.f(SourceFile:305)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.a0.k(SourceFile:158)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.FragmentManager.N(SourceFile:58)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.FragmentManager.t(SourceFile:34)V/[bionic_translation](90604): system dlopen handle: found system version"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.a0.f(SourceFile:310)I/android-translation-layer(90604): [Found native code for Java_android_content_res_AssetManager_readAsset__J_3BJJ in \"/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/natives/libtranslation_layer_main.so\"]"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.a0.k(SourceFile:158)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.FragmentManager.N(SourceFile:58)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.FragmentManager.t(SourceFile:34)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.o.onStart(SourceFile:34)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.hotstar.MainActivity.onStart(SourceFile:1)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_translation](90604): bionic_dlsym(0x7379e4235b70, Java_android_content_res_AssetManager_getAssetRemainingLength) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "Service.attachBaseContext(android.app.ContextImpl@cfce7f5) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "Service.onCreate() called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "Service.onStartCommand(Intent [component=ComponentInfo{com.disneyplus.mea/androidx.work.impl.background.systemalarm.SystemAlarmService}, extras=Bundle[{KEY_WORKSPEC_ID=2403ccea-eb21-45f7-a381-0ef1bbdd5c07}], action=ACTION_SCHEDULE_WORK, type=null, uri=null], 0, 0) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "Service.stopSelf() called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:90604): Gtk-WARNING **: 12:34:46.038: Trying to measure WrapperWidget 0x2dd48c0 for width of 0, but it needs at least 80"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_translation](90604): bionic_dlsym(0x7379e4235b70, Java_android_view_View_native_1drawBackground) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at org.json.JSON.typeMismatch(JSON.java:112)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at org.json.JSONObject.<init>(JSONObject.java:163)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at org.json.JSONObject.<init>(JSONObject.java:176)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at il.a.e(SourceFile:917)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at bk.b.d(SourceFile:120)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at za.n$a.get(SourceFile:659)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ro.b.get(SourceFile:14)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.hotstar.bff.data.BffStartUpRepositoryImpl$getStartUpData$2.invokeSuspend(SourceFile:380)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(SourceFile:9)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at fs.e0.run(SourceFile:107)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ls.f.run(SourceFile:13)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ms.h.run(SourceFile:3)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at kotlinx.coroutines.scheduling.CoroutineScheduler$a.run(SourceFile:85)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "E/PackageManager(90604): !!!!!!! hasSystemFeature: case >amazon.hardware.fire_tv< is not implemented yet"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_translation](90604): bionic_dlsym(0x20fe6f0, Java_com_wolfssl_WolfSSL_getEnabledCipherSuitesIana) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_translation](90604): bionic_dlsym(0x20fe6f0, Java_com_wolfssl_WolfSSLSession_setSession) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_translation](90604): bionic_dlsym(0x20fe6f0, Java_com_wolfssl_WolfSSLSession_getSession) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "SEVERE: null"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "java.lang.IllegalStateException: Object has been freed"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.wolfssl.WolfSSLSession.getVersion(WolfSSLSession.java:1418)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.wolfssl.provider.jsse.WolfSSLImplementSSLSession.getProtocol(WolfSSLImplementSSLSession.java:493)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.wolfssl.provider.jsse.WolfSSLSocket.startHandshake(WolfSSLSocket.java:1190)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at okhttp3.internal.connection.a.g(SourceFile:92)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at okhttp3.internal.connection.a.c(SourceFile:176)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.d.a(SourceFile:687)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.a.intercept(SourceFile:62)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at qs.a.intercept(SourceFile:157)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.a.intercept(SourceFile:233)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.h.intercept(SourceFile:157)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at xl.a.intercept(SourceFile:214)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.hotstar.extensions.network.CommonHeaderInterceptor.intercept(SourceFile:262)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.hotstar.extensions.network.a.intercept(SourceFile:5)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at kf.a.intercept(SourceFile:101)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.e.f(SourceFile:97)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.e$a.run(SourceFile:135)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1162)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:636)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Thread.run(Thread.java:768)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Nov 22, 2026 5:34:46 PM com.wolfssl.provider.jsse.WolfSSLImplementSSLSession getCipherSuite"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "SEVERE: null"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "java.lang.IllegalStateException: Object has been freed"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.wolfssl.WolfSSLSession.cipherGetName(WolfSSLSession.java:1878)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.wolfssl.provider.jsse.WolfSSLImplementSSLSession.getCipherSuite(WolfSSLImplementSSLSession.java:477)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.wolfssl.provider.jsse.WolfSSLSocket.startHandshake(WolfSSLSocket.java:1193)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at okhttp3.internal.connection.a.g(SourceFile:92)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at okhttp3.internal.connection.a.c(SourceFile:176)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.d.a(SourceFile:687)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.a.intercept(SourceFile:62)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at qs.a.intercept(SourceFile:157)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.a.intercept(SourceFile:233)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.h.intercept(SourceFile:157)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at xl.a.intercept(SourceFile:214)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.hotstar.extensions.network.CommonHeaderInterceptor.intercept(SourceFile:262)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.hotstar.extensions.network.a.intercept(SourceFile:5)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at kf.a.intercept(SourceFile:101)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.e.f(SourceFile:97)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.e$a.run(SourceFile:135)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1162)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:636)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Thread.run(Thread.java:768)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Nov 22, 2026 5:34:46 PM com.wolfssl.provider.jsse.WolfSSLImplementSSLSession getCipherSuite"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "SEVERE: null"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "java.lang.IllegalStateException: Object has been freed"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.wolfssl.WolfSSLSession.cipherGetName(WolfSSLSession.java:1878)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.wolfssl.provider.jsse.WolfSSLImplementSSLSession.getCipherSuite(WolfSSLImplementSSLSession.java:477)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at okhttp3.Handshake$Companion.a(SourceFile:1)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at okhttp3.internal.connection.a.g(SourceFile:109)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at okhttp3.internal.connection.a.c(SourceFile:176)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.d.a(SourceFile:687)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.a.intercept(SourceFile:62)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at qs.a.intercept(SourceFile:157)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.a.intercept(SourceFile:233)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.h.intercept(SourceFile:157)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at xl.a.intercept(SourceFile:214)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.hotstar.extensions.network.CommonHeaderInterceptor.intercept(SourceFile:262)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.hotstar.extensions.network.a.intercept(SourceFile:5)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at kf.a.intercept(SourceFile:101)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.e.f(SourceFile:97)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.e$a.run(SourceFile:135)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1162)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:636)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Thread.run(Thread.java:768)"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "java.io.IOException: canceled due to java.lang.IllegalStateException: cipherSuite == null"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "D/FirebaseCrashlytics(90604): Handling uncaught exception \"java.lang.IllegalStateException: cipherSuite == null\" from thread os.t Dispatcher"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "PackageManager.checkPermission: >android.permission.INTERNET< not handled"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "D/okhttp.TaskRunner(90604): Q10000 scheduled after   0 µs: os.t ConnectionPool"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "W/FirebaseCrashlytics(90604): Timeout exceeded while awaiting app exception callback from Analytics listener."
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/Context (90604): new Context! this one is: com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService@d9013be"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "Service.attachBaseContext(android.app.ContextImpl@f507c1f) called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "Service.onCreate() called"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "hacky_uncaught_exception_handler: Thread: os.t Dispatcher, Exception:"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at okhttp3.Handshake$Companion.a(SourceFile:157)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at okhttp3.internal.connection.a.g(SourceFile:109)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at okhttp3.internal.connection.a.c(SourceFile:176)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.d.a(SourceFile:687)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.a.intercept(SourceFile:62)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "D/SQLiteCursor(90604): received count(*) from native_fill_window: 1"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at qs.a.intercept(SourceFile:157)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.a.intercept(SourceFile:233)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.h.intercept(SourceFile:157)D/SQLiteCursor(90604):"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "received count(*) from native_fill_window: 0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at xl.a.intercept(SourceFile:214)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.hotstar.extensions.network.CommonHeaderInterceptor.intercept(SourceFile:262)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at com.hotstar.extensions.network.a.intercept(SourceFile:5)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at kf.a.intercept(SourceFile:101)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ts.f.b(SourceFile:153)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.e.f(SourceFile:97)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at ss.e$a.run(SourceFile:135)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1162)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:636)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.Thread.run(Thread.java:768)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "D/FirebaseCrashlytics(90604): Executing shutdown hook for Crashlytics Exception Handler"
+    },
+    {
+      "stream" : "apkmanager",
+      "text" : "Android Translation Layer exited with status 10"
+    }
+  ],
+  "errors" : [
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:90604): Gtk-WARNING **: 12:34:44.233: Theme parser error: default-stylesheet.css:21:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:90604): Gtk-WARNING **: 12:34:44.234: Theme parser error: default-stylesheet.css:25:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:90604): Gtk-WARNING **: 12:34:44.234: Theme parser error: default-stylesheet.css:29:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "android.content.pm.PackageManager$NameNotFoundException: com.tataskymore.open.uat"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "java.lang.IllegalStateException: Object has been freed"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "java.lang.IllegalStateException: Object has been freed"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "java.lang.IllegalStateException: Object has been freed"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "java.io.IOException: canceled due to java.lang.IllegalStateException: cipherSuite == null"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "D/FirebaseCrashlytics(90604): Handling uncaught exception \"java.lang.IllegalStateException: cipherSuite == null\" from thread os.t Dispatcher"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "W/FirebaseCrashlytics(90604): Timeout exceeded while awaiting app exception callback from Analytics listener."
+    },
+    {
+      "stream" : "stdout",
+      "text" : "hacky_uncaught_exception_handler: Thread: os.t Dispatcher, Exception:"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at okhttp3.Handshake$Companion.a(SourceFile:157)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "D/FirebaseCrashlytics(90604): Executing shutdown hook for Crashlytics Exception Handler"
+    }
+  ]
+}

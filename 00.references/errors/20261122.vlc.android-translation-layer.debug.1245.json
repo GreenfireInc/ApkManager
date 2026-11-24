@@ -1,0 +1,467 @@
+{
+  "apkManager" : {
+    "name" : "ApkManager",
+    "version" : "0.2.9",
+    "repository" : "https://github.com/GreenfireInc/ApkManager"
+  },
+  "system" : {
+    "linux" : {
+      "distribution" : "Linux Mint 22",
+      "id" : "linuxmint",
+      "versionId" : "22",
+      "basedOn" : "",
+      "kernelRelease" : "6.8.0-48-generic",
+      "kernelVersion" : "#48-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep 27 14:04:52 UTC 2024",
+      "architecture" : "x86_64"
+    },
+    "displayServer" : {
+      "sessionType" : "x11",
+      "display" : ":0",
+      "waylandDisplay" : "",
+      "xServerVendor" : "The X.Org Foundation",
+      "xServerVersion" : "1.21.1.11"
+    },
+    "desktopEnvironment" : {
+      "name" : "X-Cinnamon",
+      "session" : "cinnamon",
+      "version" : "Cinnamon 6.2.9"
+    },
+    "java" : {
+      "path" : "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
+      "version" : "21.0.12.1",
+      "runtime" : "OpenJDK Runtime Environment (build 21.0.12.1+1-1-24.04.4-Ubuntu)"
+    }
+  },
+  "application" : {
+    "name" : "VLC",
+    "package" : "org.videolan.vlc",
+    "versionName" : "3.7.1",
+    "versionCode" : "13070108",
+    "apk" : "~/Applications/android/org.videolan.vlc.from.F-Droid.x86_64.apk"
+  },
+  "runtime" : {
+    "id" : "android-translation-layer",
+    "name" : "Android Translation Layer",
+    "version" : "94d69d8c-edge",
+    "buildDate" : "2026-11-22T11:46:13-05"
+  },
+  "startedAt" : "2026-11-22T17:44:35Z",
+  "command" : [
+    "~/.local/bin/android-translation-layer",
+    "~/Applications/android/org.videolan.vlc.from.F-Droid.x86_64.apk",
+    "-X",
+    "-verbose:jni"
+  ],
+  "environment" : {
+    "ANDROID_LOG_TAGS" : "*:v",
+    "GDK_DEBUG" : "gl-egl"
+  },
+  "lines" : [
+    {
+      "stream" : "stderr",
+      "text" : "Unrecognized value \"gl-egl\". Try GDK_DEBUG=help"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "W/android-translation-layer(94110): DexFile /tmp/.mount_Androremp11480394280607069825/lib/java/dex/art/core-oj-hostdex.jar is in boot class path but is not in a known location"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): [     0 '/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/natives/libtranslation_layer_main.so' has not been loaded yet.  Locating...]"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:94110): Gtk-WARNING **: 12:44:36.857: Theme parser error: default-stylesheet.css:21:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:94110): Gtk-WARNING **: 12:44:36.858: Theme parser error: default-stylesheet.css:25:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:94110): Gtk-WARNING **: 12:44:36.858: Theme parser error: default-stylesheet.css:29:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_translation](94110): bionic_dlsym(0x795cf04e9b70, Java_android_os_MessageQueue_nativeInit) called"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:94110): Gtk-WARNING **: 12:44:37.547: Use GtkSettings:gtk-interface-color-scheme instead"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "I/android-translation-layer(94110): Compiling dex file: dex2oat --dex-file=/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/android_translation_layer/ghax.jar --oat-file=~/.cache/AppImage-Cache/art//x86_64/tmp@.mount_Androremp11480394280607069825@lib@art@..@java@dex@android_translation_layer@ghax.jar@classes.dex --instruction-set=x86_64 --instruction-set-features=-ssse3,-sse4.1,-sse4.2,-avx,-avx2,-popcnt --host --boot-image=/tmp/.mount_Androremp11480394280607069825/lib/art/../java/dex/art/oat/boot.art"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:94110): GLib-GObject-CRITICAL **: 12:44:38.342: g_object_get_data: assertion 'G_IS_OBJECT (object)' failed"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/android-translation-layer(94110): Failed to open file '~/.local/share/android_translation_layer/org.videolan.vlc.from.F-Droid.x86_64.apk_/assets/lua/playlist/anevia_streams.lua': No such file or directory"
+    },
+    {
+      "stream" : "stdout",
+      "text" : "updateTintFilter(null, null, SRC_IN)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libc++_shared.so hooked symbol pthread_setspecific to 0x795ceda9f6b0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libc++_shared.so hooked symbol pthread_key_create to 0x795ceda99f60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libc++_shared.so hooked symbol pthread_self to 0x795ceda9eeb0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libc++_shared.so hooked symbol pthread_getspecific to 0x795ceda99d60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libc++_shared.so hooked symbol pthread_join to 0x795ceda99e00"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libc++_shared.so hooked symbol pthread_detach to 0x795ceda993d0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libc++_shared.so hooked symbol pthread_key_delete to 0x795ceda99fc0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libc++_shared.so hooked symbol pthread_once to 0x795ceda9d800"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlc.so hooked symbol pthread_sigmask to 0x795ceda9f7d0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlc.so hooked symbol pthread_join to 0x795ceda99e00"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlc.so hooked symbol pthread_exit to 0x795ceda99430"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlc.so hooked symbol pthread_key_create to 0x795ceda99f60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlc.so hooked symbol pthread_key_delete to 0x795ceda99fc0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlc.so hooked symbol pthread_setspecific to 0x795ceda9f6b0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlc.so hooked symbol pthread_getspecific to 0x795ceda99d60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlc.so hooked symbol pthread_once to 0x795ceda9d800"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlc.so hooked symbol pthread_self to 0x795ceda9eeb0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlc.so hooked symbol pthread_setname_np to 0x795ceda9f320"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlc.so hooked symbol pthread_setschedparam to 0x795ceda9f450"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlc.so hooked symbol pthread_equal to 0x795ceda99420"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlc.so hooked symbol pthread_getschedparam to 0x795ceda99c00"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlcjni.so hooked symbol pthread_getspecific to 0x795ceda99d60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlcjni.so hooked symbol pthread_setspecific to 0x795ceda9f6b0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlcjni.so hooked symbol pthread_key_create to 0x795ceda99f60"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlcjni.so hooked symbol pthread_key_delete to 0x795ceda99fc0"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlcjni.so hooked symbol pthread_join to 0x795ceda99e00"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "V/[bionic_linker](94110): libvlcjni.so hooked symbol pthread_once to 0x795ceda9d800"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.inflate(Unknown Source:87)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.app.Activity.setContentView(Unknown Source:13)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.activity.ComponentActivity.setContentView(ComponentActivity.java:440)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at org.videolan.television.ui.MainTvActivity.onCreate(MainTvActivity.kt:77)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.app.Activity.nativeStartActivity(Native Method)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.app.ContextImpl$4.run(Unknown Source:72)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.os.Handler.handleCallback(Unknown Source:2)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.os.Handler.dispatchMessage(Unknown Source:4)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.os.Looper.loop(Unknown Source:77)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.RuntimeException: java.lang.reflect.InvocationTargetException"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.inflate(Unknown Source:87)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.leanback.app.BrandedSupportFragment.onInflateTitleView(BrandedSupportFragment.java:70)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.leanback.app.BrandedSupportFragment.installTitleView(BrandedSupportFragment.java:85)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.leanback.app.BrowseSupportFragment.onCreateView(BrowseSupportFragment.java:1297)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.Fragment.performCreateView(Fragment.java:3114)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.FragmentStateManager.ensureInflatedView(FragmentStateManager.java:404)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.FragmentStateManager.moveToExpectedState(FragmentStateManager.java:271)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.FragmentLayoutInflaterFactory.onCreateView(FragmentLayoutInflaterFactory.java:142)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.FragmentController.onCreateView(FragmentController.java:136)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.FragmentActivity.dispatchFragmentsOnCreateView(FragmentActivity.java:247)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.fragment.app.FragmentActivity.onCreateView(FragmentActivity.java:226)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.createViewFromTag(Unknown Source:109)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.rInflate(Unknown Source:107)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.inflate(Unknown Source:288)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.inflate(Unknown Source:79)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "... 8 more"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.reflect.InvocationTargetException"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.reflect.Constructor.newInstance0(Native Method)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.reflect.Constructor.newInstance(Constructor.java:334)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.createView(Unknown Source:176)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.createViewFromTag(Unknown Source:217)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.inflate(Unknown Source:192)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.inflate(Unknown Source:79)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "... 22 more"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.RuntimeException: java.lang.reflect.InvocationTargetException"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.inflate(Unknown Source:87)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.inflate(Unknown Source:3)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.leanback.widget.TitleView.<init>(TitleView.java:106)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.leanback.widget.TitleView.<init>(TitleView.java:99)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "... 28 more"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.reflect.InvocationTargetException"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.reflect.Constructor.newInstance0(Native Method)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at java.lang.reflect.Constructor.newInstance(Constructor.java:334)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.createView(Unknown Source:176)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.createViewFromTag(Unknown Source:217)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.rInflate(Unknown Source:107)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.inflate(Unknown Source:172)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at android.view.LayoutInflater.inflate(Unknown Source:79)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "... 31 more"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.NoSuchMethodError: No virtual method setSoundEffectsEnabled(Z)V in class Landroidx/leanback/widget/SearchOrbView; or its super classes (declaration of 'androidx.leanback.widget.SearchOrbView' appears in ~/Applications/android/org.videolan.vlc.from.F-Droid.x86_64.apk)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.leanback.widget.SearchOrbView.<init>(SearchOrbView.java:205)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "at androidx.leanback.widget.SearchOrbView.<init>(SearchOrbView.java:160)"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "... 38 more"
+    },
+    {
+      "stream" : "apkmanager",
+      "text" : "Android Translation Layer exited with status 0"
+    }
+  ],
+  "errors" : [
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:94110): Gtk-WARNING **: 12:44:36.857: Theme parser error: default-stylesheet.css:21:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:94110): Gtk-WARNING **: 12:44:36.858: Theme parser error: default-stylesheet.css:25:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "(android-translation-layer:94110): Gtk-WARNING **: 12:44:36.858: Theme parser error: default-stylesheet.css:29:2-12: No property named \"text-align\""
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.RuntimeException: java.lang.reflect.InvocationTargetException"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.reflect.InvocationTargetException"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.RuntimeException: java.lang.reflect.InvocationTargetException"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.reflect.InvocationTargetException"
+    },
+    {
+      "stream" : "stderr",
+      "text" : "Caused by: java.lang.NoSuchMethodError: No virtual method setSoundEffectsEnabled(Z)V in class Landroidx/leanback/widget/SearchOrbView; or its super classes (declaration of 'androidx.leanback.widget.SearchOrbView' appears in ~/Applications/android/org.videolan.vlc.from.F-Droid.x86_64.apk)"
+    }
+  ]
+}
